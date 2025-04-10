@@ -157,7 +157,7 @@ export default {
             isValidLowercase: false,
             isValidUppercase: false,
             isValidNumber: false,
-            isValidSpecialChar: false,
+            isValidSpecialChar: false
         };
     },
 
@@ -189,8 +189,6 @@ export default {
         window.addEventListener("scroll", checkScroll);
     },
 
-    
-
     created() {
         // Verifica si ya hay sesión iniciada
         const token = localStorage.getItem('authToken');
@@ -199,20 +197,6 @@ export default {
             this.loggedIn = true;
             this.currentUserName = userName;
         }
-    },
-
-    validatePassword() {
-      const password = this.user.u_password;
-
-      // Validaciones para la contraseña
-      this.isValidLength = password.length >= 8 && password.length <= 16;
-      this.isValidLowercase = /[a-z]/.test(password);
-      this.isValidUppercase = /[A-Z]/.test(password);
-      this.isValidNumber = /\d/.test(password);
-      this.isValidSpecialChar = /[#$@!%&*?_]/.test(password);
-
-      // Mostrar/ocultar mensaje de error según sea necesario
-      return this.isValidLength && this.isValidLowercase && this.isValidUppercase && this.isValidNumber && this.isValidSpecialChar;
     },
 
     watch: {
@@ -266,6 +250,28 @@ export default {
       this.showRegister = false;
     },
 
+    validatePassword() {
+        const password = this.user.u_password;
+
+        this.isValidLength = password.length >= 8 && password.length <= 16;
+        this.isValidLowercase = /[a-z]/.test(password);
+        this.isValidUppercase = /[A-Z]/.test(password);
+        this.isValidNumber = /\d/.test(password);
+        this.isValidSpecialChar = /[#$@!%&*?_]/.test(password);
+
+        this.isValidPassword = this.isValidLength &&
+                            this.isValidLowercase &&
+                            this.isValidUppercase &&
+                            this.isValidNumber &&
+                            this.isValidSpecialChar;
+
+        return this.isValidPassword && this.isValidLength &&
+                            this.isValidLowercase &&
+                            this.isValidUppercase &&
+                            this.isValidNumber &&
+                            this.isValidSpecialChar;
+    },
+
     handleLogin() {
         console.log("Iniciar sesión con:", this.user);// user es tu objeto reactivo
         if (!this.user.u_name || !this.user.u_password || !this.user.u_mail) {
@@ -314,7 +320,8 @@ export default {
     },
 
     handleRegister() {
-    axios.post('http://localhost:5289/api/Users', this.user)
+        if (!this.validatePassword()) return;
+        axios.post('http://localhost:5289/api/Users', this.user)
         .then(response => {
             alert("Usuario registrado exitosamente");
             this.showRegister = false;

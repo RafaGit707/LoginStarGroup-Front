@@ -40,6 +40,10 @@
   <style scoped>
   .usuarios {
     padding: 20px;
+    max-width: 100%;
+    padding: var(--header-height);
+    text-align: center;
+    font-size: large;
   }
   ul {
     list-style: none;

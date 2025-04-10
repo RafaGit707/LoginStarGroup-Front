@@ -2,6 +2,10 @@
   
   <HomePage/>
   <UserList/>
+  <UserList/>
+  <UserList/>
+  <UserList/>
+  <UserList/>
 
 </template>
 
