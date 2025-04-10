@@ -1,15 +1,19 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  
+  <HomePage/>
+  <UserList/>
+
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import HomePage from './components/HomePage.vue'
+import UserList from './components/UserList.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    HomePage,
+    UserList
   }
 }
 </script>
@@ -19,8 +23,26 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  color: white;
 }
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+:root {
+    --header-height: 80px;
+    --scroll-y: 0;
+}
+
+body.no-scroll {
+    overflow: hidden;
+}
+
 </style>
