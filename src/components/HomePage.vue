@@ -31,7 +31,7 @@
                     </a>
                     </li>
                     <li class="user-sesion" v-else>
-                        <span class="user" style="color: white;"> {{ currentUserName }}</span>
+                        <span class="user" style="color: white; cursor: pointer;" @click="toggleUserDetails"> {{ currentUserName }}</span>
                         <button @click="logout" type="button" class="button-cerrar-sesion">Cerrar sesión</button>
                     </li>
                 </ul>
@@ -115,7 +115,7 @@
         </div>
         <div class="form-group">
             <label for="password2">Contraseña</label>
-            <input v-model="user.u_password" type="password" id="password2" name="password2" autocomplete="off" required @input="validatePassword" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$@!%&*?_])(?!\s)[a-zA-Z\d#$@!%&*?_]{8,16}$">
+            <input v-model="user.u_password" type="password" id="password2" name="password2" autocomplete="off" required @input="validatePassword">
         </div>
         <div id="error_message" v-if="!isValidPassword">
             <p class="message"><img class="X2" :src="isValidLength ? '@/assets/tick.png' : '@/assets/X.png'" alt="X2">La contraseña debe tener entre 8 y 16 caracteres</p>
@@ -131,9 +131,7 @@
     </div>
 </div>
 
-
 </template>
-
 
 <script>
 import axios from 'axios';
@@ -160,15 +158,6 @@ export default {
             isValidSpecialChar: false
         };
     },
-
-    // mounted() {
-    //     const token = localStorage.getItem('authToken');
-    //     const userName = localStorage.getItem('userName');
-    //     if (token && userName) {
-    //         this.loggedIn = true;
-    //         this.currentUserName = userName;
-    //     }
-    // },
 
     mounted() {
         const header = document.querySelector("header");
@@ -232,115 +221,116 @@ export default {
     },
 
     methods: {
-    showLoginModal() {
-        this.showLogin = true;
-        this.showRegister = false;
-    },
-
-    showRegisterModal() {
-      this.showRegister = true;
-      this.showLogin = false;
-    },
-
-    closeLoginModal() {
-        this.showLogin = false;
-    },
-
-    closeRegisterModal() {
-      this.showRegister = false;
-    },
-
-    validatePassword() {
-        const password = this.user.u_password;
-
-        this.isValidLength = password.length >= 8 && password.length <= 16;
-        this.isValidLowercase = /[a-z]/.test(password);
-        this.isValidUppercase = /[A-Z]/.test(password);
-        this.isValidNumber = /\d/.test(password);
-        this.isValidSpecialChar = /[#$@!%&*?_]/.test(password);
-
-        this.isValidPassword = this.isValidLength &&
-                            this.isValidLowercase &&
-                            this.isValidUppercase &&
-                            this.isValidNumber &&
-                            this.isValidSpecialChar;
-
-        return this.isValidPassword && this.isValidLength &&
-                            this.isValidLowercase &&
-                            this.isValidUppercase &&
-                            this.isValidNumber &&
-                            this.isValidSpecialChar;
-    },
-
-    handleLogin() {
-        console.log("Iniciar sesión con:", this.user);// user es tu objeto reactivo
-        if (!this.user.u_name || !this.user.u_password || !this.user.u_mail) {
-            alert("Por favor, completa todos los campos.");
-            return;
-        }
-
-        console.log("Datos a enviar:", JSON.stringify(this.user));
-
-        axios.post('http://localhost:5289/api/Login/login', this.user )
-        .then(response => {
-            if (response.data.message === 'Login exitoso') {
-                alert("Inicio de sesión exitoso");
-                localStorage.setItem('authToken', response.data.token);
-                this.loggedIn = true;
-                this.currentUserName = this.user.u_name; 
-                // window.location.href = "/usuarios";
-            } else {
-                alert("Credenciales incorrectas");
-            }
-        })
-        .catch(error => {
-        console.error("Error en la petición:", error);
-
-        if (error.response) {
-            console.error("Respuesta del servidor:", error.response.data);
-            alert(`Error del servidor: ${error.response.data}`);
-        } else if (error.request) {
-            console.error("No hubo respuesta del servidor:", error.request);
-            alert("No hubo respuesta del servidor.");
-        } else {
-            console.error("Error al configurar la petición:", error.message);
-            alert(`Error: ${error.message}`);
-        }
-
-        alert("Hubo un problema con el inicio de sesión, intenta nuevamente.");
-        });
-    },
-
-    fetchUsers() {
-      console.log("Fetching users...");
-    },
-
-    registerUser() {
-      this.fetchUsers();
-    },
-
-    handleRegister() {
-        if (!this.validatePassword()) return;
-        axios.post('http://localhost:5289/api/Users', this.user)
-        .then(response => {
-            alert("Usuario registrado exitosamente");
+        showLoginModal() {
+            this.showLogin = true;
             this.showRegister = false;
-            this.fetchUsers();
-            this.registerUser();
-            console.log(response.data);
-        })
-        .catch(error => {
-            console.error("Error al registrar usuario", error);
-            alert("Error al registrar usuario");
-        });
-    },
+        },
 
-    logout() {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userName');
-        this.loggedIn = false;
-        this.currentUserName = '';
-    },
+        showRegisterModal() {
+        this.showRegister = true;
+        this.showLogin = false;
+        },
+
+        closeLoginModal() {
+            this.showLogin = false;
+        },
+
+        closeRegisterModal() {
+        this.showRegister = false;
+        },
+
+        toggleUserDetails() {
+            this.showUserDetails = !this.showUserDetails;
+        },
+
+        validatePassword() {
+            const password = this.user.u_password;
+
+            this.isValidLength = password.length >= 8 && password.length <= 16;
+            this.isValidLowercase = /[a-z]/.test(password);
+            this.isValidUppercase = /[A-Z]/.test(password);
+            this.isValidNumber = /\d/.test(password);
+            this.isValidSpecialChar = /[#$@!%&*?_]/.test(password);
+
+            this.isValidPassword = this.isValidLength &&
+                                this.isValidLowercase &&
+                                this.isValidUppercase &&
+                                this.isValidNumber &&
+                                this.isValidSpecialChar;
+
+            return this.isValidPassword && this.isValidLength &&
+                                this.isValidLowercase &&
+                                this.isValidUppercase &&
+                                this.isValidNumber &&
+                                this.isValidSpecialChar;
+        },
+
+        handleLogin() {
+            console.log("Iniciar sesión con:", this.user);// user es tu objeto reactivo
+            if (!this.user.u_name || !this.user.u_password || !this.user.u_mail) {
+                alert("Por favor, completa todos los campos.");
+                return;
+            }
+
+            console.log("Datos a enviar:", JSON.stringify(this.user));
+
+            axios.post('http://localhost:5289/api/Login/login', this.user )
+            .then(response => {
+                if (response.data.message === 'Login exitoso') {
+                    // alert("Inicio de sesión exitoso");
+                    localStorage.setItem('authToken', response.data.token);
+                    this.loggedIn = true;
+                    this.currentUserName = this.user.u_name;
+                    localStorage.setItem('userName', this.user.u_name);
+                    this.user = { u_name: '', u_mail: '', u_password: '' };
+                    this.showLogin = false;
+                    window.location.reload();
+                } else {
+                    alert("Credenciales incorrectas");
+                }
+            })
+            .catch(error => {
+                console.error("Error en la petición:", error);
+
+                if (error.response) {
+                    console.error("Respuesta del servidor:", error.response.data);
+                } else if (error.request) {
+                    console.error("No hubo respuesta del servidor:", error.request);
+                    alert("No hubo respuesta del servidor.");
+                } else {
+                    console.error("Error al configurar la petición:", error.message);
+                    alert(`Error: ${error.message}`);
+                }
+
+                alert("Hubo un problema con el inicio de sesión, intenta nuevamente.");
+            });
+        },
+
+        fetchUsers() {
+            console.log("Fetching users...");
+        },
+
+        handleRegister() {
+            // if (!this.validatePassword()) return;
+            axios.post('http://localhost:5289/api/Users', this.user)
+            .then(response => {
+                this.showRegister = false;
+                this.fetchUsers();
+                console.log(response.data);
+            })
+            .catch(error => {
+                console.error("Error al registrar usuario", error);
+                alert("Error al registrar usuario");
+            });
+        },
+
+        logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userName');
+            this.loggedIn = false;
+            this.currentUserName = '';
+            window.location.reload();
+        }
 
     },
 };
@@ -457,6 +447,11 @@ export default {
     width: fit-content;
     cursor: pointer;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.button-cerrar-sesion:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.9);
 }
 
 ul {

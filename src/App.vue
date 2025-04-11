@@ -1,11 +1,9 @@
 <template>
   
   <HomePage/>
-  <UserList/>
-  <UserList/>
-  <UserList/>
-  <UserList/>
-  <UserList/>
+  <main class="main-container">
+    <UserList/>
+  </main>
 
 </template>
 
@@ -47,6 +45,15 @@ html {
 
 body.no-scroll {
     overflow: hidden;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(7px);
 }
 
 </style>
