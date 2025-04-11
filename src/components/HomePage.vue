@@ -281,7 +281,7 @@ export default {
 
         console.log("Datos a enviar:", JSON.stringify(this.user));
 
-        axios.post('http://localhost:5289/api/Login/login', this.user )
+        axios.post('https://localhost:7198/api/Login/login', this.user )
         .then(response => {
             if (response.data.message === 'Login exitoso') {
                 alert("Inicio de sesión exitoso");
@@ -321,7 +321,7 @@ export default {
 
     handleRegister() {
         if (!this.validatePassword()) return;
-        axios.post('http://localhost:5289/api/Users', this.user)
+        axios.post('https://localhost:7198/api/Users', this.user)
         .then(response => {
             alert("Usuario registrado exitosamente");
             this.showRegister = false;
