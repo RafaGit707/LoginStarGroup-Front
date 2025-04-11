@@ -69,9 +69,17 @@
         });
     },
 
-    showEditUser() {
-        this.showEditUser = true;
+    selectUserForEdit(usuario) {
+        this.selectedUser = usuario;
+        this.showEditForm = true;
+    },
+
+    updateUser() {
+      
+
     }
+
+
     
     },
 
