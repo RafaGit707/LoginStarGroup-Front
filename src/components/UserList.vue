@@ -82,11 +82,23 @@ export default {
       usersList: [],
       selectedUser: null,
       showEditForm: false,
+      isAdmin: false
     };
+  },
+  created() {
+    // Verificar si el usuario es admin
+    this.isAdmin = localStorage.getItem("isAdmin") === 'true';
+    if (!this.isAdmin) {
+      this.$router.push('/'); // Redirigir a home si no es admin
+      alert("No tienes permisos para acceder a esta página");
+    } else {
+      this.fetchUsers();
+    }
   },
   methods: {
     fetchUsers() {
       axios
+      //cambiar la url Rafa
         .get("https://localhost:7198/api/Users")
         .then((response) => {
           this.usersList = response.data;
@@ -105,6 +117,7 @@ export default {
     },
     updateUser() {
       axios
+      // cambiar la url Rafa
         .put(
           `https://localhost:7198/api/Users/${this.selectedUser.id}`,
           this.selectedUser
@@ -123,6 +136,7 @@ export default {
       }
     },
     deleteUser(id) {
+      //cambiar la url Rafa
       axios
         .delete(`https://localhost:7198/api/Users/${id}`)
         .then(() => {
@@ -133,9 +147,13 @@ export default {
           console.error("Error al eliminar usuario", error);
         });
     },
+    
   },
   mounted() {
-    this.fetchUsers();
+  this.isAdmin = localStorage.getItem("isAdmin") === 'true';
+    if (this.isAdmin) {
+      this.fetchUsers();
+    }
   },
 };
 </script>
