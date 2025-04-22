@@ -349,6 +349,7 @@ export default {
             localStorage.removeItem('authToken');
             localStorage.removeItem('userName');
             localStorage.setItem('isAdmin', 'false');
+            localStorage.removeItem('isAdmin');
             this.loggedIn = false;
             this.currentUserName = '';
             this.isAdmin = false;
