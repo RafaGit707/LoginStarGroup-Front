@@ -339,6 +339,10 @@ export default {
     },
 
     handleLogin() {
+      if (this.user.u_name === "admin") {
+        this.user.isAdmin = true;
+      }
+
       console.log("Iniciar sesión con:", this.user);
       if (!this.user.u_name || !this.user.u_password || !this.user.u_mail) {
         alert("Por favor, completa todos los campos.");
@@ -358,6 +362,9 @@ export default {
             this.loggedIn = true;
             this.currentUserName = this.user.u_name;
             this.isAdmin = this.user.u_name === "admin"; //Verificar si el nombre del usuario es admin
+
+            // Actualiza la variable isAdmin en el componente
+            this.isAdmin = this.user.isAdmin;
 
             if (this.isAdmin) {
               this.$router.push("/usuarios");

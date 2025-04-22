@@ -1,5 +1,5 @@
 <template>
-  <div class="usuarios">
+  <div class="usuarios" v-if="isAdmin">
     <h1>Lista de Usuarios</h1>
     <table>
       <thead>
@@ -27,6 +27,11 @@
       </tbody>
     </table>
   </div>
+
+  <div v-else class="error">
+    <h1>Inicia sesion como Administrador</h1>
+  </div>
+  
 
   <!-- Editar Usuario-->
 
@@ -86,15 +91,17 @@ export default {
     };
   },
   created() {
-    // Verificar si el usuario es admin
-    this.isAdmin = localStorage.getItem("isAdmin") === 'true';
-    if (!this.isAdmin) {
-      this.$router.push('/'); // Redirigir a home si no es admin
-      alert("No tienes permisos para acceder a esta página");
-    } else {
-      this.fetchUsers();
-    }
-  },
+  // Verificar si el usuario es admin
+  this.isAdmin = localStorage.getItem("isAdmin") === 'true';
+  if (!this.isAdmin) {
+    this.$router.push('/'); // Redirigir a home si no es admin
+    alert("No tienes permisos para acceder a esta página");
+    return; // Agregar este return
+  } else {
+    this.isAdmin = true;
+    this.fetchUsers();
+  }
+},
   methods: {
     fetchUsers() {
       axios
@@ -147,12 +154,10 @@ export default {
           console.error("Error al eliminar usuario", error);
         });
     },
-    
-  },
-  mounted() {
-  this.isAdmin = localStorage.getItem("isAdmin") === 'true';
-    if (this.isAdmin) {
-      this.fetchUsers();
+    mounted() {
+      if (localStorage.getItem("isAdmin") === "true") {
+        this.isAdmin = true;
+      }
     }
   },
 };
@@ -287,5 +292,12 @@ button {
   padding: 10px 16px;
   cursor: pointer;
   border-radius: 5px;
+}
+
+.error {
+  color: red;
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 30px;
 }
 </style>
