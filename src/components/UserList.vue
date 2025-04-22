@@ -34,6 +34,48 @@
     <p>Solo los administradores pueden ver la lista de usuarios.</p>
     <p>Si eres un administrador, por favor inicia sesión.</p>
   </div>
+
+  <div v-if="showEditForm" class="modal-overlay">
+    <div class="modal-content">
+      <form @submit.prevent="updateUser">
+        <h2>Editar Usuario</h2>
+        <div class="form-group">
+          <label for="edit-name">Nombre</label>
+          <input
+            v-model="selectedUser.u_name"
+            type="text"
+            id="edit-name"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="edit-email">Correo electrónico</label>
+          <input
+            v-model="selectedUser.u_mail"
+            type="email"
+            id="edit-email"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="edit-password">Contraseña</label>
+          <input
+            v-model="selectedUser.u_password"
+            type="password"
+            id="edit-password"
+            required
+          />
+        </div>
+        <div class="modal-buttons">
+          <button type="submit" class="submit-btn">Guardar</button>
+          <button type="button" @click="closeEditForm" class="cancel-btn">
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
 </template>
 
 <script>
@@ -45,7 +87,9 @@ export default {
   props: ['isAdmin'],
   data() {
     return {
-        usersList: []
+        usersList: [],
+        selectedUser: null,
+        showEditForm: false
     };
   },
   mounted() {
@@ -65,21 +109,51 @@ export default {
       });
     },
     deleteUser(id) {
+      //cambiar la url Rafa
       localStorage.setItem('userId', id);
       if (id === localStorage.getItem("userId")) {
         alert("No puedes eliminar tu propio usuario");
         return;
       }
-      if (confirm("¿Seguro que quieres eliminar este usuario?")) {
-        try {
-          axios.delete(`http://localhost:5289/api/Users/${id}`);
-          this.checkRole();
+      axios
+        .delete(`http://localhost:5289/api/Users/${id}`)
+        .then(() => {
+          this.fetchUsers();
           HomePage.methods.logout();
-        } catch (err) {
-          console.error("Error al eliminar usuario", err);
-        }
+          alert("Usuario eliminado correctamente");
+        })
+        .catch((error) => {
+          console.error("Error al eliminar usuario", error);
+        });
+    },
+    confirmDelete(id) {
+      if (confirm("¿Deseas eliminar este usuario?")) {
+        this.deleteUser(id);
       }
     },
+    selectUserForEdit(usuario) {
+      this.selectedUser = { ...usuario };
+      this.showEditForm = true;
+    },
+    updateUser() {
+      axios
+      // cambiar la url Rafa
+        .put(
+          `http://localhost:5289/api/Users/${this.selectedUser.id}`,
+          this.selectedUser
+        )
+        .then(() => {
+          this.fetchUsers();
+          this.closeEditForm();
+        })
+        .catch((error) => {
+          console.error("Error al actualizar usuario", error);
+        });
+    },
+    closeEditForm() {
+      this.showEditForm = false;
+      this.selectedUser = null;
+    }
   }
 }
 </script>
@@ -115,6 +189,7 @@ li {
   margin-bottom: 16px;
   font-size: large;
 }
+
 .delete-btn {
   font-size: large;
   padding: 10px 15px 10px 15px;
@@ -127,6 +202,120 @@ li {
   width: fit-content;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+td {
+  padding: 8px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: #f2f2f2;
+  color: black;
+  padding: 8px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+button {
+  margin-top: 20px;
+  background-color: #2e2f36;
+  color: white;
+  padding: 10px 20px;
+  border: white 2px solid;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-inline: 50px;
+}
+
+.edit-btn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.9);
+}
+
+.delete-btn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.9);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #222;
+  padding: 30px;
+  border-radius: 10px;
+  width: 400px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  color: white;
+}
+
+.form-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  background-color: #333;
+  border: 1px solid #555;
+  color: white;
+  border-radius: 5px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.submit-btn {
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.cancel-btn {
+  background-color: #e67e22;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.error {
+  color: red;
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 30px;
 }
 </style>
   
