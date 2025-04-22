@@ -1,8 +1,8 @@
 <template>
   
-  <HomePage/>
+  <HomePage @login-success="handleLoginSuccess"/>
   <main class="main-container">
-    <UserList/>
+    <UserList :isAdmin="isAdmin"/>
   </main>
 
 </template>
@@ -16,6 +16,17 @@ export default {
   components: {
     HomePage,
     UserList
+  },
+  data() {
+    return {
+      isAdmin: localStorage.getItem("isAdmin") === 'true'
+    };
+  },
+  methods: {
+    handleLoginSuccess(data) {
+      this.isAdmin = data.isAdmin;
+      localStorage.setItem("isAdmin", data.isAdmin);
+    }
   }
 }
 </script>

@@ -138,6 +138,7 @@ import axios from 'axios';
 
 export default {
     name: "HomePage",
+    emits: ['loginSuccess'],
     data() {
         return {
             user: {
@@ -149,6 +150,7 @@ export default {
             loggedIn: false,
             currentUserName: '',
             showRegister: false,
+            isAdmin: false,
 
             isValidPassword: false,
             isValidLength: false,
@@ -160,6 +162,8 @@ export default {
     },
 
     mounted() {
+        this.checkRole();
+        
         const header = document.querySelector("header");
 
         const checkScroll = () => {
@@ -185,6 +189,7 @@ export default {
         if (token && userName) {
             this.loggedIn = true;
             this.currentUserName = userName;
+            this.isAdmin = localStorage.getItem("isAdmin") === 'true';
         }
     },
 
@@ -215,20 +220,24 @@ export default {
     },
 
     beforeUnmount() {
-        // Limpia el token y el nombre de usuario al cerrar sesión
         localStorage.removeItem('authToken');
         localStorage.removeItem('userName');
     },
 
     methods: {
+        checkRole() {
+            this.isAdmin = localStorage.getItem("isAdmin") === 'true';
+            console.log("isAdmin:", this.isAdmin);
+            console.log("userName:", this.user.u_name);
+        },
         showLoginModal() {
             this.showLogin = true;
             this.showRegister = false;
         },
 
         showRegisterModal() {
-        this.showRegister = true;
-        this.showLogin = false;
+            this.showRegister = true;
+            this.showLogin = false;
         },
 
         closeLoginModal() {
@@ -277,14 +286,25 @@ export default {
             axios.post('http://localhost:5289/api/Login/login', this.user )
             .then(response => {
                 if (response.data.message === 'Login exitoso') {
-                    // alert("Inicio de sesión exitoso");
-                    localStorage.setItem('authToken', response.data.token);
-                    this.loggedIn = true;
-                    this.currentUserName = this.user.u_name;
-                    localStorage.setItem('userName', this.user.u_name);
-                    this.user = { u_name: '', u_mail: '', u_password: '' };
-                    this.showLogin = false;
-                    window.location.reload();
+                    const nombre = this.user.u_name;
+
+                this.$emit('login-success', {
+                    isAdmin: nombre === 'admin'
+                });
+
+                localStorage.setItem('authToken', response.data.token);
+                localStorage.setItem('userName', nombre);
+                localStorage.setItem('isAdmin', nombre === 'admin' ? 'true' : 'false');
+
+                this.loggedIn = true;
+                this.currentUserName = nombre;
+                this.isAdmin = nombre === 'admin';
+
+                this.user = { u_name: '', u_mail: '', u_password: '' };
+                this.showLogin = false;
+
+                this.checkRole();
+                window.location.reload();
                 } else {
                     alert("Credenciales incorrectas");
                 }
@@ -325,10 +345,13 @@ export default {
         },
 
         logout() {
+            this.$emit('logout');
             localStorage.removeItem('authToken');
             localStorage.removeItem('userName');
+            localStorage.setItem('isAdmin', 'false');
             this.loggedIn = false;
             this.currentUserName = '';
+            this.isAdmin = false;
             window.location.reload();
         }
 
@@ -356,7 +379,7 @@ export default {
     height: 100vh;
     justify-content: flex-start;
     align-items: flex-end;
-    background: transparent;
+    background: none;
     padding-bottom: var(--header-height);
 }
 

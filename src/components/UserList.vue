@@ -1,12 +1,38 @@
 <template>
-  <div class="usuarios">
+
+  <div class="usuarios" v-if="isAdmin">
     <h1>Lista de Usuarios</h1>
-    <ul>
-      <li v-for="usuario in usersList" :key="usuario.id">
-        {{ usuario.u_name }} / {{ usuario.u_mail }}
-        <button class="delete" @click="deleteUser(usuario.id)">Delete</button>
-      </li>
-    </ul>
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Contraseña</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="usuario in usersList" :key="usuario.id">
+          <td>{{ usuario.u_name }}</td>
+          <td>{{ usuario.u_mail }}</td>
+          <td>{{ usuario.u_password }}</td>
+          <td>
+            <button @click="selectUserForEdit(usuario)" class="edit-btn">
+              Editar
+            </button>
+            <button @click="confirmDelete(usuario.id)" class="delete-btn">
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div v-else class="usuarios">
+    <h1>Acceso denegado</h1>
+    <p>Solo los administradores pueden ver la lista de usuarios.</p>
+    <p>Si eres un administrador, por favor inicia sesión.</p>
   </div>
 </template>
 
@@ -16,15 +42,19 @@ import axios from 'axios';
 
 export default {
   name: "UserList",
+  props: ['isAdmin'],
   data() {
     return {
         usersList: []
     };
   },
   mounted() {
-    this.fetchUsers();
+    if (this.isAdmin) {
+      this.fetchUsers();
+    }
   },
   methods: {
+
     fetchUsers() {
       axios.get('http://localhost:5289/api/Users')
       .then(response => {
@@ -43,7 +73,7 @@ export default {
       if (confirm("¿Seguro que quieres eliminar este usuario?")) {
         try {
           axios.delete(`http://localhost:5289/api/Users/${id}`);
-          this.fetchUsers();
+          this.checkRole();
           HomePage.methods.logout();
         } catch (err) {
           console.error("Error al eliminar usuario", err);
@@ -85,7 +115,7 @@ li {
   margin-bottom: 16px;
   font-size: large;
 }
-.delete {
+.delete-btn {
   font-size: large;
   padding: 10px 15px 10px 15px;
   background: none;
