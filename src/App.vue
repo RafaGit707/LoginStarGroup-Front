@@ -4,18 +4,21 @@
   <main class="main-container">
     <UserList :isAdmin="isAdmin"/>
   </main>
+  <FooterPage/>
 
 </template>
 
 <script>
 import HomePage from './components/HomePage.vue'
 import UserList from './components/UserList.vue'
+import FooterPage from './components/FooterPage.vue';
 
 export default {
   name: 'App',
   components: {
     HomePage,
-    UserList
+    UserList,
+    FooterPage
   },
   data() {
     return {
@@ -63,8 +66,12 @@ body.no-scroll {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(7px);
+  background-color: white;
+}
+
+ul li a {
+    color: white;
+    text-decoration: none;
 }
 
 </style>

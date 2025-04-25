@@ -1,11 +1,10 @@
 <template>
 
 <div class="container-header">
-    <div class="div-fondo"></div>
 
     <section class="img-titulo">
         <img src="../assets/logo.png" class="img-top" alt="Imagen de fondo arriba">
-        <h1 class="titulo-top">Bienvenidos a Vue</h1>
+        <h1 class="titulo-top">Bienvenidos al Proyecto</h1>
     </section>
 
     <header id="#">
@@ -68,37 +67,6 @@
 </div>
 
 <!-- pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$@!%&*?_])(?!\s)[a-zA-Z\d#$@!%&*?_]{8,16}$" -->
-
-<!-- <div v-if="showRegister" id="registro" class="container1">
-    <div class="fondo"></div>
-    <div class="contenido">
-        <form class="form-container" @submit.prevent="handleRegister">
-        <h1>Registrarse</h1>
-        <div class="form-group">
-            <label for="name">Nombre</label>
-            <input v-model="user.u_name" type="text" id="name" name="name" autocomplete="off" required>
-        </div>
-        <div class="form-group">
-            <label for="email">Correo electrónico</label>
-            <input v-model="user.u_mail" type="email" id="email" name="email" autocomplete="off" required>
-        </div>
-        <div class="form-group">
-            <label for="password2">Contraseña</label>
-            <input v-model="user.u_password" type="password" id="password2" name="password2" autocomplete="off" required>
-        </div>
-        <div id="error_message">
-            <p class="message"><img class="X2" src="@/assets/X.png" alt="X2" id="length-icon">La contraseña debe tener entre 8 y 16 caracteres</p>
-            <p class="message"><img class="X2" src="@/assets/X.png" alt="X2" id="lowercase-icon">La contraseña debe contener al menos una letra minúscula</p>
-            <p class="message"><img class="X2" src="@/assets/X.png" alt="X2" id="uppercase-icon">La contraseña debe contener al menos una letra mayúscula</p>
-            <p class="message"><img class="X2" src="@/assets/X.png" alt="X2" id="number-icon">La contraseña debe contener al menos un número</p>
-            <p class="message"><img class="X2" src="@/assets/X.png" alt="X2" id="special-char-icon">La contraseña debe contener al menos un carácter especial (#$@!%&amp;*?_)</p>
-        </div>
-        <button class="submit-btn" type="submit">Registrarse</button>
-        <p class="cuenta_p">¿Tienes cuenta? <a href="#mostrar" class="registrarse" @click="showLogin = true">Iniciar Sesion</a></p>
-        <a id="cerrar" class="cerrar" href="#" @click="closeRegisterModal"><img src="@/assets/X-green.png" class="X1" id="X1"></a>
-        </form>
-    </div>
-</div> -->
 
 <div v-if="showRegister" id="registro" class="container1">
     <div class="fondo"></div>
@@ -163,23 +131,6 @@ export default {
 
     mounted() {
         this.checkRole();
-        
-        const header = document.querySelector("header");
-
-        const checkScroll = () => {
-            const headerTop = header.getBoundingClientRect().top;
-            const triggerHeight = window.innerHeight - header.offsetHeight;
-            const scrollPosition = window.scrollY;
-
-            if (headerTop <= 0) {
-                header.classList.add("header-fixed");
-            }
-            if (scrollPosition <= triggerHeight) {
-                header.classList.remove("header-fixed");
-            }
-        };
-
-        window.addEventListener("scroll", checkScroll);
     },
 
     created() {
@@ -377,25 +328,8 @@ export default {
     display: flex;
     max-width: 100%;
     width: 100%;
-    height: 100vh;
-    justify-content: flex-start;
-    align-items: flex-end;
-    background: none;
-    padding-bottom: var(--header-height);
-}
-
-.div-fondo {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    max-width: 100%;
-    height: 100vh;
-    background-image: url("../assets/vue.jpg");
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    z-index: -1;
+    justify-content: center;
+    padding-top: var(--header-height);
 }
 
 .img-titulo {
@@ -415,7 +349,7 @@ export default {
     max-width: 100%;
     font-size: 2.2em;
     font-weight: bold;
-    color: white;
+    color: black;
 }
 
 /* TOPHEADER */
@@ -456,12 +390,12 @@ export default {
 
 .user {
     margin-right: 30px;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
 }
 
 .button-cerrar-sesion {
-    padding: 10px 15px 10px 15px;
+    padding: 8px 12px 8px 12px;
     background: none;
     font-size: 14px;
     margin-right: 30px;
@@ -490,8 +424,8 @@ ul li a {
 }
 
 header {
-    position: absolute;
-    bottom: 0;
+    position: fixed;
+    top: 0;
     width: 100%;
     z-index: 998;
     transition: all 0.3s ease-in-out;
@@ -502,17 +436,10 @@ header {
     max-width: 100%;
     justify-content: space-between;
     align-items: center;
-    padding: 12px;
+    padding: 8px;
     background-color: #2e2f36;
     color: black;
     transition: all 0.3s ease-in-out;
-}
-
-.header-fixed {
-    position: fixed;
-    top: 0;
-    bottom: auto;
-    width: 100%;
 }
 
 header nav ul li a {
@@ -720,6 +647,22 @@ header nav ul li a:hover {
 
 /* Para pantallas menores a 1024px (tablets y móviles grandes) */
 @media (max-width: 1024px) {
+    
+
+    .user {
+        margin-right: 20px;
+        font-size: 14px;
+    }
+
+    .button-cerrar-sesion {
+        padding: 8px 12px 8px 12px;
+        font-size: 13px;
+        margin-right: 24px;
+    }
+
+    header nav ul li a {
+        font-size: medium;
+    }
 
     .form-container {
         padding: 40px;
@@ -808,6 +751,21 @@ header nav ul li a:hover {
 
 /* Para pantallas menores a 768px (móviles) */
 @media (max-width: 768px) {
+
+    .user {
+        margin-right: 18px;
+        font-size: 12px;
+    }
+
+    .button-cerrar-sesion {
+        padding: 6px 10px 6px 10px;
+        font-size: 12px;
+        margin-right: 20px;
+    }
+    
+    header nav ul li a {
+        font-size: medium;
+    }
 
     .form-container {
         padding: 35px;
@@ -909,11 +867,11 @@ header nav ul li a:hover {
 
     .form-container {
         padding: 24px;
-        width: 330px;
+        width: 360px;
     }
 
     .form-container h1 {
-        font-size: 20px;
+        font-size: 22px;
         margin-bottom: 18px;
         margin-top: 18px;
     }
@@ -923,13 +881,13 @@ header nav ul li a:hover {
     }
 
     .form-group label {
-        font-size: 11px;
+        font-size: 12px;
         font-weight: 700;
         margin-bottom: 5px;
     }
 
     .form-group input {
-        font-size: 10px;
+        font-size: 11px;
         padding: 7px 0;
         width: 100%;
     }
@@ -937,17 +895,17 @@ header nav ul li a:hover {
     #error_message {
         margin-top: 14px;
         margin-bottom: 14px;
-        font-size: 10px;
+        font-size: 11px;
     }
 
     .cuenta_p {
-        margin-top: 15px;
-        font-size: 12px;
+        margin-top: 16px;
+        font-size: 13px;
     }
 
     .registrarse {
-        margin-top: 12px;
-        font-size: 13px;
+        margin-top: 14px;
+        font-size: 14px;
     }
 
     .submit-btn {
@@ -956,8 +914,8 @@ header nav ul li a:hover {
     }
 
     .X1 {
-        width: 18px;
-        height: 18px;
+        width: 20px;
+        height: 20px;
     }
     
     .X2 {
@@ -970,39 +928,50 @@ header nav ul li a:hover {
     }
 
     .img-titulo {
-        margin: 25px;
+        margin: 10px;
     }
     
     .img-top {
-        width: 80px;
+        width: 60px;
         height: auto;
     }
     
     .titulo-top {
-        font-size: 1.5em;
+        font-size: 1.2em;
     }
 
     .logo {
-        margin-left: 16px;
+        margin-left: 12px;
     }
     
     .nav-enlaces {
-        margin-left: 16px;
+        margin-left: 12px;
     }
 
     ul {
-        gap: 16px;
+        gap: 14px;
     }
 
     .img-logo {
-        max-width: 50px;
-        max-height: 50px;
+        max-width: 40px;
+        max-height: 40px;
     }
 
     .button-iniciar-sesion {
         padding: 6px 8px 6px 8px;
         font-size: 10px;
-        margin-right: 16px;
+        margin-right: 14px;
+    }
+
+    .user {
+        margin-right: 15px;
+        font-size: 12px;
+    }
+
+    .button-cerrar-sesion {
+        padding: 6px 8px 6px 8px;
+        font-size: 10px;
+        margin-right: 15px;
     }
 
 }

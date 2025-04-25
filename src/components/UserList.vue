@@ -17,12 +17,8 @@
           <td>{{ usuario.u_mail }}</td>
           <td>{{ usuario.u_password }}</td>
           <td>
-            <button @click="selectUserForEdit(usuario)" class="edit-btn">
-              Editar
-            </button>
-            <button @click="confirmDelete(usuario.id)" class="delete-btn">
-              Eliminar
-            </button>
+            <img class="edit" src="../assets/edit_ic.svg" alt="" @click="selectUserForEdit(usuario)">
+            <img class="delete" src="../assets/delete_ic.svg" alt="" @click="confirmDelete(usuario.id)">
           </td>
         </tr>
       </tbody>
@@ -164,10 +160,12 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 20px;
+  width: 100%;
   max-width: 100%;
   padding: var(--header-height);
   font-size: large;
   background: none;
+  color: black;
 }
 
 h1 {
@@ -224,7 +222,7 @@ th {
   border-bottom: 1px solid #ddd;
 }
 
-button {
+.button {
   margin-top: 20px;
   background-color: #2e2f36;
   color: white;
@@ -233,16 +231,6 @@ button {
   cursor: pointer;
   transition: background-color 0.3s ease;
   margin-inline: 50px;
-}
-
-.edit-btn:hover {
-  transform: translateY(-5px);
-  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.9);
-}
-
-.delete-btn:hover {
-  transform: translateY(-5px);
-  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.9);
 }
 
 .modal-overlay {
@@ -262,7 +250,7 @@ button {
   background-color: #222;
   padding: 30px;
   border-radius: 10px;
-  width: 400px;
+  width: 80%;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   color: white;
 }
@@ -317,5 +305,163 @@ button {
   margin-top: 30px;
   margin-bottom: 30px;
 }
+
+.edit {
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  margin-right: 20px;
+}
+
+.delete {
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  margin-left: 20px;
+}
+
+
+/* Media Queries */
+
+/* Para pantallas menores a 1024px (tablets y móviles grandes) */
+@media (max-width: 1024px) {
+
+  .usuarios {
+    padding: 10px;
+    font-size: medium;
+    padding: 60px;
+  }
+
+  h1 {
+    font-size: x-large;
+  }
+
+  table {
+    font-size: small;
+  }
+
+  .modal-content {
+    width: 90%;
+  }
+
+  .modal-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .submit-btn, .cancel-btn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .submit-btn {
+    margin-bottom: 0;
+  }
+
+  .edit {
+    width: 24px;
+    height: 24px;
+    margin-right: 18px;
+  }
+
+  .delete {
+    width: 24px;
+    height: 24px;
+    margin-left: 18px;
+  }
+
+}
+
+/* Para pantallas menores a 768px (móviles) */
+@media (max-width: 768px) {
+
+  .usuarios {
+    padding: 5px;
+    font-size: small;
+    padding: 50px;
+  }
+
+  h1 {
+    font-size: large;
+  }
+
+  table {
+    font-size: x-small;
+  }
+
+  .modal-content {
+    width: 95%;
+  }
+
+  .modal-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .submit-btn, .cancel-btn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .submit-btn {
+    margin-bottom: 0;
+  }
+
+  .edit {
+    width: 22px;
+    height: 22px;
+    margin-right: 18px;
+  }
+
+  .delete {
+    width: 22px;
+    height: 22px;
+    margin-left: 18px;
+  }
+
+}
+
+/* Para pantallas muy pequeñas (menores a 480px) */
+@media (max-width: 480px) {
+
+  .usuarios {
+    padding: 5px;
+    font-size: small;
+    padding: 40px;
+  }
+
+  table {
+    font-size: x-small;
+  }
+
+  .modal-content {
+    width: 95%;
+  }
+
+  .modal-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .submit-btn, .cancel-btn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .submit-btn {
+    margin-bottom: 0;
+  }
+
+  .edit {
+    width: 16px;
+    height: 16px;
+    margin-right: 16px;
+  }
+
+  .delete {
+    width: 16px;
+    height: 16px;
+    margin-left: 16px;
+  }
+
+}
+
 </style>
   
