@@ -3,7 +3,7 @@
 <footer id="contacto">
     <div class="arriba">
         <div class="logo-footer">
-            <img class="img-logo-footer" src="../assets/logo.png" alt="Logo">
+            <img class="img-logo-footer" src="../assets/app.png" alt="Logo">
         </div>
         <a href="#">
             <span>Volver arriba</span>

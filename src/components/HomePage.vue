@@ -3,7 +3,7 @@
 <div class="container-header">
 
     <section class="img-titulo">
-        <img src="../assets/logo.png" class="img-top" alt="Imagen de fondo arriba">
+        <img src="../assets/app-black.png" class="img-top" alt="Imagen de fondo arriba">
         <h1 class="titulo-top">Bienvenidos al Proyecto</h1>
     </section>
 
@@ -11,7 +11,7 @@
         <div class="topheader">
             <div class="logo">
                 <a href="index.html">
-                    <img src="@/assets/logo.png" class="img-logo">
+                    <img src="@/assets/app.png" class="img-logo">
                 </a>
                 <nav class="nav-enlaces">
                     <ul>
