@@ -3,7 +3,7 @@
 <footer id="contacto">
     <div class="arriba">
         <div class="logo-footer">
-            <img class="img-logo-footer" src="../assets/icon_user.png" alt="Logo">
+            <img class="img-logo-footer" src="../assets/logo.png" alt="Logo">
         </div>
         <a href="#">
             <span>Volver arriba</span>
@@ -30,7 +30,7 @@
         </div>
     </div>
     <div class="tag">
-        <p>© 2025. Realizado Por Raul Galvez y Rafael Galvan</p>
+        <p>© 2025. Realizado Por Raúl Plaza Gálvez y Rafael Galván Calvo</p>
     </div>
 </footer>
 
@@ -71,7 +71,7 @@ export default {
 
 .img-logo-footer {
     width: auto;
-    height: 80px;
+    height: 60px;
 }
 
 .social-media {

@@ -48,10 +48,6 @@
         <form class="form-container" @submit.prevent="handleLogin">
         <h1>Iniciar sesión</h1>
         <div class="form-group">
-            <label for="name">Nombre</label>
-            <input v-model="user.u_name" type="text" id="name" name="name" autocomplete="off" required>
-        </div>
-        <div class="form-group">
             <label for="email">Correo electrónico</label>
             <input v-model="user.u_mail" type="email" id="email" name="email" autocomplete="off" required>
         </div>
@@ -163,7 +159,7 @@ export default {
 
     computed: {
         isLoginValid() {
-            return this.user.u_name && this.user.u_mail && this.user.u_password;
+            return this.user.u_mail && this.user.u_password;
         },
         isRegisterValid() {
             return this.user.u_name && this.user.u_mail && this.user.u_password;
@@ -179,7 +175,7 @@ export default {
         checkRole() {
             this.isAdmin = localStorage.getItem("isAdmin") === 'true';
             console.log("isAdmin:", this.isAdmin);
-            console.log("userName:", this.user.u_name);
+            console.log("userName:", this.currentUserName);
         },
         showLoginModal() {
             this.showLogin = true;
@@ -227,7 +223,7 @@ export default {
 
         handleLogin() {
             console.log("Iniciar sesión con:", this.user);// user es tu objeto reactivo
-            if (!this.user.u_name || !this.user.u_password || !this.user.u_mail) {
+            if (!this.user.u_password || !this.user.u_mail) {
                 alert("Por favor, completa todos los campos.");
                 return;
             }
@@ -237,29 +233,30 @@ export default {
             axios.post('http://localhost:5289/api/Login/login', this.user )
             .then(response => {
                 if (response.data.message === 'Login exitoso') {
-                    const nombre = this.user.u_name;
+                    const userName = response.data.nombre;
+                    const email = this.user.u_mail;
 
-                this.$emit('login-success', {
-                    isAdmin: nombre === 'admin'
-                });
+                    this.$emit('login-success', {
+                        isAdmin: email === 'admin@admin.com'
+                    });
 
-                localStorage.setItem('authToken', response.data.token);
-                localStorage.setItem('userName', nombre);
-                localStorage.setItem('isAdmin', nombre === 'admin' ? 'true' : 'false');
+                    localStorage.setItem('authToken', response.data.token);
+                    localStorage.setItem('userName', userName);
+                    localStorage.setItem('isAdmin', email === 'admin@admin.com' ? 'true' : 'false');
 
-                this.loggedIn = true;
-                this.currentUserName = nombre;
-                this.isAdmin = nombre === 'admin';
+                    this.loggedIn = true;
+                    this.currentUserName = userName;
+                    this.isAdmin = email === 'admin@admin.com';
 
-                this.user = { u_name: '', u_mail: '', u_password: '' };
-                this.showLogin = false;
+                    this.user = { u_name: '', u_mail: '', u_password: '' };
+                    this.showLogin = false;
 
-                this.checkRole();
-                window.location.reload();
-                } else {
-                    alert("Credenciales incorrectas");
-                }
-            })
+                    this.checkRole();
+                    window.location.reload();
+                    } else {
+                        alert("Credenciales incorrectas");
+                    }
+                })
             .catch(error => {
                 console.error("Error en la petición:", error);
 
@@ -647,7 +644,6 @@ header nav ul li a:hover {
 
 /* Para pantallas menores a 1024px (tablets y móviles grandes) */
 @media (max-width: 1024px) {
-    
 
     .user {
         margin-right: 20px;
@@ -769,7 +765,7 @@ header nav ul li a:hover {
 
     .form-container {
         padding: 35px;
-        width: 490px;
+        width: 500px;
     }
 
     .form-container h1 {
@@ -866,30 +862,16 @@ header nav ul li a:hover {
 @media (max-width: 480px) {
 
     .form-container {
-        padding: 24px;
+        padding: 25px;
         width: 360px;
     }
 
     .form-container h1 {
-        font-size: 22px;
-        margin-bottom: 18px;
         margin-top: 18px;
     }
 
     .form-group {
         margin-bottom: 10px;
-    }
-
-    .form-group label {
-        font-size: 12px;
-        font-weight: 700;
-        margin-bottom: 5px;
-    }
-
-    .form-group input {
-        font-size: 11px;
-        padding: 7px 0;
-        width: 100%;
     }
 
     #error_message {
@@ -899,28 +881,16 @@ header nav ul li a:hover {
     }
 
     .cuenta_p {
-        margin-top: 16px;
-        font-size: 13px;
+        margin-top: 18px;
     }
 
     .registrarse {
         margin-top: 14px;
-        font-size: 14px;
     }
 
     .submit-btn {
-        font-size: 13px;
         padding: 9px;
-    }
-
-    .X1 {
-        width: 20px;
-        height: 20px;
-    }
-    
-    .X2 {
-        width: 9px;
-        height: 9px;
+        margin-top: 10px;
     }
 
     header nav ul li a {
@@ -928,16 +898,16 @@ header nav ul li a:hover {
     }
 
     .img-titulo {
-        margin: 10px;
+        margin: 16px;
     }
     
     .img-top {
-        width: 60px;
+        width: 55px;
         height: auto;
     }
     
     .titulo-top {
-        font-size: 1.2em;
+        font-size: 1.4em;
     }
 
     .logo {
@@ -959,7 +929,7 @@ header nav ul li a:hover {
 
     .button-iniciar-sesion {
         padding: 6px 8px 6px 8px;
-        font-size: 10px;
+        font-size: 11px;
         margin-right: 14px;
     }
 

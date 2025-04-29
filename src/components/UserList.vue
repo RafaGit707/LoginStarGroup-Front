@@ -2,6 +2,14 @@
 
   <div class="usuarios" v-if="isAdmin">
     <h1>Lista de Usuarios</h1>
+
+    <input
+      v-model="searchQuery"
+      type="text"
+      placeholder="Buscar por nombre o correo"
+      class="filter-input"
+    />
+
     <table>
       <thead>
         <tr>
@@ -12,7 +20,8 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="usuario in usersList" :key="usuario.id">
+        <!-- <tr v-for="usuario in usersList" :key="usuario.id"> -->
+        <tr v-for="usuario in filteredUsers" :key="usuario.id">
           <td>{{ usuario.u_name }}</td>
           <td>{{ usuario.u_mail }}</td>
           <td>{{ usuario.u_password }}</td>
@@ -85,12 +94,22 @@ export default {
     return {
         usersList: [],
         selectedUser: null,
-        showEditForm: false
+        showEditForm: false,
+        searchQuery: ""
     };
   },
   mounted() {
     if (this.isAdmin) {
       this.fetchUsers();
+    }
+  },
+  computed: {
+    filteredUsers() {
+      const query = this.searchQuery.toLowerCase();
+      return this.usersList.filter(user =>
+        user.u_name.toLowerCase().includes(query) ||
+        user.u_mail.toLowerCase().includes(query)
+      );
     }
   },
   methods: {
@@ -166,6 +185,18 @@ export default {
   font-size: large;
   background: none;
   color: black;
+  align-items: center;
+  text-align: center;
+}
+
+.filter-input {
+  padding: 10px;
+  margin-bottom: 20px;
+  font-size: 16px;
+  width: 100%;
+  max-width: 400px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 h1 {
@@ -248,11 +279,17 @@ th {
 
 .modal-content {
   background-color: #222;
-  padding: 30px;
+  padding: 40px;
   border-radius: 10px;
-  width: 80%;
+  max-width: 90%;
+  width: 500px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   color: white;
+}
+
+.modal-content h2 {
+  margin-bottom: 20px;
+  text-align: center;
 }
 
 .form-group {
@@ -327,8 +364,6 @@ th {
 @media (max-width: 1024px) {
 
   .usuarios {
-    padding: 10px;
-    font-size: medium;
     padding: 60px;
   }
 
@@ -337,11 +372,11 @@ th {
   }
 
   table {
-    font-size: small;
+    font-size: medium;
   }
 
   .modal-content {
-    width: 90%;
+    max-width: 90%;
   }
 
   .modal-buttons {
@@ -376,20 +411,11 @@ th {
 
   .usuarios {
     padding: 5px;
-    font-size: small;
     padding: 50px;
   }
 
-  h1 {
-    font-size: large;
-  }
-
   table {
-    font-size: x-small;
-  }
-
-  .modal-content {
-    width: 95%;
+    max-width: 95%;
   }
 
   .modal-buttons {
@@ -401,6 +427,7 @@ th {
     width: 100%;
     margin-bottom: 10px;
   }
+
   .submit-btn {
     margin-bottom: 0;
   }
@@ -424,16 +451,20 @@ th {
 
   .usuarios {
     padding: 5px;
-    font-size: small;
-    padding: 40px;
+    padding: 35px;
   }
 
   table {
-    font-size: x-small;
+    max-width: 95%;
+    font-size: 15px;
   }
 
-  .modal-content {
-    width: 95%;
+  td {
+    padding: 7px;
+  }
+
+  th {
+    padding: 7px;
   }
 
   .modal-buttons {
@@ -443,22 +474,22 @@ th {
 
   .submit-btn, .cancel-btn {
     width: 100%;
-    margin-bottom: 10px;
   }
+
   .submit-btn {
-    margin-bottom: 0;
+    margin-bottom: 14px;
   }
 
   .edit {
-    width: 16px;
-    height: 16px;
-    margin-right: 16px;
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
   }
 
   .delete {
-    width: 16px;
-    height: 16px;
-    margin-left: 16px;
+    width: 18px;
+    height: 18px;
+    margin-left: 10px;
   }
 
 }
