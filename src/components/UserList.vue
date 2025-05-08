@@ -1,6 +1,14 @@
 <template>
   <div class="usuarios" v-if="isAdmin">
     <h1>Lista de Usuarios</h1>
+
+    <input
+      v-model="searchQuery"
+      type="text"
+      placeholder="Buscar por nombre o correo"
+      class="filter-input"
+    />
+
     <table>
       <thead>
         <tr>
@@ -11,29 +19,24 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="usuario in usersList" :key="usuario.id">
+        <tr v-for="usuario in filteredUsers" :key="usuario.id">
           <td>{{ usuario.u_name }}</td>
           <td>{{ usuario.u_mail }}</td>
           <td>{{ usuario.u_password }}</td>
           <td>
-            <button @click="selectUserForEdit(usuario)" class="edit-btn">
-              Editar
-            </button>
-            <button @click="confirmDelete(usuario.id)" class="delete-btn">
-              Eliminar
-            </button>
+            <img class="edit" src="../assets/edit_ic.svg" alt="" @click="selectUserForEdit(usuario)" />
+            <img class="delete" src="../assets/delete_ic.svg" alt="" @click="confirmDelete(usuario.id)" />
           </td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <div v-else class="error">
-    <h1>Inicia sesion como Administrador</h1>
+  <div v-else class="usuarios">
+    <h1>Acceso denegado</h1>
+    <p>Solo los administradores pueden ver la lista de usuarios.</p>
+    <p>Si eres un administrador, por favor inicia sesión.</p>
   </div>
-  
-
-  <!-- Editar Usuario-->
 
   <div v-if="showEditForm" class="modal-overlay">
     <div class="modal-content">
@@ -78,7 +81,8 @@
 </template>
 
 <script>
-import axios from "axios";
+import HomePage from '@/components/HomePage.vue';
+import axios from 'axios';
 
 export default {
   name: "UserList",
@@ -87,44 +91,65 @@ export default {
       usersList: [],
       selectedUser: null,
       showEditForm: false,
-      isAdmin: false
+      searchQuery: ""
     };
   },
-  created() {
-  // Verificar si el usuario es admin
-  this.isAdmin = localStorage.getItem("isAdmin") === 'true';
-  if (!this.isAdmin) {
-    this.$router.push('/'); // Redirigir a home si no es admin
-    alert("No tienes permisos para acceder a esta página");
-    return; // Agregar este return
-  } else {
-    this.isAdmin = true;
-    this.fetchUsers();
-  }
-},
+  computed: {
+    isAdmin() {
+      const username = localStorage.getItem('userName');
+      return username && username.toLowerCase() === 'admin';
+    },
+    filteredUsers() {
+      const query = this.searchQuery.toLowerCase();
+      return this.usersList.filter(user =>
+        user.u_name.toLowerCase().includes(query) ||
+        user.u_mail.toLowerCase().includes(query)
+      );
+    }
+  },
+  mounted() {
+    if (this.isAdmin) {
+      this.fetchUsers();
+    }
+  },
   methods: {
     fetchUsers() {
-      axios
-      //cambiar la url Rafa
-        .get("https://localhost:7198/api/Users")
-        .then((response) => {
+      axios.get('https://localhost:7198/api/Users')
+        .then(response => {
           this.usersList = response.data;
         })
-        .catch((error) => {
+        .catch(error => {
           console.error("Error al cargar usuarios", error);
         });
+    },
+    deleteUser(id) {
+      localStorage.setItem('userId', id);
+      if (id === localStorage.getItem("userId")) {
+        alert("No puedes eliminar tu propio usuario");
+        return;
+      }
+      axios
+        .delete(`https://localhost:7198/api/Users/${id}`)
+        .then(() => {
+          this.fetchUsers();
+          HomePage.methods.logout();
+          alert("Usuario eliminado correctamente");
+        })
+        .catch((error) => {
+          console.error("Error al eliminar usuario", error);
+        });
+    },
+    confirmDelete(id) {
+      if (confirm("¿Deseas eliminar este usuario?")) {
+        this.deleteUser(id);
+      }
     },
     selectUserForEdit(usuario) {
       this.selectedUser = { ...usuario };
       this.showEditForm = true;
     },
-    closeEditForm() {
-      this.showEditForm = false;
-      this.selectedUser = null;
-    },
     updateUser() {
       axios
-      // cambiar la url Rafa
         .put(
           `https://localhost:7198/api/Users/${this.selectedUser.id}`,
           this.selectedUser
@@ -137,54 +162,73 @@ export default {
           console.error("Error al actualizar usuario", error);
         });
     },
-    confirmDelete(id) {
-      if (confirm("¿Deseas eliminar este usuario?")) {
-        this.deleteUser(id);
-      }
-    },
-    deleteUser(id) {
-      //cambiar la url Rafa
-      axios
-        .delete(`https://localhost:7198/api/Users/${id}`)
-        .then(() => {
-          this.fetchUsers();
-          alert("Usuario eliminado correctamente");
-        })
-        .catch((error) => {
-          console.error("Error al eliminar usuario", error);
-        });
-    },
-    mounted() {
-      if (localStorage.getItem("isAdmin") === "true") {
-        this.isAdmin = true;
-      }
+    closeEditForm() {
+      this.showEditForm = false;
+      this.selectedUser = null;
     }
-  },
-};
+  }
+}
 </script>
 
+
 <style scoped>
-.usuarios {
-  background-color: #000000;
-}
 
 .usuarios {
+  display: flex;
+  flex-direction: column;
   padding: 20px;
+  width: 100%;
   max-width: 100%;
   padding: var(--header-height);
-  text-align: center;
   font-size: large;
+  background: none;
+  color: black;
+  align-items: center;
+  text-align: center;
 }
+
+.filter-input {
+  padding: 10px;
+  margin-bottom: 20px;
+  font-size: 16px;
+  width: 100%;
+  max-width: 400px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+h1 {
+  text-align: center;
+  font-size: xx-large;
+  margin-bottom: 20px;
+}
+
 ul {
   list-style: none;
+  text-align: center;
   padding: 10px;
 }
+
 li {
   display: flex;
   align-items: center;
   gap: 16px;
   margin-bottom: 16px;
   font-size: large;
+}
+
+.delete-btn {
+  font-size: large;
+  padding: 10px 15px 10px 15px;
+  background: none;
+  font-size: 14px;
+  margin-right: 30px;
+  font-weight: 700;
+  color: red;
+  border: 2px solid red;
+  width: fit-content;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 table {
@@ -207,7 +251,7 @@ th {
   border-bottom: 1px solid #ddd;
 }
 
-button {
+.button {
   margin-top: 20px;
   background-color: #2e2f36;
   color: white;
@@ -216,16 +260,6 @@ button {
   cursor: pointer;
   transition: background-color 0.3s ease;
   margin-inline: 50px;
-}
-
-.edit-btn:hover {
-  transform: translateY(-5px);
-  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.9);
-}
-
-.delete-btn:hover {
-  transform: translateY(-5px);
-  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.9);
 }
 
 .modal-overlay {
@@ -243,11 +277,17 @@ button {
 
 .modal-content {
   background-color: #222;
-  padding: 30px;
+  padding: 40px;
   border-radius: 10px;
-  width: 400px;
+  max-width: 90%;
+  width: 500px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   color: white;
+}
+
+.modal-content h2 {
+  margin-bottom: 20px;
+  text-align: center;
 }
 
 .form-group {
@@ -300,4 +340,157 @@ button {
   margin-top: 30px;
   margin-bottom: 30px;
 }
+
+.edit {
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  margin-right: 20px;
+}
+
+.delete {
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  margin-left: 20px;
+}
+
+
+/* Media Queries */
+
+/* Para pantallas menores a 1024px (tablets y móviles grandes) */
+@media (max-width: 1024px) {
+
+  .usuarios {
+    padding: 60px;
+  }
+
+  h1 {
+    font-size: x-large;
+  }
+
+  table {
+    font-size: medium;
+  }
+
+  .modal-content {
+    max-width: 90%;
+  }
+
+  .modal-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .submit-btn, .cancel-btn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .submit-btn {
+    margin-bottom: 0;
+  }
+
+  .edit {
+    width: 24px;
+    height: 24px;
+    margin-right: 18px;
+  }
+
+  .delete {
+    width: 24px;
+    height: 24px;
+    margin-left: 18px;
+  }
+
+}
+
+/* Para pantallas menores a 768px (móviles) */
+@media (max-width: 768px) {
+
+  .usuarios {
+    padding: 5px;
+    padding: 50px;
+  }
+
+  table {
+    max-width: 95%;
+  }
+
+  .modal-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .submit-btn, .cancel-btn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .submit-btn {
+    margin-bottom: 0;
+  }
+
+  .edit {
+    width: 22px;
+    height: 22px;
+    margin-right: 18px;
+  }
+
+  .delete {
+    width: 22px;
+    height: 22px;
+    margin-left: 18px;
+  }
+
+}
+
+/* Para pantallas muy pequeñas (menores a 480px) */
+@media (max-width: 480px) {
+
+  .usuarios {
+    padding: 5px;
+    padding: 35px;
+  }
+
+  table {
+    max-width: 95%;
+    font-size: 15px;
+  }
+
+  td {
+    padding: 7px;
+  }
+
+  th {
+    padding: 7px;
+  }
+
+  .modal-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .submit-btn, .cancel-btn {
+    width: 100%;
+  }
+
+  .submit-btn {
+    margin-bottom: 14px;
+  }
+
+  .edit {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+  }
+
+  .delete {
+    width: 18px;
+    height: 18px;
+    margin-left: 10px;
+  }
+
+}
+
 </style>
+  

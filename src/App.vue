@@ -1,17 +1,35 @@
 <template>
-  <HomePage/>
-  <UserList/>
+  
+  <HomePage @login-success="handleLoginSuccess"/>
+  <main class="main-container">
+    <UserList :isAdmin="isAdmin"/>
+  </main>
+  <FooterPage/>
+
 </template>
 
 <script>
 import HomePage from './components/HomePage.vue'
 import UserList from './components/UserList.vue'
+import FooterPage from './components/FooterPage.vue';
 
 export default {
   name: 'App',
   components: {
     HomePage,
-    UserList
+    UserList,
+    FooterPage
+  },
+  data() {
+    return {
+      isAdmin: localStorage.getItem("isAdmin") === 'true'
+    };
+  },
+  methods: {
+    handleLoginSuccess(data) {
+      this.isAdmin = data.isAdmin;
+      localStorage.setItem("isAdmin", data.isAdmin);
+    }
   }
 }
 </script>
@@ -41,6 +59,19 @@ html {
 
 body.no-scroll {
     overflow: hidden;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+}
+
+ul li a {
+    color: white;
+    text-decoration: none;
 }
 
 </style>

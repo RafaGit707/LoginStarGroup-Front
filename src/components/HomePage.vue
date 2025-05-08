@@ -1,58 +1,42 @@
 <template>
-  <div class="container-header">
-    <div class="div-fondo"></div>
+
+<div class="container-header">
 
     <section class="img-titulo">
-      <img
-        src="../assets/logo.png"
-        class="img-top"
-        alt="Imagen de fondo arriba"
-      />
-      <h1 class="titulo-top">Bienvenidos a Vue</h1>
+        <img src="../assets/app-black.png" class="img-top" alt="Imagen de fondo arriba">
+        <h1 class="titulo-top">Bienvenidos al Proyecto</h1>
     </section>
 
     <header id="#">
-      <div class="topheader">
-        <div class="logo">
-          <a href="index.html">
-            <img src="@/assets/logo.png" class="img-logo" />
-          </a>
-          <nav class="nav-enlaces">
-            <ul>
-              <li><a href="otra.html">Otra pagina</a></li>
-              <li><a class="enlaces" href="#contacto">Contacto</a></li>
-            </ul>
-          </nav>
+        <div class="topheader">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="@/assets/app.png" class="img-logo">
+                </a>
+                <nav class="nav-enlaces">
+                    <ul>
+                        <li><a href="otra.html">Otra pagina</a></li>
+                        <li><a class="enlaces" href = #contacto>Contacto</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <nav>
+                <ul>
+                    <li v-if="!loggedIn">
+                    <a href="#mostrar">
+                        <button type="button" class="button-iniciar-sesion" id="abrir-login" @click="showLoginModal">
+                        Iniciar Sesión
+                        </button>
+                    </a>
+                    </li>
+                    <li class="user-sesion" v-else>
+                        <span class="user" style="color: white; cursor: pointer;" @click="toggleUserDetails"> {{ currentUserName }}</span>
+                        <button @click="logout" type="button" class="button-cerrar-sesion">Cerrar sesión</button>
+                    </li>
+                </ul>
+            </nav>
+
         </div>
-        <nav>
-          <ul>
-            <li v-if="!loggedIn">
-              <a href="#mostrar">
-                <button
-                  type="button"
-                  class="button-iniciar-sesion"
-                  id="abrir-login"
-                  @click="showLoginModal"
-                >
-                  Iniciar Sesión
-                </button>
-              </a>
-            </li>
-            <li class="user-sesion" v-else>
-              <span class="user" style="color: white">
-                {{ currentUserName }}</span
-              >
-              <button
-                @click="logout"
-                type="button"
-                class="button-cerrar-sesion"
-              >
-                Cerrar sesión
-              </button>
-            </li>
-          </ul>
-        </nav>
-      </div>
     </header>
   </div>
 
@@ -63,17 +47,6 @@
     <div class="contenido">
       <form class="form-container" @submit.prevent="handleLogin">
         <h1>Iniciar sesión</h1>
-        <div class="form-group">
-          <label for="name">Nombre</label>
-          <input
-            v-model="user.u_name"
-            type="text"
-            id="name"
-            name="name"
-            autocomplete="off"
-            required
-          />
-        </div>
         <div class="form-group">
           <label for="email">Correo electrónico</label>
           <input
@@ -108,7 +81,9 @@
         /></a>
       </form>
     </div>
-  </div>
+</div>
+
+<!-- pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$@!%&*?_])(?!\s)[a-zA-Z\d#$@!%&*?_]{8,16}$" -->
 
   <div v-if="showRegister" id="registro" class="container1">
     <div class="fondo"></div>
@@ -138,17 +113,8 @@
           />
         </div>
         <div class="form-group">
-          <label for="password2">Contraseña</label>
-          <input
-            v-model="user.u_password"
-            type="password"
-            id="password2"
-            name="password2"
-            autocomplete="off"
-            required
-            @input="validatePassword"
-            pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$@!%&*?_])(?!\s)[a-zA-Z\d#$@!%&*?_]{8,16}$"
-          />
+            <label for="password2">Contraseña</label>
+            <input v-model="user.u_password" type="password" id="password2" name="password2" autocomplete="off" required @input="validatePassword">
         </div>
         <div id="error_message" v-if="!isValidPassword">
           <p class="message">
@@ -200,66 +166,52 @@
         /></a>
       </form>
     </div>
-  </div>
+</div>
+
 </template>
 
 <script>
 import axios from "axios";
 
 export default {
-  name: "HomePage",
-  data() {
-    return {
-      user: {
-        u_name: "",
-        u_mail: "",
-        u_password: "",
-        isAdmin: false
-      },
-      showLogin: false,
-      loggedIn: false,
-      currentUserName: "",
-      showRegister: false,
+    name: "HomePage",
+    emits: ['loginSuccess'],
+    data() {
+        return {
+            user: {
+                u_name: '',
+                u_mail: '',
+                u_password: ''
+            },
+            showLogin: false,
+            loggedIn: false,
+            currentUserName: '',
+            showRegister: false,
+            isAdmin: false,
 
-      isValidPassword: false,
-      isValidLength: false,
-      isValidLowercase: false,
-      isValidUppercase: false,
-      isValidNumber: false,
-      isValidSpecialChar: false,
-    };
-  },
+            isValidPassword: false,
+            isValidLength: false,
+            isValidLowercase: false,
+            isValidUppercase: false,
+            isValidNumber: false,
+            isValidSpecialChar: false
+        };
+    },
 
-  mounted() {
-    const header = document.querySelector("header");
+    mounted() {
+        this.checkRole();
+    },
 
-    const checkScroll = () => {
-      const headerTop = header.getBoundingClientRect().top;
-      const triggerHeight = window.innerHeight - header.offsetHeight;
-      const scrollPosition = window.scrollY;
-
-      if (headerTop <= 0) {
-        header.classList.add("header-fixed");
-      }
-      if (scrollPosition <= triggerHeight) {
-        header.classList.remove("header-fixed");
-      }
-    };
-
-    window.addEventListener("scroll", checkScroll);
-  },
-
-  created() {
-    // Verifica si ya hay sesión iniciada
-    const token = localStorage.getItem("authToken");
-    const userName = localStorage.getItem("userName");
-    const isAdmin = localStorage.getItem("isAdmin") === "true";
-    if (token && userName) {
-      this.loggedIn = true;
-      this.currentUserName = userName;
-      this.isAdmin = isAdmin;
-    }
-  },
+    created() {
+        // Verifica si ya hay sesión iniciada
+        const token = localStorage.getItem('authToken');
+        const userName = localStorage.getItem('userName');
+        if (token && userName) {
+            this.loggedIn = true;
+            this.currentUserName = userName;
+            this.isAdmin = localStorage.getItem("isAdmin") === 'true';
+        }
+    },
 
   watch: {
     showLogin(newValue) {
@@ -278,157 +230,154 @@ export default {
     },
   },
 
-  computed: {
-    isLoginValid() {
-      return this.user.u_name && this.user.u_mail && this.user.u_password;
-    },
-    isRegisterValid() {
-      return this.user.u_name && this.user.u_mail && this.user.u_password;
-    },
-  },
-
-  beforeUnmount() {
-    // Limpia el token y el nombre de usuario al cerrar sesión
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("userName");
-  },
-
-  methods: {
-    showLoginModal() {
-      this.showLogin = true;
-      this.showRegister = false;
+    computed: {
+        isLoginValid() {
+            return this.user.u_mail && this.user.u_password;
+        },
+        isRegisterValid() {
+            return this.user.u_name && this.user.u_mail && this.user.u_password;
+        }
     },
 
-    showRegisterModal() {
-      this.showRegister = true;
-      this.showLogin = false;
+    beforeUnmount() {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userName');
     },
 
-    closeLoginModal() {
-      this.showLogin = false;
-    },
+    methods: {
+        checkRole() {
+            this.isAdmin = localStorage.getItem("isAdmin") === 'true';
+            console.log("isAdmin:", this.isAdmin);
+            console.log("userName:", this.currentUserName);
+        },
+        showLoginModal() {
+            this.showLogin = true;
+            this.showRegister = false;
+        },
 
-    closeRegisterModal() {
-      this.showRegister = false;
-    },
+        showRegisterModal() {
+            this.showRegister = true;
+            this.showLogin = false;
+        },
 
-    validatePassword() {
-      const password = this.user.u_password;
+        closeLoginModal() {
+            this.showLogin = false;
+        },
 
-      this.isValidLength = password.length >= 8 && password.length <= 16;
-      this.isValidLowercase = /[a-z]/.test(password);
-      this.isValidUppercase = /[A-Z]/.test(password);
-      this.isValidNumber = /\d/.test(password);
-      this.isValidSpecialChar = /[#$@!%&*?_]/.test(password);
+        closeRegisterModal() {
+        this.showRegister = false;
+        },
 
-      this.isValidPassword =
-        this.isValidLength &&
-        this.isValidLowercase &&
-        this.isValidUppercase &&
-        this.isValidNumber &&
-        this.isValidSpecialChar;
+        toggleUserDetails() {
+            this.showUserDetails = !this.showUserDetails;
+        },
 
-      return (
-        this.isValidPassword &&
-        this.isValidLength &&
-        this.isValidLowercase &&
-        this.isValidUppercase &&
-        this.isValidNumber &&
-        this.isValidSpecialChar
-      );
-    },
+        validatePassword() {
+            const password = this.user.u_password;
 
-    handleLogin() {
-      if (this.user.u_name === "admin") {
-        this.user.isAdmin = true;
-      }
+            this.isValidLength = password.length >= 8 && password.length <= 16;
+            this.isValidLowercase = /[a-z]/.test(password);
+            this.isValidUppercase = /[A-Z]/.test(password);
+            this.isValidNumber = /\d/.test(password);
+            this.isValidSpecialChar = /[#$@!%&*?_]/.test(password);
 
-      console.log("Iniciar sesión con:", this.user);
-      if (!this.user.u_name || !this.user.u_password || !this.user.u_mail) {
-        alert("Por favor, completa todos los campos.");
-        return;
-      }
+            this.isValidPassword = this.isValidLength &&
+                                this.isValidLowercase &&
+                                this.isValidUppercase &&
+                                this.isValidNumber &&
+                                this.isValidSpecialChar;
 
-      console.log("Datos a enviar:", JSON.stringify(this.user));
+            return this.isValidPassword && this.isValidLength &&
+                                this.isValidLowercase &&
+                                this.isValidUppercase &&
+                                this.isValidNumber &&
+                                this.isValidSpecialChar;
+        },
 
-      axios
-      //cambiar la url Rafa
-        .post("https://localhost:7198/api/Login/login", this.user)
-        .then((response) => {
-          if (response.data.message === "Login exitoso") {
-            alert("Inicio de sesión exitoso");
-            localStorage.setItem("authToken", response.data.token);
-            localStorage.setItem("isAdmin", this.user.u_name === "admin");
-            this.loggedIn = true;
-            this.currentUserName = this.user.u_name;
-            this.isAdmin = this.user.u_name === "admin"; //Verificar si el nombre del usuario es admin
-
-            // Actualiza la variable isAdmin en el componente
-            this.isAdmin = this.user.isAdmin;
-
-            if (this.isAdmin) {
-              this.$router.push("/usuarios");
+        handleLogin() {
+            console.log("Iniciar sesión con:", this.user);// user es tu objeto reactivo
+            if (!this.user.u_password || !this.user.u_mail) {
+                alert("Por favor, completa todos los campos.");
+                return;
             }
-          } else {
-            alert("Credenciales incorrectas");
-          }
-        })
-        .catch((error) => {
-          console.error("Error en la petición:", error);
 
-          if (error.response) {
-            console.error("Respuesta del servidor:", error.response.data);
-            alert(`Error del servidor: ${error.response.data}`);
-          } else if (error.request) {
-            console.error("No hubo respuesta del servidor:", error.request);
-            alert("No hubo respuesta del servidor.");
-          } else {
-            console.error("Error al configurar la petición:", error.message);
-            alert(`Error: ${error.message}`);
-          }
+            console.log("Datos a enviar:", JSON.stringify(this.user));
 
-          alert(
-            "Hubo un problema con el inicio de sesión, intenta nuevamente."
-          );
-        });
+            axios.post('https://localhost:7198/api/Login/login', this.user )
+            .then(response => {
+                if (response.data.message === 'Login exitoso') {
+                    const userName = response.data.nombre;
+                    const email = this.user.u_mail;
+
+                    this.$emit('login-success', {
+                        isAdmin: email === 'admin@admin.com'
+                    });
+
+                    localStorage.setItem('authToken', response.data.token);
+                    localStorage.setItem('userName', userName);
+                    localStorage.setItem('isAdmin', email === 'admin@admin.com' ? 'true' : 'false');
+
+                    this.loggedIn = true;
+                    this.currentUserName = userName;
+                    this.isAdmin = email === 'admin@admin.com';
+
+                    this.user = { u_name: '', u_mail: '', u_password: '' };
+                    this.showLogin = false;
+
+                    this.checkRole();
+                    window.location.reload();
+                    } else {
+                        alert("Credenciales incorrectas");
+                    }
+                })
+            .catch(error => {
+                console.error("Error en la petición:", error);
+
+                if (error.response) {
+                    console.error("Respuesta del servidor:", error.response.data);
+                } else if (error.request) {
+                    console.error("No hubo respuesta del servidor:", error.request);
+                    alert("No hubo respuesta del servidor.");
+                } else {
+                    console.error("Error al configurar la petición:", error.message);
+                    alert(`Error: ${error.message}`);
+                }
+
+                alert("Hubo un problema con el inicio de sesión, intenta nuevamente.");
+            });
+        },
+
+        fetchUsers() {
+            console.log("Fetching users...");
+        },
+
+        handleRegister() {
+            // if (!this.validatePassword()) return;
+            axios.post('https://localhost:7198/api/Users', this.user)
+            .then(response => {
+                this.showRegister = false;
+                this.fetchUsers();
+                console.log(response.data);
+            })
+            .catch(error => {
+                console.error("Error al registrar usuario", error);
+                alert("Error al registrar usuario");
+            });
+        },
+
+        logout() {
+            this.$emit('logout');
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userName');
+            localStorage.setItem('isAdmin', 'false');
+            localStorage.removeItem('isAdmin');
+            this.loggedIn = false;
+            this.currentUserName = '';
+            this.isAdmin = false;
+            window.location.reload();
+        }
+
     },
-
-    fetchUsers() {
-      console.log("Fetching users...");
-    },
-
-    registerUser() {
-      this.fetchUsers();
-    },
-
-    handleRegister() {
-      if (!this.validatePassword()) return;
-      //cambiar la url Rafa
-      axios
-        .post("https://localhost:7198/api/Users", this.user)
-        .then((response) => {
-          alert("Usuario registrado exitosamente");
-          this.showRegister = false;
-          this.fetchUsers();
-          this.registerUser();
-          console.log(response.data);
-        })
-        .catch((error) => {
-          console.error("Error al registrar usuario", error);
-          alert("Error al registrar usuario");
-        });
-    },
-
-    logout() {
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("userName");
-      localStorage.removeItem("isAdmin");
-      this.loggedIn = false;
-      this.currentUserName = "";
-      this.isAdmin = false;
-      this.$router.push("/");
-    },
-  },
 };
 </script>
 
@@ -445,28 +394,11 @@ export default {
 /* HEADER */
 
 .container-header {
-  display: flex;
-  max-width: 100%;
-  width: 100%;
-  height: 100vh;
-  justify-content: flex-start;
-  align-items: flex-end;
-  background: transparent;
-  padding-bottom: var(--header-height);
-}
-
-.div-fondo {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  max-width: 100%;
-  height: 100vh;
-  background-image: url("../assets/vue.jpg");
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  z-index: -1;
+    display: flex;
+    max-width: 100%;
+    width: 100%;
+    justify-content: center;
+    padding-top: var(--header-height);
 }
 
 .img-titulo {
@@ -482,11 +414,11 @@ export default {
 }
 
 .titulo-top {
-  display: flex;
-  max-width: 100%;
-  font-size: 2.2em;
-  font-weight: bold;
-  color: white;
+    display: flex;
+    max-width: 100%;
+    font-size: 2.2em;
+    font-weight: bold;
+    color: black;
 }
 
 /* TOPHEADER */
@@ -526,22 +458,27 @@ export default {
 }
 
 .user {
-  margin-right: 30px;
-  font-size: 18px;
-  font-weight: 700;
+    margin-right: 30px;
+    font-size: 16px;
+    font-weight: 700;
 }
 
 .button-cerrar-sesion {
-  padding: 10px 15px 10px 15px;
-  background: none;
-  font-size: 14px;
-  margin-right: 30px;
-  font-weight: 700;
-  color: red;
-  border: 2px solid red;
-  width: fit-content;
-  cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+    padding: 8px 12px 8px 12px;
+    background: none;
+    font-size: 14px;
+    margin-right: 30px;
+    font-weight: 700;
+    color: red;
+    border: 2px solid red;
+    width: fit-content;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.button-cerrar-sesion:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.9);
 }
 
 ul {
@@ -556,29 +493,22 @@ ul li a {
 }
 
 header {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  z-index: 998;
-  transition: all 0.3s ease-in-out;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 998;
+    transition: all 0.3s ease-in-out;
 }
 
 .topheader {
-  display: flex;
-  max-width: 100%;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px;
-  background-color: #2e2f36;
-  color: black;
-  transition: all 0.3s ease-in-out;
-}
-
-.header-fixed {
-  position: fixed;
-  top: 0;
-  bottom: auto;
-  width: 100%;
+    display: flex;
+    max-width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    background-color: #2e2f36;
+    color: black;
+    transition: all 0.3s ease-in-out;
 }
 
 header nav ul li a {
@@ -786,10 +716,26 @@ header nav ul li a:hover {
 
 /* Para pantallas menores a 1024px (tablets y móviles grandes) */
 @media (max-width: 1024px) {
-  .form-container {
-    padding: 40px;
-    width: 550px;
-  }
+
+    .user {
+        margin-right: 20px;
+        font-size: 14px;
+    }
+
+    .button-cerrar-sesion {
+        padding: 8px 12px 8px 12px;
+        font-size: 13px;
+        margin-right: 24px;
+    }
+
+    header nav ul li a {
+        font-size: medium;
+    }
+
+    .form-container {
+        padding: 40px;
+        width: 550px;
+    }
 
   .form-container h1 {
     font-size: 24px;
@@ -872,10 +818,26 @@ header nav ul li a:hover {
 
 /* Para pantallas menores a 768px (móviles) */
 @media (max-width: 768px) {
-  .form-container {
-    padding: 35px;
-    width: 490px;
-  }
+
+    .user {
+        margin-right: 18px;
+        font-size: 12px;
+    }
+
+    .button-cerrar-sesion {
+        padding: 6px 10px 6px 10px;
+        font-size: 12px;
+        margin-right: 20px;
+    }
+    
+    header nav ul li a {
+        font-size: medium;
+    }
+
+    .form-container {
+        padding: 35px;
+        width: 500px;
+    }
 
   .form-container h1 {
     font-size: 22px;
@@ -968,102 +930,89 @@ header nav ul li a:hover {
 
 /* Para pantallas muy pequeñas (menores a 480px) */
 @media (max-width: 480px) {
-  .form-container {
-    padding: 24px;
-    width: 330px;
-  }
 
-  .form-container h1 {
-    font-size: 20px;
-    margin-bottom: 18px;
-    margin-top: 18px;
-  }
+    .form-container {
+        padding: 25px;
+        width: 360px;
+    }
 
-  .form-group {
-    margin-bottom: 10px;
-  }
+    .form-container h1 {
+        margin-top: 18px;
+    }
 
-  .form-group label {
-    font-size: 11px;
-    font-weight: 700;
-    margin-bottom: 5px;
-  }
+    .form-group {
+        margin-bottom: 10px;
+    }
 
-  .form-group input {
-    font-size: 10px;
-    padding: 7px 0;
-    width: 100%;
-  }
+    #error_message {
+        margin-top: 14px;
+        margin-bottom: 14px;
+        font-size: 11px;
+    }
 
-  #error_message {
-    margin-top: 14px;
-    margin-bottom: 14px;
-    font-size: 10px;
-  }
+    .cuenta_p {
+        margin-top: 18px;
+    }
 
-  .cuenta_p {
-    margin-top: 15px;
-    font-size: 12px;
-  }
+    .registrarse {
+        margin-top: 14px;
+    }
 
-  .registrarse {
-    margin-top: 12px;
-    font-size: 13px;
-  }
-
-  .submit-btn {
-    font-size: 13px;
-    padding: 9px;
-  }
-
-  .X1 {
-    width: 18px;
-    height: 18px;
-  }
-
-  .X2 {
-    width: 9px;
-    height: 9px;
-  }
+    .submit-btn {
+        padding: 9px;
+        margin-top: 10px;
+    }
 
   header nav ul li a {
     font-size: small;
   }
 
-  .img-titulo {
-    margin: 25px;
-  }
+    .img-titulo {
+        margin: 16px;
+    }
+    
+    .img-top {
+        width: 55px;
+        height: auto;
+    }
+    
+    .titulo-top {
+        font-size: 1.4em;
+    }
 
-  .img-top {
-    width: 80px;
-    height: auto;
-  }
+    .logo {
+        margin-left: 12px;
+    }
+    
+    .nav-enlaces {
+        margin-left: 12px;
+    }
 
-  .titulo-top {
-    font-size: 1.5em;
-  }
+    ul {
+        gap: 14px;
+    }
 
-  .logo {
-    margin-left: 16px;
-  }
+    .img-logo {
+        max-width: 40px;
+        max-height: 40px;
+    }
 
-  .nav-enlaces {
-    margin-left: 16px;
-  }
+    .button-iniciar-sesion {
+        padding: 6px 8px 6px 8px;
+        font-size: 11px;
+        margin-right: 14px;
+    }
 
-  ul {
-    gap: 16px;
-  }
+    .user {
+        margin-right: 15px;
+        font-size: 12px;
+    }
 
-  .img-logo {
-    max-width: 50px;
-    max-height: 50px;
-  }
+    .button-cerrar-sesion {
+        padding: 6px 8px 6px 8px;
+        font-size: 10px;
+        margin-right: 15px;
+    }
 
-  .button-iniciar-sesion {
-    padding: 6px 8px 6px 8px;
-    font-size: 10px;
-    margin-right: 16px;
-  }
 }
 </style>
