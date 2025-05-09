@@ -15,7 +15,9 @@
                 </a>
                 <nav class="nav-enlaces">
                     <ul>
-                        <li><a href="otra.html">Otra pagina</a></li>
+                        <router-link to="/articulos">
+                            <li><a class="enlaces">Artículos</a></li>
+                        </router-link>
                         <li><a class="enlaces" href = #contacto>Contacto</a></li>
                     </ul>
                 </nav>
@@ -101,7 +103,7 @@
 import axios from 'axios';
 
 export default {
-    name: "HomePage",
+    name: "HeaderPage",
     emits: ['loginSuccess'],
     data() {
         return {
@@ -354,7 +356,7 @@ export default {
 .logo {
     display: flex;
     align-items: center;
-    margin-left: 40px;
+    margin-left: 30px;
 }
 
 .nav-enlaces {
@@ -365,7 +367,7 @@ export default {
     padding: 8px 12px 8px 12px;
     background: none;
     font-size: 14px;
-    margin-right: 40px;
+    margin-right: 30px;
     color: white;
     font-weight: 700;
     border: 2px solid white;
@@ -433,7 +435,7 @@ header {
     max-width: 100%;
     justify-content: space-between;
     align-items: center;
-    padding: 8px;
+    padding: 10px;
     background-color: #2e2f36;
     color: black;
     transition: all 0.3s ease-in-out;

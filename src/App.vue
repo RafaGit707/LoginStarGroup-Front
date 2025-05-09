@@ -1,22 +1,24 @@
 <template>
   
-  <HomePage @login-success="handleLoginSuccess"/>
+  <HeaderPage @login-success="handleLoginSuccess"/>
   <main class="main-container">
     <UserList :isAdmin="isAdmin"/>
+    <router-view></router-view>
   </main>
+  
   <FooterPage/>
 
 </template>
 
 <script>
-import HomePage from './components/HomePage.vue'
+import HeaderPage from './components/HeaderPage.vue'
 import UserList from './components/UserList.vue'
-import FooterPage from './components/FooterPage.vue';
+import FooterPage from './components/FooterPage.vue'
 
 export default {
   name: 'App',
   components: {
-    HomePage,
+    HeaderPage,
     UserList,
     FooterPage
   },

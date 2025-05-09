@@ -84,7 +84,7 @@
 </template>
 
 <script>
-import HomePage from '@/components/HomePage.vue';
+import HeaderPage from '@/components/HeaderPage.vue';
 import axios from 'axios';
 
 export default {
@@ -134,7 +134,7 @@ export default {
         .delete(`http://localhost:5289/api/Users/${id}`)
         .then(() => {
           this.fetchUsers();
-          HomePage.methods.logout();
+          HeaderPage.methods.logout();
           alert("Usuario eliminado correctamente");
         })
         .catch((error) => {
