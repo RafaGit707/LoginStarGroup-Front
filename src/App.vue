@@ -1,23 +1,16 @@
 <template>
-  
-  <HomePage @login-success="handleLoginSuccess"/>
-  <main class="main-container">
-    <UserList :isAdmin="isAdmin"/>
-  </main>
-  <FooterPage/>
-
+  <div id="app">
+    <router-view @login-success="handleLoginSuccess" />
+    <FooterPage />
+  </div>
 </template>
 
 <script>
-import HomePage from './components/HomePage.vue'
-import UserList from './components/UserList.vue'
-import FooterPage from './components/FooterPage.vue';
+import FooterPage from './components/FooterPage.vue'
 
 export default {
   name: 'App',
   components: {
-    HomePage,
-    UserList,
     FooterPage
   },
   data() {
@@ -33,6 +26,9 @@ export default {
   }
 }
 </script>
+
+
+
 
 <style>
 #app {

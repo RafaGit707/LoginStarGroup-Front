@@ -1,27 +1,20 @@
 <template>
+  <div class="container-header">
 
-<div class="container-header">
-
-    <section class="img-titulo">
-        <img src="../assets/app-black.png" class="img-top" alt="Imagen de fondo arriba">
-        <h1 class="titulo-top">Bienvenidos al Proyecto</h1>
-    </section>
-
-    <header id="#">
-        <div class="topheader">
-            <div class="logo">
-                <a href="index.html">
-                    <img src="@/assets/app.png" class="img-logo">
-                </a>
-                <nav class="nav-enlaces">
-                    <ul>
-                        <li><router-link to="/catalogo">Productos</router-link></li>
-                        <li><a class="enlaces" href="#contacto">Contacto</a></li>
-                    </ul>
-                </nav>
-
-            </div>
-            <nav>
+    <header>
+      <div class="topheader">
+        <div class="logo">
+          <router-link to="/">
+            <img src="@/assets/app.png" class="img-logo" alt="Logo" />
+          </router-link>
+          <nav class="nav-enlaces">
+            <ul>
+              <li><router-link to="/">Inicio</router-link></li>
+              <li><a class="enlaces" href="#contacto">Contacto</a></li>
+            </ul>
+          </nav>
+        </div>
+        <nav>
                 <ul>
                     <li v-if="!loggedIn">
                     <a href="#mostrar">
@@ -36,9 +29,26 @@
                     </li>
                 </ul>
             </nav>
-
-        </div>
+      </div>
     </header>
+  </div>
+
+  <div class="catalogo-productos">
+    <h1 class="catalogo-titulo">Catálogo de Productos</h1>
+
+    <input v-model="searchQuery" type="text" placeholder="Buscar por nombre, código o familia" class="search-input" />
+
+    <div class="grid-container">
+      <div v-for="producto in filteredProductos" :key="producto.a_id" class="producto-card">
+        <h2>{{ producto.a_nombre }}</h2>
+        <p><strong>Código:</strong> {{ producto.a_cod }}</p>
+        <p><strong>Familia:</strong> {{ producto.fa_id }}</p>
+        <p><strong>Unidad:</strong> {{ producto.un_id }}</p>
+        <p><strong>Precio:</strong> ${{ producto.a_pvp.toFixed(2) }}</p>
+        <p><strong>IVA:</strong> {{ producto.iva_id }}%</p>
+        <p><strong>Código de barras:</strong> {{ producto.a_cod_barras }}</p>
+      </div>
+    </div>
   </div>
 
   <!--FORMULARIO INICIO SESION -->
@@ -50,41 +60,23 @@
         <h1>Iniciar sesión</h1>
         <div class="form-group">
           <label for="email">Correo electrónico</label>
-          <input
-            v-model="user.u_mail"
-            type="email"
-            id="email"
-            name="email"
-            autocomplete="off"
-            required
-          />
+          <input v-model="user.u_mail" type="email" id="email" name="email" autocomplete="off" required />
         </div>
         <div class="form-group">
           <label for="password">Contraseña</label>
-          <input
-            v-model="user.u_password"
-            type="password"
-            id="password"
-            name="password"
-            autocomplete="off"
-            required
-          />
+          <input v-model="user.u_password" type="password" id="password" name="password" autocomplete="off" required />
         </div>
         <button class="submit-btn" type="submit">Iniciar sesión</button>
         <p class="cuenta_p">
           ¿No tienes cuenta?
-          <a href="#registro" class="registrarse" @click="showRegister = true"
-            >Registrarse</a
-          >
+          <a href="#registro" class="registrarse" @click="showRegister = true">Registrarse</a>
         </p>
-        <a id="cerrar" class="cerrar" href="#" @click="closeLoginModal"
-          ><img src="@/assets/X-green.png" class="X1" id="X1"
-        /></a>
+        <a id="cerrar" class="cerrar" href="#" @click="closeLoginModal"><img src="@/assets/X-green.png" class="X1"
+            id="X1" /></a>
       </form>
     </div>
-</div>
-
-<!-- pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$@!%&*?_])(?!\s)[a-zA-Z\d#$@!%&*?_]{8,16}$" -->
+  </div>
+  <!-- FORMULARIO REGISTRO-->
 
   <div v-if="showRegister" id="registro" class="container1">
     <div class="fondo"></div>
@@ -93,126 +85,114 @@
         <h1>Registrarse</h1>
         <div class="form-group">
           <label for="name">Nombre</label>
-          <input
-            v-model="user.u_name"
-            type="text"
-            id="name"
-            name="name"
-            autocomplete="off"
-            required
-          />
+          <input v-model="user.u_name" type="text" id="name" name="name" autocomplete="off" required />
         </div>
         <div class="form-group">
           <label for="email">Correo electrónico</label>
-          <input
-            v-model="user.u_mail"
-            type="email"
-            id="email"
-            name="email"
-            autocomplete="off"
-            required
-          />
+          <input v-model="user.u_mail" type="email" id="email" name="email" autocomplete="off" required />
         </div>
         <div class="form-group">
-            <label for="password2">Contraseña</label>
-            <input v-model="user.u_password" type="password" id="password2" name="password2" autocomplete="off" required @input="validatePassword">
+          <label for="password2">Contraseña</label>
+          <input v-model="user.u_password" type="password" id="password2" name="password2" autocomplete="off" required
+            @input="validatePassword">
         </div>
         <div id="error_message" v-if="!isValidPassword">
           <p class="message">
-            <img
-              class="X2"
-              :src="isValidLength ? '@/assets/tick.png' : '@/assets/X.png'"
-              alt="X2"
-            />La contraseña debe tener entre 8 y 16 caracteres
+            <img class="X2" :src="isValidLength ? '@/assets/tick.png' : '@/assets/X.png'" alt="X2" />La contraseña debe
+            tener entre 8 y 16 caracteres
           </p>
           <p class="message">
-            <img
-              class="X2"
-              :src="isValidLowercase ? '@/assets/tick.png' : '@/assets/X.png'"
-              alt="X2"
-            />La contraseña debe contener al menos una letra minúscula
+            <img class="X2" :src="isValidLowercase ? '@/assets/tick.png' : '@/assets/X.png'" alt="X2" />La contraseña
+            debe contener al menos una letra minúscula
           </p>
           <p class="message">
-            <img
-              class="X2"
-              :src="isValidUppercase ? '@/assets/tick.png' : '@/assets/X.png'"
-              alt="X2"
-            />La contraseña debe contener al menos una letra mayúscula
+            <img class="X2" :src="isValidUppercase ? '@/assets/tick.png' : '@/assets/X.png'" alt="X2" />La contraseña
+            debe contener al menos una letra mayúscula
           </p>
           <p class="message">
-            <img
-              class="X2"
-              :src="isValidNumber ? '@/assets/tick.png' : '@/assets/X.png'"
-              alt="X2"
-            />La contraseña debe contener al menos un número
+            <img class="X2" :src="isValidNumber ? '@/assets/tick.png' : '@/assets/X.png'" alt="X2" />La contraseña debe
+            contener al menos un número
           </p>
           <p class="message">
-            <img
-              class="X2"
-              :src="isValidSpecialChar ? '@/assets/tick.png' : '@/assets/X.png'"
-              alt="X2"
-            />La contraseña debe contener al menos un carácter especial
+            <img class="X2" :src="isValidSpecialChar ? '@/assets/tick.png' : '@/assets/X.png'" alt="X2" />La contraseña
+            debe contener al menos un carácter especial
             (#$@!%&*?_)
           </p>
         </div>
         <button class="submit-btn" type="submit">Registrarse</button>
         <p class="cuenta_p">
           ¿Tienes cuenta?
-          <a href="#mostrar" class="registrarse" @click="showLogin = true"
-            >Iniciar Sesion</a
-          >
+          <a href="#mostrar" class="registrarse" @click="showLogin = true">Iniciar Sesion</a>
         </p>
-        <a id="cerrar" class="cerrar" href="#" @click="closeRegisterModal"
-          ><img src="@/assets/X-green.png" class="X1" id="X1"
-        /></a>
+        <a id="cerrar" class="cerrar" href="#" @click="closeRegisterModal"><img src="@/assets/X-green.png" class="X1"
+            id="X1" /></a>
       </form>
     </div>
-</div>
-
+  </div>
 </template>
 
 <script>
 import axios from "axios";
 
 export default {
-    name: "HomePage",
-    emits: ['loginSuccess'],
-    data() {
-        return {
-            user: {
-                u_name: '',
-                u_mail: '',
-                u_password: ''
-            },
-            showLogin: false,
-            loggedIn: false,
-            currentUserName: '',
-            showRegister: false,
-            isAdmin: false,
+  name: "CatalogoProductos",
+  emits: ['loginSuccess'],
+  data() {
+    return {
+      productos: [],
+      user: {
+        u_mail: "",
+        u_password: "",
+        u_name: ""
+      },
 
-            isValidPassword: false,
-            isValidLength: false,
-            isValidLowercase: false,
-            isValidUppercase: false,
-            isValidNumber: false,
-            isValidSpecialChar: false
-        };
+      showLogin: false,
+      loggedIn: false,
+      currentUserName: '',
+      showRegister: false,
+      isAdmin: false,
+
+      isValidPassword: false,
+      isValidLength: false,
+      isValidLowercase: false,
+      isValidUppercase: false,
+      isValidNumber: false,
+      isValidSpecialChar: false
+      ,
+      searchQuery: "",
+    };
+  },
+  computed: {
+    filteredProductos() {
+      const query = this.searchQuery.toLowerCase();
+      return this.productos.filter((producto) =>
+        [producto.a_nombre, producto.a_cod, producto.familia]
+          .some((field) => field && field.toLowerCase().includes(query))
+      );
     },
 
-    mounted() {
-        this.checkRole();
+    isLoginValid() {
+      return this.user.u_mail && this.user.u_password;
     },
+    isRegisterValid() {
+      return this.user.u_name && this.user.u_mail && this.user.u_password;
+    }
+  },
+  mounted() {
+    this.fetchProductos();
+    this.checkRole();
+  },
 
-    created() {
-        // Verifica si ya hay sesión iniciada
-        const token = localStorage.getItem('authToken');
+  created() {
+    // Verifica si ya hay sesión iniciada
+    const token = localStorage.getItem('authToken');
         const userName = localStorage.getItem('userName');
         if (token && userName) {
             this.loggedIn = true;
             this.currentUserName = userName;
             this.isAdmin = localStorage.getItem("isAdmin") === 'true';
         }
-    },
+  },
 
   watch: {
     showLogin(newValue) {
@@ -231,22 +211,26 @@ export default {
     },
   },
 
-    computed: {
-        isLoginValid() {
-            return this.user.u_mail && this.user.u_password;
-        },
-        isRegisterValid() {
-            return this.user.u_name && this.user.u_mail && this.user.u_password;
-        }
-    },
+  beforeUnmount() {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userName');
+  },
 
-    beforeUnmount() {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userName');
+  methods: {
+    async fetchProductos() {
+      try {
+        const response = await axios.get("https://localhost:7198/api/articulos");
+        this.productos = response.data.map((p) => ({
+          ...p,
+          familia: p.familia?.fa_nombre || "Sin familia",
+          unidad: p.unidad?.un_nombre || "Sin unidad",
+          iva: p.iva?.iva_value || 0,
+        }));
+      } catch (error) {
+        console.error("Error al cargar los productos:", error);
+      }
     },
-
-    methods: {
-        checkRole() {
+    checkRole() {
             this.isAdmin = localStorage.getItem("isAdmin") === 'true';
             console.log("isAdmin:", this.isAdmin);
             console.log("userName:", this.currentUserName);
@@ -267,10 +251,6 @@ export default {
 
         closeRegisterModal() {
         this.showRegister = false;
-        },
-
-        toggleUserDetails() {
-            this.showUserDetails = !this.showUserDetails;
         },
 
         validatePassword() {
@@ -377,12 +357,41 @@ export default {
             this.isAdmin = false;
             window.location.reload();
         }
-
-    },
+  },
 };
 </script>
 
 <style scoped>
+.catalogo-titulo {
+  padding: 40px;
+  text-align: center;
+  color: #2e2f36;
+}
+
+.catalogo-productos {
+  padding: 40px;
+  text-align: center;
+}
+
+.search-input {
+  padding: 10px;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 30px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.producto-card h2 {
+  margin-top: 0;
+}
+
 /* MEDIA */
 
 .img-logo {
@@ -395,11 +404,11 @@ export default {
 /* HEADER */
 
 .container-header {
-    display: flex;
-    max-width: 100%;
-    width: 100%;
-    justify-content: center;
-    padding-top: var(--header-height);
+  display: flex;
+  max-width: 100%;
+  width: 100%;
+  justify-content: center;
+  padding-top: var(--header-height);
 }
 
 .img-titulo {
@@ -415,11 +424,11 @@ export default {
 }
 
 .titulo-top {
-    display: flex;
-    max-width: 100%;
-    font-size: 2.2em;
-    font-weight: bold;
-    color: black;
+  display: flex;
+  max-width: 100%;
+  font-size: 2.2em;
+  font-weight: bold;
+  color: black;
 }
 
 /* TOPHEADER */
@@ -459,27 +468,27 @@ export default {
 }
 
 .user {
-    margin-right: 30px;
-    font-size: 16px;
-    font-weight: 700;
+  margin-right: 30px;
+  font-size: 16px;
+  font-weight: 700;
 }
 
 .button-cerrar-sesion {
-    padding: 8px 12px 8px 12px;
-    background: none;
-    font-size: 14px;
-    margin-right: 30px;
-    font-weight: 700;
-    color: red;
-    border: 2px solid red;
-    width: fit-content;
-    cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  padding: 8px 12px 8px 12px;
+  background: none;
+  font-size: 14px;
+  margin-right: 30px;
+  font-weight: 700;
+  color: red;
+  border: 2px solid red;
+  width: fit-content;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .button-cerrar-sesion:hover {
-    transform: translateY(-5px);
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.9);
+  transform: translateY(-5px);
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.9);
 }
 
 ul {
@@ -494,22 +503,22 @@ ul li a {
 }
 
 header {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 998;
-    transition: all 0.3s ease-in-out;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 998;
+  transition: all 0.3s ease-in-out;
 }
 
 .topheader {
-    display: flex;
-    max-width: 100%;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px;
-    background-color: #2e2f36;
-    color: black;
-    transition: all 0.3s ease-in-out;
+  display: flex;
+  max-width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background-color: #2e2f36;
+  color: black;
+  transition: all 0.3s ease-in-out;
 }
 
 header nav ul li a {
@@ -519,6 +528,65 @@ header nav ul li a {
 
 header nav ul li a:hover {
   color: #cccccc;
+}
+
+.producto-card {
+  border: 1px solid #ddd;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: left;
+  background-color: #f9f9f9;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.producto-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.producto-card h2 {
+  margin-top: 0;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.producto-card p {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.producto-card strong {
+  font-weight: bold;
+  color: #333;
+}
+
+.producto-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10px 10px 0 0;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+@media (max-width: 768px) {
+  .grid-container {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .grid-container {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
 }
 
 /*** INICIAR SESION ***/
@@ -711,309 +779,5 @@ header nav ul li a:hover {
 
 #cerrar:hover {
   transform: scale(1.2);
-}
-
-/* Media Queries */
-
-/* Para pantallas menores a 1024px (tablets y móviles grandes) */
-@media (max-width: 1024px) {
-
-    .user {
-        margin-right: 20px;
-        font-size: 14px;
-    }
-
-    .button-cerrar-sesion {
-        padding: 8px 12px 8px 12px;
-        font-size: 13px;
-        margin-right: 24px;
-    }
-
-    header nav ul li a {
-        font-size: medium;
-    }
-
-    .form-container {
-        padding: 40px;
-        width: 550px;
-    }
-
-  .form-container h1 {
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 22px;
-    margin-top: 22px;
-  }
-
-  .form-group {
-    margin-bottom: 22px;
-  }
-
-  .form-group label {
-    font-size: 15px;
-    font-weight: 700;
-    margin-bottom: 7px;
-  }
-
-  .form-group input {
-    font-size: 14px;
-    padding: 8px 0;
-    width: 100%;
-  }
-
-  #error_message {
-    margin-top: 18px;
-    margin-bottom: 18px;
-    font-size: 13px;
-  }
-
-  .cuenta_p {
-    margin-top: 20px;
-    font-size: 15px;
-  }
-
-  .registrarse {
-    margin-top: 16px;
-    font-size: 16px;
-  }
-
-  .submit-btn {
-    font-size: 16px;
-  }
-
-  .X1 {
-    width: 22px;
-    height: 22px;
-  }
-
-  .X2 {
-    width: 12px;
-    height: 12px;
-  }
-
-  .img-titulo {
-    margin: 34px;
-  }
-
-  .img-top {
-    width: 120px;
-    height: auto;
-  }
-
-  .titulo-top {
-    font-size: 2.1em;
-  }
-
-  .logo {
-    margin-left: 24px;
-  }
-
-  .nav-enlaces {
-    margin-left: 24px;
-  }
-
-  .button-iniciar-sesion {
-    margin-right: 24px;
-  }
-}
-
-/* Para pantallas menores a 768px (móviles) */
-@media (max-width: 768px) {
-
-    .user {
-        margin-right: 18px;
-        font-size: 12px;
-    }
-
-    .button-cerrar-sesion {
-        padding: 6px 10px 6px 10px;
-        font-size: 12px;
-        margin-right: 20px;
-    }
-    
-    header nav ul li a {
-        font-size: medium;
-    }
-
-    .form-container {
-        padding: 35px;
-        width: 500px;
-    }
-
-  .form-container h1 {
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 20px;
-    margin-top: 20px;
-  }
-
-  .form-group {
-    margin-bottom: 18px;
-  }
-
-  .form-group label {
-    font-size: 14px;
-    font-weight: 700;
-    margin-bottom: 5px;
-  }
-
-  .form-group input {
-    font-size: 13px;
-    padding: 8px 0;
-    width: 100%;
-  }
-
-  #error_message {
-    margin-top: 16px;
-    margin-bottom: 16px;
-    font-size: 12px;
-  }
-
-  .cuenta_p {
-    margin-top: 18px;
-    font-size: 14px;
-  }
-
-  .registrarse {
-    margin-top: 12px;
-    font-size: 15px;
-  }
-
-  .submit-btn {
-    font-size: 15px;
-  }
-
-  .X2 {
-    width: 10px;
-    height: 10px;
-  }
-
-  header nav ul li a {
-    font-size: medium;
-  }
-
-  .img-titulo {
-    margin: 30px;
-  }
-
-  .img-top {
-    width: 100px;
-    height: auto;
-  }
-
-  .titulo-top {
-    font-size: 1.9em;
-  }
-
-  .logo {
-    margin-left: 20px;
-  }
-
-  .nav-enlaces {
-    margin-left: 20px;
-  }
-
-  ul {
-    gap: 18px;
-  }
-
-  .img-logo {
-    max-width: 65px;
-    max-height: 65px;
-  }
-
-  .button-iniciar-sesion {
-    padding: 6px 10px 6px 10px;
-    font-size: 12px;
-    margin-right: 20px;
-  }
-}
-
-/* Para pantallas muy pequeñas (menores a 480px) */
-@media (max-width: 480px) {
-
-    .form-container {
-        padding: 25px;
-        width: 360px;
-    }
-
-    .form-container h1 {
-        margin-top: 18px;
-    }
-
-    .form-group {
-        margin-bottom: 10px;
-    }
-
-    #error_message {
-        margin-top: 14px;
-        margin-bottom: 14px;
-        font-size: 11px;
-    }
-
-    .cuenta_p {
-        margin-top: 18px;
-    }
-
-    .registrarse {
-        margin-top: 14px;
-    }
-
-    .submit-btn {
-        padding: 9px;
-        margin-top: 10px;
-    }
-
-  header nav ul li a {
-    font-size: small;
-  }
-
-    .img-titulo {
-        margin: 16px;
-    }
-    
-    .img-top {
-        width: 55px;
-        height: auto;
-    }
-    
-    .titulo-top {
-        font-size: 1.4em;
-    }
-
-    .logo {
-        margin-left: 12px;
-    }
-    
-    .nav-enlaces {
-        margin-left: 12px;
-    }
-
-    ul {
-        gap: 14px;
-    }
-
-    .img-logo {
-        max-width: 40px;
-        max-height: 40px;
-    }
-
-    .button-iniciar-sesion {
-        padding: 6px 8px 6px 8px;
-        font-size: 11px;
-        margin-right: 14px;
-    }
-
-    .user {
-        margin-right: 15px;
-        font-size: 12px;
-    }
-
-    .button-cerrar-sesion {
-        padding: 6px 8px 6px 8px;
-        font-size: 10px;
-        margin-right: 15px;
-    }
-
 }
 </style>
