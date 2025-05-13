@@ -15,7 +15,7 @@
                 </a>
                 <nav class="nav-enlaces">
                     <ul>
-                        <li><router-link to="/catalogo">Productos</router-link></li>
+                        <li><router-link to="/catalogo">Articulos</router-link></li>
                         <li><a class="enlaces" href="#contacto">Contacto</a></li>
                     </ul>
                 </nav>

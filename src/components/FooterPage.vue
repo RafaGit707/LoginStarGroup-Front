@@ -53,6 +53,7 @@ export default {
     color: white;
     margin-top: 16px;
     align-items: center;
+    margin-bottom: 40px;
 }
 
 .footer-links {
@@ -90,9 +91,13 @@ export default {
 }
 
 footer {
-    padding: 40px;
-    background-color: black;
-    color: white;
+  position: relative;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 40px;
+  background-color: black;
+  color: white;
 }
 
 .arriba {
