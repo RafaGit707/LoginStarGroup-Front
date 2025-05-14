@@ -33,66 +33,12 @@
     </header>
   </div>
 
-  <div class="catalogo-productos" v-if="isAdmin">
-    <h1 class="catalogo-titulo">Articulos</h1>
-
-    <input v-model="searchQuery" type="text" placeholder="Buscar por nombre, código o familia" class="search-input" />
-
-    <div class="grid-container">
-      <div v-for="producto in filteredProductos" :key="producto.a_id" class="producto-card">
-        <h2>{{ producto.a_nombre }}</h2>
-        <p><strong>Código:</strong> {{ producto.a_cod }}</p>
-        <p><strong>Familia:</strong> {{ producto.fa_id }}</p>
-        <p><strong>Unidad:</strong> {{ producto.un_id }}</p>
-        <p><strong>Precio:</strong> {{ producto.a_pvp.toFixed(2) }}€</p>
-        <p><strong>IVA:</strong> {{ producto.iva_id }}%</p>
-        <p><strong>Ultimo precio compra:</strong> {{ producto.a_ultimo_pc.toFixed(2) }}€</p>
-        <p><strong>Código de barras:</strong> {{ producto.a_cod_barras }}</p>
-        <img class="edit" src="../assets/edit_ic.svg" alt="" @click="selectArticuloForEdit(producto)" />
-        <img class="delete" src="../assets/delete_ic.svg" alt="" @click="confirmDelete(producto.a_id)" />
-      </div>
-      <!--<button class="agregar-btn" @click="agregarArticulo">Agregar Articulo</button>-->
-    </div>
-  </div>
-
-  <div class="catalogo-unidades" v-if="isAdmin">
-    <h1 class="catalogo-titulo">Unidades</h1>
-    
-    <!--<input v-model="searchQuery" type="text" placeholder="Buscar por nombre" class="search-input" />-->
-
-    <div class="grid-container">
-      <div v-for="unidad in filteredUnidades" :key="unidad.un_id" class="unidad-card">
-        <p><strong>Id:</strong> {{ unidad.un_id }}</p>
-        <p><strong>Nombre:</strong> {{ unidad.un_nombre }}</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="catalogo-iva" v-if="isAdmin">
-    <h1 class="catalogo-titulo">IVA</h1>
-    
-    <!--<input v-model="searchQuery" type="text" placeholder="Buscar por nombre o valor" class="search-input" />-->
-
-    <div class="grid-container">
-      <div v-for="iva in filteredIvas" :key="iva.iva_id" class="iva-card">
-        <p><strong>Id:</strong> {{ iva.iva_id }}</p>
-        <p><strong>Nombre:</strong> {{ iva.iva_nombre }}</p>
-        <p><strong>Valor:</strong> {{ iva.iva_value }}%</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="catalogo-familias" v-if="isAdmin">
-    <h1 class="catalogo-titulo">Familias</h1>
-    
-    <!--<input v-model="searchQuery" type="text" placeholder="Buscar por nombre" class="search-input" />-->
-
-    <div class="grid-container">
-      <div v-for="familia in filteredFamilias" :key="familia.fa_id" class="familia-card">
-        <p><strong>Id:</strong> {{ familia.fa_id }}</p>
-        <p><strong>Nombre:</strong> {{ familia.fa_nombre }}</p>
-      </div>
-    </div>
+  <!-- Menú de selección para el admin -->
+  <div v-if="isAdmin" class="admin-menu">
+    <button @click="selectSection('articulos')">Artículos</button>
+    <button @click="selectSection('unidades')">Unidades</button>
+    <button @click="selectSection('iva')">IVA</button>
+    <button @click="selectSection('familias')">Familias</button>
   </div>
 
   <div v-else class="denegado">
@@ -100,6 +46,214 @@
     <p>Solo los administradores pueden ver la lista de articulos y sus relaciones.</p>
     <p>Si eres un administrador, por favor inicia sesión.</p>
   </div>
+
+  <div class="catalogo-productos" v-if="activeSection === 'articulos'">
+  <h1 class="catalogo-titulo">Artículos</h1>
+
+  <div class="top-bar">
+    <input v-model="searchQuery" type="text" placeholder="Buscar por nombre, código o familia" class="search-input" />
+    <button class="agregar-btn" @click="abrirFormularioArticulo">+ Agregar Artículo</button>
+  </div>
+
+  <table class="tabla">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Código</th>
+        <th>Familia</th>
+        <th>Unidad</th>
+        <th>Precio</th>
+        <th>IVA</th>
+        <th>Último precio compra</th>
+        <th>Código de barras</th>
+        <th>Editar</th>
+        <th>Eliminar</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="producto in filteredProductos" :key="producto.a_id">
+        <td>{{ producto.a_nombre }}</td>
+        <td>{{ producto.a_cod }}</td>
+        <td>{{ getFamiliaNombre(producto.fa_id) }}</td>
+        <td>{{ getUnidadNombre(producto.un_id) }}</td>
+        <td>{{ producto.a_pvp.toFixed(2) }}€</td>
+        <td>{{ getIvaValor(producto.iva_id) }}%</td>
+        <td>{{ producto.a_ultimo_pc.toFixed(2) }}€</td>
+        <td>{{ producto.a_cod_barras }}</td>
+        <td><img class="edit" src="../assets/edit_ic.svg" alt="" @click="selectArticuloForEdit(producto)" /></td>
+        <td><img class="delete" src="../assets/delete_ic.svg" alt="" @click="confirmDelete(producto.a_id)" /></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+
+
+  <div class="catalogo-unidades" v-if="activeSection === 'unidades'">
+    <h1 class="catalogo-titulo">Unidades</h1>
+
+    <div class="top-bar">
+      <input v-model="searchQuery" type="text" placeholder="Buscar por nombre" class="search-input" />
+      <button class="agregar-btn" @click="mostrarFormulario">+ Agregar Unidad</button>
+    </div>
+
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Editar</th>
+          <th>Eliminar</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="unidad in filteredUnidades" :key="unidad.un_id">
+          <td>{{ unidad.un_id }}</td>
+          <td>{{ unidad.un_nombre }}</td>
+          <td><img class="edit" src="../assets/edit_ic.svg" alt="" @click="selectUnidadForEdit(unidad)" /></td>
+          <td><img class="delete" src="../assets/delete_ic.svg" alt="" @click="confirmDeleteUnidad(unidad.un_id)" /></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <div class="catalogo-iva" v-if="activeSection === 'iva'">
+    <h1 class="catalogo-titulo">IVA</h1>
+
+    <div class="top-bar">
+      <input v-model="searchQuery" type="text" placeholder="Buscar por nombre, código o familia" class="search-input" />
+      <button class="agregar-btn" @click="mostrarFormulario">+ Agregar IVA</button>
+    </div>
+
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Valor</th>
+          <th>Editar</th>
+          <th>Eliminar</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="iva in filteredIvas" :key="iva.iva_id">
+          <td>{{ iva.iva_id }}</td>
+          <td>{{ iva.iva_nombre }}</td>
+          <td>{{ iva.iva_value }}%</td>
+          <td><img class="edit" src="../assets/edit_ic.svg" alt="" @click="selectIvaForEdit(iva)" /></td>
+          <td><img class="delete" src="../assets/delete_ic.svg" alt="" @click="confirmDeleteIva(iva.iva_id)" /></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <div class="catalogo-familias" v-if="activeSection === 'familias'">
+    <h1 class="catalogo-titulo">Familias</h1>
+
+    <div class="top-bar">
+      <input v-model="searchQuery" type="text" placeholder="Buscar por nombre, código o familia" class="search-input" />
+      <button class="agregar-btn" @click="mostrarFormulario">+ Agregar Familia</button>
+    </div>
+
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Editar</th>
+          <th>Eliminar</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="familia in filteredFamilias" :key="familia.fa_id">
+          <td>{{ familia.fa_id }}</td>
+          <td>{{ familia.fa_nombre }}</td>
+          <td><img class="edit" src="../assets/edit_ic.svg" alt="" @click="selectFamiliaForEdit(familia)" /></td>
+          <td><img class="delete" src="../assets/delete_ic.svg" alt="" @click="confirmDeleteFamilia(familia.fa_id)" /></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+ <!-- FORMULARIO CREAR ARTICULO (Modal) -->
+<div v-if="mostrarFormularioArticulo" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Nuevo Artículo</h2>
+      <button class="close-btn" @click="cancelarFormulario">&times;</button>
+    </div>
+    
+    <form @submit.prevent="guardarArticulo" class="formulario-articulo">
+      <div class="form-columns">
+        <div class="form-column">
+          <div class="form-group">
+            <label>Nombre:</label>
+            <input v-model="nuevoArticulo.a_nombre" required />
+          </div>
+
+          <div class="form-group">
+            <label>Código:</label>
+            <input v-model="nuevoArticulo.a_cod" required />
+          </div>
+
+          <div class="form-group">
+            <label>Familia:</label>
+            <select v-model="nuevoArticulo.fa_id" required>
+              <option v-for="familia in familias" :key="familia.fa_id" :value="familia.fa_id">
+                {{ familia.fa_nombre }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Unidad:</label>
+            <select v-model="nuevoArticulo.un_id" required>
+              <option v-for="unidad in unidades" :key="unidad.un_id" :value="unidad.un_id">
+                {{ unidad.un_nombre }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-column">
+          <div class="form-group">
+            <label>Precio:</label>
+            <input type="number" v-model.number="nuevoArticulo.a_pvp" step="0.01" required />
+          </div>
+
+          <div class="form-group">
+            <label>IVA:</label>
+            <select v-model="nuevoArticulo.iva_id" required>
+              <option v-for="iva in ivas" :key="iva.iva_id" :value="iva.iva_id">
+                {{ iva.iva_nombre }} ({{ iva.iva_value }}%)
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Último precio de compra:</label>
+            <input type="number" v-model.number="nuevoArticulo.a_ultimo_pc" step="0.01" />
+          </div>
+
+          <div class="form-group">
+            <label>Código de barras:</label>
+            <input v-model="nuevoArticulo.a_cod_barras" />
+          </div>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button type="button" @click="cancelarFormulario" class="btn-cancel">Cancelar</button>
+        <button type="submit" class="btn-save">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
 
   <!--FORMULARIO INICIO SESION -->
 
@@ -267,10 +421,21 @@ export default {
   emits: ['loginSuccess'],
   data() {
     return {
+      activeSection: null,
       productos: [],
       unidades: [],
       ivas: [],
       familias: [],
+      nuevoArticulo: {
+        a_nombre: "",
+        a_cod: "",
+        fa_id: null,
+        un_id: null,
+        a_pvp: "",
+        a_ultimo_pc: "",
+        iva_id: null,
+        a_cod_barras: ""
+      },
       user: {
         u_mail: "",
         u_password: "",
@@ -283,6 +448,7 @@ export default {
       showRegister: false,
       showEditForm: false,
       selectedProducto: null,
+      mostrarFormularioArticulo: false,
 
       isValidPassword: false,
       isValidLength: false,
@@ -343,6 +509,7 @@ export default {
   },
   mounted() {
     if (this.isAdmin) {
+      this.selectSection('articulos');
       this.fetchProductos();
       this.fetchUnidades();
       this.fetchIvas();
@@ -385,6 +552,33 @@ export default {
   },
 
   methods: {
+    selectSection(section) {
+      this.activeSection = section;
+      if (section === 'articulos') {
+        this.fetchProductos();
+      }
+      if (section === 'unidades') {
+        this.fetchUnidades();
+      }
+      if (section === 'ivas') {
+        this.fetchIvas();
+      }
+      if (section === 'familias') {
+        this.fetchFamilias();
+      }
+    },
+    getUnidadNombre(un_id) {
+      const unidad = this.unidades.find(u => u.un_id === un_id);
+      return unidad ? unidad.un_nombre : 'Desconocida';
+    },
+    getFamiliaNombre(fa_id) {
+      const familia = this.familias.find(f => f.fa_id === fa_id);
+      return familia ? familia.fa_nombre : 'Desconocida';
+    },
+    getIvaValor(iva_id) {
+      const iva = this.ivas.find(i => i.iva_id === iva_id);
+      return iva ? iva.iva_value.toFixed(2) : '0.00';
+    },
     async fetchProductos() {
       try {
         const response = await axios.get("https://localhost:7198/api/articulos");
@@ -462,6 +656,39 @@ export default {
       .catch((error) => {
         console.error("Error al actualizar producto", error);
       });
+    },
+    guardarArticulo() {
+      this.mostrarFormularioArticulo = true;
+      axios.post("https://localhost:7198/api/Articulos", this.nuevoArticulo)
+        .then(() => {
+          this.fetchProductos();
+          this.cancelarFormulario();
+        })
+        .catch((error) => {
+          console.error("Error al crear Articulo", error);
+          alert("Error al crear Articulo");
+        })
+    },
+    abrirFormularioArticulo() {
+      this.mostrarFormularioArticulo = true;
+    },
+
+    cancelarFormulario() {
+      this.mostrarFormularioArticulo = false;
+      this.resetFormulario();
+    },
+
+    resetFormulario() {
+      this.nuevoArticulo = {
+        a_nombre: '',
+        a_cod: '',
+        fa_id: null,
+        un_id: null,
+        a_pvp: 0,
+        iva_id: null,
+        a_ultimo_pc: 0,
+        a_cod_barras: ''
+      };
     },
 
     closeEditForm() {
@@ -600,6 +827,231 @@ export default {
 </script>
 
 <style scoped>
+/* Estilos mejorados para el modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 2rem; /* Espacio alrededor del modal */
+  overflow-y: auto; /* Permite scroll si el contenido es muy largo */
+}
+
+.modal-content {
+  background-color: #ffffff;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 800px; /* Un poco más ancho para dos columnas */
+  max-height: 90vh; /* Limita la altura máxima */
+  overflow-y: auto; /* Scroll interno si es necesario */
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  animation: fadeIn 0.3s ease-in-out;
+  padding: 2rem;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #ffffff;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #ff0000;
+}
+
+.close-btn:hover {
+  color: #ece4e4;
+}
+
+/* Formulario en dos columnas */
+.form-columns {
+  display: flex;
+  gap: 2rem;
+}
+
+.form-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Mejoras en los inputs */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #444;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #2e2f36;
+  outline: none;
+}
+
+/* Botones mejorados */
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.btn-cancel {
+  background-color: #e67e22;
+  color: black;
+  padding: 8px;
+}
+
+.btn-cancel:hover {
+  background-color: #eb9c57;
+}
+
+.btn-save {
+  background-color: #2ecc71;
+  color: black;
+  padding: 8px;
+}
+
+.btn-save:hover {
+  background-color: #85eeb1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-columns {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .modal-content {
+    width: 95%;
+    padding: 1.5rem;
+  }
+}
+
+
+/* Estilos para las tablas */
+.table, .tabla {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.table th, .table td, .tabla th, .tabla td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
+}
+
+
+.table td, .tabla td {
+  color: #050715;
+  background-color: #fff; 
+}
+
+
+.table th, .tabla th {
+  background-color: #2e2f36;
+  color: #fff;
+}
+
+.table img, .tabla img {
+  cursor: pointer;
+  width: 20px;
+  align-items: center;
+}
+
+/* Estilos para el menu */ 
+
+.admin-menu {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.admin-menu button {
+  padding: 10px 20px;
+  background-color: #2e2f36;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.admin-menu button:hover {
+  background-color: #006666;
+}
+
+/* Estilos para agregar articulo */
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.search-input {
+  flex: 1;
+  max-width: 60%;
+  padding: 8px;
+  font-size: 1rem;
+}
+
+.agregar-btn {
+  background-color: #2e2f36;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-left: 1rem;
+}
+
+.agregar-btn:hover {
+  background-color: #44454d;
+}
+
+
+
+
 .catalogo-titulo {
   padding: 40px;
   text-align: center;
@@ -657,14 +1109,12 @@ export default {
   cursor: pointer;
   width: 30px;
   height: 30px;
-  margin-left: 20px;
 }
 
 .delete {
   cursor: pointer;
   width: 30px;
   height: 30px;
-  margin-left: 20px;
 }
 
 .modal-overlay {
