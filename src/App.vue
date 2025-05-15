@@ -2,8 +2,7 @@
   
   <HeaderPage @login-success="handleLoginSuccess"/>
   <main class="main-container">
-    <UserList :isAdmin="isAdmin"/>
-    <router-view></router-view>
+    <router-view/>
   </main>
   
   <FooterPage/>
@@ -12,14 +11,12 @@
 
 <script>
 import HeaderPage from './components/HeaderPage.vue'
-import UserList from './components/UserList.vue'
 import FooterPage from './components/FooterPage.vue'
 
 export default {
   name: 'App',
   components: {
     HeaderPage,
-    UserList,
     FooterPage
   },
   data() {

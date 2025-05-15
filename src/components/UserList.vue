@@ -86,6 +86,7 @@
 <script>
 import HeaderPage from '@/components/HeaderPage.vue';
 import axios from 'axios';
+import { API_BASE_URL } from '@/config/apiConfig.js';
 
 export default {
   name: "UserList",
@@ -115,7 +116,7 @@ export default {
   methods: {
 
     fetchUsers() {
-      axios.get('http://localhost:5289/api/Users')
+      axios.get(API_BASE_URL+'Users')
       .then(response => {
           this.usersList = response.data;
       })
@@ -131,7 +132,7 @@ export default {
         return;
       }
       axios
-        .delete(`http://localhost:5289/api/Users/${id}`)
+        .delete(API_BASE_URL`Users/${id}`)
         .then(() => {
           this.fetchUsers();
           HeaderPage.methods.logout();
@@ -154,7 +155,7 @@ export default {
       axios
       // cambiar la url Rafa
         .put(
-          `http://localhost:5289/api/Users/${this.selectedUser.id}`,
+          API_BASE_URL`Users/${this.selectedUser.id}`,
           this.selectedUser
         )
         .then(() => {

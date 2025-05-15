@@ -10,13 +10,13 @@
     <header id="#">
         <div class="topheader">
             <div class="logo">
-                <a href="index.html">
+                <a href="/">
                     <img src="@/assets/app.png" class="img-logo">
                 </a>
                 <nav class="nav-enlaces">
                     <ul>
-                        <router-link to="/articulos">
-                            <li><a class="enlaces">Artículos</a></li>
+                        <router-link to="/catalogo">
+                            <li><a class="enlaces">Catalogo</a></li>
                         </router-link>
                         <li><a class="enlaces" href = #contacto>Contacto</a></li>
                     </ul>
@@ -34,6 +34,7 @@
                     <li class="user-sesion" v-else>
                         <span class="user" style="color: white; cursor: pointer;" @click="toggleUserDetails"> {{ currentUserName }}</span>
                         <button @click="logout" type="button" class="button-cerrar-sesion">Cerrar sesión</button>
+                        <router-link to="admin-dashboard"><a v-if="isAdmin" class="button-admin-panel" >Admin Panel</a></router-link>
                     </li>
                 </ul>
             </nav>
@@ -101,6 +102,10 @@
 
 <script>
 import axios from 'axios';
+import { API_BASE_URL } from '@/config/apiConfig.js';
+import { jwtDecode } from 'jwt-decode';
+
+const ADMIN_EMAIL = 'admin@admin.com';
 
 export default {
     name: "HeaderPage",
@@ -232,7 +237,7 @@ export default {
 
             console.log("Datos a enviar:", JSON.stringify(this.user));
 
-            axios.post('http://localhost:5289/api/Login/login', this.user )
+            axios.post(API_BASE_URL+'Login/login', this.user )
             .then(response => {
                 if (response.data.message === 'Login exitoso') {
                     const userName = response.data.nombre;
@@ -391,6 +396,24 @@ export default {
     margin-right: 30px;
     font-size: 16px;
     font-weight: 700;
+}
+
+.button-admin-panel {
+    padding: 8px 12px 8px 12px;
+    background: none;
+    font-size: 14px;
+    margin-right: 30px;
+    color: yellow;
+    font-weight: 700;
+    border: 2px solid white;
+    width: fit-content;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.button-admin-panel:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.9);
 }
 
 .button-cerrar-sesion {

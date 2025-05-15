@@ -1,8 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import ArticulosPage from '../components/ArticulosPage.vue'
+import CatalogoProductos from '@/components/CatalogoProductos.vue'
+import UserList from '@/components/UserList.vue'
 
 const routes = [
-  { path: '/articulos', name: 'Articulos', component: ArticulosPage },
+  { path: '/admin-dashboard', name: 'Admin', component: UserList },
+  { path: '/catalogo', name: 'Catalogo', component: CatalogoProductos }
 ]
 
 const router = createRouter({
