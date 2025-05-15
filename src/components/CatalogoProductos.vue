@@ -15,20 +15,21 @@
           </nav>
         </div>
         <nav>
-                <ul>
-                    <li v-if="!loggedIn">
-                    <a href="#mostrar">
-                        <button type="button" class="button-iniciar-sesion" id="abrir-login" @click="showLoginModal">
-                        Iniciar Sesión
-                        </button>
-                    </a>
-                    </li>
-                    <li class="user-sesion" v-else>
-                        <span class="user" style="color: white; cursor: pointer;" @click="toggleUserDetails"> {{ currentUserName }}</span>
-                        <button @click="logout" type="button" class="button-cerrar-sesion">Cerrar sesión</button>
-                    </li>
-                </ul>
-            </nav>
+          <ul>
+            <li v-if="!loggedIn">
+              <a href="#mostrar">
+                <button type="button" class="button-iniciar-sesion" id="abrir-login" @click="showLoginModal">
+                  Iniciar Sesión
+                </button>
+              </a>
+            </li>
+            <li class="user-sesion" v-else>
+              <span class="user" style="color: white; cursor: pointer;" @click="toggleUserDetails"> {{ currentUserName
+                }}</span>
+              <button @click="logout" type="button" class="button-cerrar-sesion">Cerrar sesión</button>
+            </li>
+          </ul>
+        </nav>
       </div>
     </header>
   </div>
@@ -39,6 +40,10 @@
     <button @click="selectSection('unidades')">Unidades</button>
     <button @click="selectSection('iva')">IVA</button>
     <button @click="selectSection('familias')">Familias</button>
+    <button @click="selectSection('marcas')">Marcas</button>
+    <button @click="selectSection('proveedores')">Proveedores</button>
+    <button @click="selectSection('historialCompras')">Historial Compras</button>
+
   </div>
 
   <div v-else class="denegado">
@@ -48,53 +53,51 @@
   </div>
 
   <div class="catalogo-productos" v-if="activeSection === 'articulos'">
-  <h1 class="catalogo-titulo">Artículos</h1>
+    <h1 class="catalogo-titulo">Artículos</h1>
 
-  <div class="top-bar">
-    <input v-model="searchQuery" type="text" placeholder="Buscar por nombre, código o familia" class="search-input" />
-    <button class="agregar-btn" @click="abrirFormularioArticulo">+ Agregar Artículo</button>
+    <div class="top-bar">
+      <input v-model="searchQuery" type="text" placeholder="Buscar por nombre, código o familia" class="search-input" />
+      <button class="agregar-btn" @click="abrirFormularioArticulo">+ Agregar Artículo</button>
+    </div>
+
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Código</th>
+          <th>Familia</th>
+          <th>Unidad</th>
+          <th>Precio</th>
+          <th>IVA</th>
+          <th>Último precio compra</th>
+          <th>Código de barras</th>
+          <th>Editar</th>
+          <th>Eliminar</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="producto in filteredProductos" :key="producto.a_id">
+          <td>{{ producto.a_nombre }}</td>
+          <td>{{ producto.a_cod }}</td>
+          <td>{{ getFamiliaNombre(producto.fa_id) }}</td>
+          <td>{{ getUnidadNombre(producto.un_id) }}</td>
+          <td>{{ producto.a_pvp.toFixed(2) }}€</td>
+          <td>{{ getIvaValor(producto.iva_id) }}%</td>
+          <td>{{ producto.a_ultimo_pc.toFixed(2) }}€</td>
+          <td>{{ producto.a_cod_barras }}</td>
+          <td><img class="edit" src="../assets/edit_ic.svg" alt="" @click="selectArticuloForEdit(producto)" /></td>
+          <td><img class="delete" src="../assets/delete_ic.svg" alt="" @click="confirmDelete(producto.a_id)" /></td>
+        </tr>
+      </tbody>
+    </table>
   </div>
-
-  <table class="tabla">
-    <thead>
-      <tr>
-        <th>Nombre</th>
-        <th>Código</th>
-        <th>Familia</th>
-        <th>Unidad</th>
-        <th>Precio</th>
-        <th>IVA</th>
-        <th>Último precio compra</th>
-        <th>Código de barras</th>
-        <th>Editar</th>
-        <th>Eliminar</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="producto in filteredProductos" :key="producto.a_id">
-        <td>{{ producto.a_nombre }}</td>
-        <td>{{ producto.a_cod }}</td>
-        <td>{{ getFamiliaNombre(producto.fa_id) }}</td>
-        <td>{{ getUnidadNombre(producto.un_id) }}</td>
-        <td>{{ producto.a_pvp.toFixed(2) }}€</td>
-        <td>{{ getIvaValor(producto.iva_id) }}%</td>
-        <td>{{ producto.a_ultimo_pc.toFixed(2) }}€</td>
-        <td>{{ producto.a_cod_barras }}</td>
-        <td><img class="edit" src="../assets/edit_ic.svg" alt="" @click="selectArticuloForEdit(producto)" /></td>
-        <td><img class="delete" src="../assets/delete_ic.svg" alt="" @click="confirmDelete(producto.a_id)" /></td>
-      </tr>
-    </tbody>
-  </table>
-  </div>
-
-
 
   <div class="catalogo-unidades" v-if="activeSection === 'unidades'">
     <h1 class="catalogo-titulo">Unidades</h1>
 
     <div class="top-bar">
       <input v-model="searchQuery" type="text" placeholder="Buscar por nombre" class="search-input" />
-      <button class="agregar-btn" @click="mostrarFormulario">+ Agregar Unidad</button>
+      <button class="agregar-btn" @click="abrirFormularioUnidades">+ Agregar Unidad</button>
     </div>
 
     <table class="tabla">
@@ -111,12 +114,12 @@
           <td>{{ unidad.un_id }}</td>
           <td>{{ unidad.un_nombre }}</td>
           <td><img class="edit" src="../assets/edit_ic.svg" alt="" @click="selectUnidadForEdit(unidad)" /></td>
-          <td><img class="delete" src="../assets/delete_ic.svg" alt="" @click="confirmDeleteUnidad(unidad.un_id)" /></td>
+          <td><img class="delete" src="../assets/delete_ic.svg" alt="" @click="confirmDeleteUnidad(unidad.un_id)" />
+          </td>
         </tr>
       </tbody>
     </table>
   </div>
-
 
   <div class="catalogo-iva" v-if="activeSection === 'iva'">
     <h1 class="catalogo-titulo">IVA</h1>
@@ -148,12 +151,40 @@
     </table>
   </div>
 
+  <div class="catalogo-marcas" v-if="activeSection === 'marcas'">
+    <h1 class="catalogo-titulo">Marcas</h1>
+
+    <div class="top-bar">
+      <input v-model="searchQuery" type="text" placeholder="Buscar por nombre" class="search-input" />
+      <button class="agregar-btn" @click="mostrarFormulario">+ Agregar Familia</button>
+    </div>
+
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Editar</th>
+          <th>Eliminar</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="marca in filteredMarcas" :key="marca.ma_id">
+          <td>{{ marca.ma_id }}</td>
+          <td>{{ marca.ma_nombre }}</td>
+          <td><img class="edit" src="../assets/edit_ic.svg" alt="" @click="selectMarcaForEdit(marca)" /></td>
+          <td><img class="delete" src="../assets/delete_ic.svg" alt="" @click="confirmDeleteMarca(marca.ma_id)" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <div class="catalogo-familias" v-if="activeSection === 'familias'">
     <h1 class="catalogo-titulo">Familias</h1>
 
     <div class="top-bar">
-      <input v-model="searchQuery" type="text" placeholder="Buscar por nombre, código o familia" class="search-input" />
+      <input v-model="searchQuery" type="text" placeholder="Buscar por nombre de Familia" class="search-input" />
       <button class="agregar-btn" @click="mostrarFormulario">+ Agregar Familia</button>
     </div>
 
@@ -171,87 +202,155 @@
           <td>{{ familia.fa_id }}</td>
           <td>{{ familia.fa_nombre }}</td>
           <td><img class="edit" src="../assets/edit_ic.svg" alt="" @click="selectFamiliaForEdit(familia)" /></td>
-          <td><img class="delete" src="../assets/delete_ic.svg" alt="" @click="confirmDeleteFamilia(familia.fa_id)" /></td>
+          <td><img class="delete" src="../assets/delete_ic.svg" alt="" @click="confirmDeleteFamilia(familia.fa_id)" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="catalogo-proveedores" v-if="activeSection === 'proveedores'">
+    <h1 class="catalogo-titulo">Proveedores</h1>
+
+    <div class="top-bar">
+      <input v-model="searchQuery" type="text" placeholder="Buscar por nombre, email" class="search-input" />
+      <button class="agregar-btn" @click="mostrarFormulario">+ Agregar Familia</button>
+    </div>
+
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>CIF</th>
+          <th>Email</th>
+          <th>Telefono</th>
+          <th>Editar</th>
+          <th>Eliminar</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="proveedor in filteredProveedores" :key="proveedor.p_id">
+          <td>{{ proveedor.p_id }}</td>
+          <td>{{ proveedor.p_nombre }}</td>
+          <td>{{ proveedor.p_cif }}</td>
+          <td>{{ proveedor.p_email }}</td>
+          <td>{{ proveedor.p_telefono }}</td>
+          <td><img class="edit" src="../assets/edit_ic.svg" alt="" @click="selectProveedorForEdit(proveedor)" /></td>
+          <td><img class="delete" src="../assets/delete_ic.svg" alt="" @click="confirmDeleteProveedor(proveedor.p_id)" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="catalogo-historial" v-if="activeSection === 'historialCompras'">
+    <h1 class="catalogo-titulo">Historial de Compras</h1>
+
+    <div class="top-bar">
+      <input v-model="searchQuery" type="text" placeholder="Buscar por fechas" class="search-input" />
+      <button class="agregar-btn" @click="abrirFormularioHistorial">+ Agregar Historial</button>
+    </div>
+
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Articulo</th>
+          <th>Proveedor</th>
+          <th>Precio</th>
+          <th>Fecha</th>
+          <th>Editar</th>
+          <th>Eliminar</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="historial in filteredHistorialCompras" :key="historial.hc_fecha">
+          <td>{{ getNombreArticulo(historial.a_id) }}</td>
+          <td>{{ getNombreProveedor(historial.p_id) }}</td>
+          <td>{{ historial.hc_precio.toFixed(2) }}€</td>
+          <td>{{ historial.hc_fecha }}</td>
+          <td><img class="edit" src="../assets/edit_ic.svg" alt="" @click="selectHistorialForEdit(historial)" /></td>
+          <td><img class="delete" src="../assets/delete_ic.svg" alt="" @click="confirmDeleteHistorial(historial.hc_fecha)" /></td>
         </tr>
       </tbody>
     </table>
   </div>
 
 
- <!-- FORMULARIO CREAR ARTICULO (Modal) -->
-<div v-if="mostrarFormularioArticulo" class="modal-overlay">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>Nuevo Artículo</h2>
-      <button class="close-btn" @click="cancelarFormulario">&times;</button>
+  <!-- FORMULARIO CREAR ARTICULO (Modal) -->
+  <div v-if="mostrarFormularioArticulo" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Nuevo Artículo</h2>
+        <button class="close-btn" @click="cancelarFormulario">&times;</button>
+      </div>
+
+      <form @submit.prevent="guardarArticulo" class="formulario-articulo">
+        <div class="form-columns">
+          <div class="form-column">
+            <div class="form-group">
+              <label>Nombre:</label>
+              <input v-model="nuevoArticulo.a_nombre" required />
+            </div>
+
+            <div class="form-group">
+              <label>Código:</label>
+              <input v-model="nuevoArticulo.a_cod" required />
+            </div>
+
+            <div class="form-group">
+              <label>Familia:</label>
+              <select v-model="nuevoArticulo.fa_id" required>
+                <option v-for="familia in familias" :key="familia.fa_id" :value="familia.fa_id">
+                  {{ familia.fa_nombre }}
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Unidad:</label>
+              <select v-model="nuevoArticulo.un_id" required>
+                <option v-for="unidad in unidades" :key="unidad.un_id" :value="unidad.un_id">
+                  {{ unidad.un_nombre }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-column">
+            <div class="form-group">
+              <label>Precio:</label>
+              <input type="number" v-model.number="nuevoArticulo.a_pvp" step="0.01" required />
+            </div>
+
+            <div class="form-group">
+              <label>IVA:</label>
+              <select v-model="nuevoArticulo.iva_id" required>
+                <option v-for="iva in ivas" :key="iva.iva_id" :value="iva.iva_id">
+                  {{ iva.iva_nombre }} ({{ iva.iva_value }}%)
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Último precio de compra:</label>
+              <input type="number" v-model.number="nuevoArticulo.a_ultimo_pc" step="0.01" />
+            </div>
+
+            <div class="form-group">
+              <label>Código de barras:</label>
+              <input v-model="nuevoArticulo.a_cod_barras" />
+            </div>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button type="button" @click="cancelarFormulario" class="btn-cancel">Cancelar</button>
+          <button type="submit" class="btn-save">Guardar</button>
+        </div>
+      </form>
     </div>
-    
-    <form @submit.prevent="guardarArticulo" class="formulario-articulo">
-      <div class="form-columns">
-        <div class="form-column">
-          <div class="form-group">
-            <label>Nombre:</label>
-            <input v-model="nuevoArticulo.a_nombre" required />
-          </div>
-
-          <div class="form-group">
-            <label>Código:</label>
-            <input v-model="nuevoArticulo.a_cod" required />
-          </div>
-
-          <div class="form-group">
-            <label>Familia:</label>
-            <select v-model="nuevoArticulo.fa_id" required>
-              <option v-for="familia in familias" :key="familia.fa_id" :value="familia.fa_id">
-                {{ familia.fa_nombre }}
-              </option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>Unidad:</label>
-            <select v-model="nuevoArticulo.un_id" required>
-              <option v-for="unidad in unidades" :key="unidad.un_id" :value="unidad.un_id">
-                {{ unidad.un_nombre }}
-              </option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-column">
-          <div class="form-group">
-            <label>Precio:</label>
-            <input type="number" v-model.number="nuevoArticulo.a_pvp" step="0.01" required />
-          </div>
-
-          <div class="form-group">
-            <label>IVA:</label>
-            <select v-model="nuevoArticulo.iva_id" required>
-              <option v-for="iva in ivas" :key="iva.iva_id" :value="iva.iva_id">
-                {{ iva.iva_nombre }} ({{ iva.iva_value }}%)
-              </option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>Último precio de compra:</label>
-            <input type="number" v-model.number="nuevoArticulo.a_ultimo_pc" step="0.01" />
-          </div>
-
-          <div class="form-group">
-            <label>Código de barras:</label>
-            <input v-model="nuevoArticulo.a_cod_barras" />
-          </div>
-        </div>
-      </div>
-
-      <div class="button-group">
-        <button type="button" @click="cancelarFormulario" class="btn-cancel">Cancelar</button>
-        <button type="submit" class="btn-save">Guardar</button>
-      </div>
-    </form>
   </div>
-</div>
 
 
 
@@ -335,72 +434,37 @@
   </div>
 
   <!-- FORMULARIO DE EDICION-->
-   <div v-if="showEditForm" class="modal-overlay">
+  <div v-if="showEditForm" class="modal-overlay">
     <div class="modal-content">
       <form @submit.prevent="updateProducto">
         <h2>Editar Articulo</h2>
         <div class="form-group">
           <label for="edit-name">Nombre</label>
-          <input
-            v-model="selectedProducto.a_nombre"
-            type="text"
-            id="edit-name"
-            required
-          />
+          <input v-model="selectedProducto.a_nombre" type="text" id="edit-name" required />
         </div>
         <div class="form-group">
           <label for="edit-cod">Código</label>
-          <input
-            v-model="selectedProducto.a_cod"
-            type="text"
-            id="edit-cod"
-            required
-          />
+          <input v-model="selectedProducto.a_cod" type="text" id="edit-cod" required />
         </div>
         <div class="form-group">
           <label for="edit-unidad_id">Unidad</label>
-          <input
-            v-model="selectedProducto.un_id"
-            type="number"
-            id="edit-unidad_id"
-            required
-          />
+          <input v-model="selectedProducto.un_id" type="number" id="edit-unidad_id" required />
         </div>
         <div class="form-group">
           <label for="edit-iva_id">Iva</label>
-          <input
-            v-model="selectedProducto.iva_id"
-            type="number"
-            id="edit-iva_id"
-            required
-          />
+          <input v-model="selectedProducto.iva_id" type="number" id="edit-iva_id" required />
         </div>
         <div class="form-group">
           <label for="edit-ultimo_costo">Costo</label>
-          <input
-            v-model="selectedProducto.a_ultimo_pc"
-            type="number"
-            id="edit-ultimo_costo"
-            required
-          />
+          <input v-model="selectedProducto.a_ultimo_pc" type="number" id="edit-ultimo_costo" required />
         </div>
         <div class="form-group">
           <label for="edit-precio_venta">Precio</label>
-          <input
-            v-model="selectedProducto.a_pvp"
-            type="number"
-            id="edit-precio_venta"
-            required
-          />
+          <input v-model="selectedProducto.a_pvp" type="number" id="edit-precio_venta" required />
         </div>
         <div class="form-group">
           <label for="edit-codigo-barras">Codigo de Barras</label>
-          <input
-            v-model="selectedProducto.a_cod_barras"
-            type="text"
-            id="edit-codigo-barras"
-            required
-          />
+          <input v-model="selectedProducto.a_cod_barras" type="text" id="edit-codigo-barras" required />
         </div>
         <div class="modal-buttons">
           <button type="submit" class="submit-btn">Guardar</button>
@@ -426,6 +490,9 @@ export default {
       unidades: [],
       ivas: [],
       familias: [],
+      marcas: [],
+      proveedores: [],
+      historialCompras: [],
       nuevoArticulo: {
         a_nombre: "",
         a_cod: "",
@@ -495,9 +562,30 @@ export default {
       );
     },
 
-    
+    filteredMarcas() {
+      const query = this.searchQuery.toLowerCase();
+      return this.marcas.filter((marca) =>
+        [marca.ma_nombre]
+          .some((field) => field && field.toLowerCase().includes(query))
+      );
+    },
 
-    
+    filteredProveedores() {
+      const query = this.searchQuery.toLowerCase();
+      return this.proveedores.filter((proveedor) =>
+        [proveedor.p_nombre, proveedor.p_email]
+          .some((field) => field && field.toLowerCase().includes(query))
+      );
+    },
+
+    filteredHistorialCompras() {
+      const query = this.searchQuery.toLowerCase();
+      return this.historialCompras.filter((historial) =>
+        [historial.hc_fecha]
+          .some((field) => field && field.toLowerCase().includes(query))
+      );
+    },
+
 
     isLoginValid() {
       return this.user.u_mail && this.user.u_password;
@@ -505,7 +593,7 @@ export default {
     isRegisterValid() {
       return this.user.u_name && this.user.u_mail && this.user.u_password;
     }
-    
+
   },
   mounted() {
     if (this.isAdmin) {
@@ -514,6 +602,9 @@ export default {
       this.fetchUnidades();
       this.fetchIvas();
       this.fetchFamilias();
+      this.fetchMarcas();
+      this.fetchProveedores();
+      this.fetchHistorialCompras();
       this.checkRole();
     }
   },
@@ -521,12 +612,12 @@ export default {
   created() {
     // Verifica si ya hay sesión iniciada
     const token = localStorage.getItem('authToken');
-        const userName = localStorage.getItem('userName');
-        if (token && userName) {
-            this.loggedIn = true;
-            this.currentUserName = userName;
-            this.isAdmin = localStorage.getItem("isAdmin") === 'true';
-        }
+    const userName = localStorage.getItem('userName');
+    if (token && userName) {
+      this.loggedIn = true;
+      this.currentUserName = userName;
+      this.isAdmin = localStorage.getItem("isAdmin") === 'true';
+    }
   },
 
   watch: {
@@ -560,13 +651,24 @@ export default {
       if (section === 'unidades') {
         this.fetchUnidades();
       }
-      if (section === 'ivas') {
+      if (section === 'iva') {
         this.fetchIvas();
       }
       if (section === 'familias') {
         this.fetchFamilias();
       }
+      if (section === 'marcas') {
+        this.fetchMarcas();
+      }
+      if (section === 'proveedores') {
+        this.fetchProveedores();
+      }
+      if (section === 'historialCompras') {
+        this.fetchHistorialCompras();
+      }
     },
+
+    /*Obtener Nombres*/ 
     getUnidadNombre(un_id) {
       const unidad = this.unidades.find(u => u.un_id === un_id);
       return unidad ? unidad.un_nombre : 'Desconocida';
@@ -579,6 +681,17 @@ export default {
       const iva = this.ivas.find(i => i.iva_id === iva_id);
       return iva ? iva.iva_value.toFixed(2) : '0.00';
     },
+    getNombreArticulo(a_id) {
+      const articulo = this.productos.find(a => a.a_id === a_id);
+      return articulo ? articulo.a_nombre : 'Desconocido';
+    },
+    getNombreProveedor(p_id) {
+      const proveedor = this.proveedores.find(p => p.p_id === p_id);
+      return proveedor ? proveedor.p_nombre : 'Desconocido';
+    },
+
+
+    /*Obtener datos desde la API*/ 
     async fetchProductos() {
       try {
         const response = await axios.get("https://localhost:7198/api/articulos");
@@ -621,6 +734,33 @@ export default {
 
     },
 
+    async fetchMarcas() {
+      try {
+        const response = await axios.get("https://localhost:7198/api/Marcas");
+        this.marcas = response.data;
+      } catch (error) {
+        console.error("Error al cargar las marcas:", error);
+      }
+    },
+
+    async fetchProveedores() {
+      try {
+        const response = await axios.get("https://localhost:7198/api/Proveedores");
+        this.proveedores = response.data;
+      } catch (error) {
+        console.error("Error al cargar los proveedores:", error);
+      }
+    },
+
+    async fetchHistorialCompras() {
+      try {
+        const response = await axios.get("https://localhost:7198/api/HistorialCompra");
+        this.historialCompras = response.data;
+      } catch (error) {
+        console.error("Error al cargar el historial de compras:", error);
+      }
+    },
+
     deleteProduct(id) {
       localStorage.setItem('productId', id);
       axios.delete("https://localhost:7198/api/articulos/" + id)
@@ -641,21 +781,21 @@ export default {
 
     selectArticuloForEdit(producto) {
       console.log("Producto seleccionado para edición:", producto);
-      this.selectedProducto = {...producto};
+      this.selectedProducto = { ...producto };
       this.showEditForm = true;
     },
     updateProducto() {
       axios.put(`https://localhost:7198/api/Articulos/${this.selectedProducto.a_id}`, this.selectedProducto
 
       )
-      .then(() => {
-        alert("Producto actualizado correctamente");
-        this.fetchProductos();
-        this.closeEditForm();
-      })
-      .catch((error) => {
-        console.error("Error al actualizar producto", error);
-      });
+        .then(() => {
+          alert("Producto actualizado correctamente");
+          this.fetchProductos();
+          this.closeEditForm();
+        })
+        .catch((error) => {
+          console.error("Error al actualizar producto", error);
+        });
     },
     guardarArticulo() {
       this.mostrarFormularioArticulo = true;
@@ -696,132 +836,132 @@ export default {
       this.selectedProducto = null;
     },
     checkRole() {
-            this.isAdmin = localStorage.getItem("isAdmin") === 'true';
-            console.log("isAdmin:", this.isAdmin);
-            console.log("userName:", this.currentUserName);
-        },
-        showLoginModal() {
-            this.showLogin = true;
-            this.showRegister = false;
-        },
+      this.isAdmin = localStorage.getItem("isAdmin") === 'true';
+      console.log("isAdmin:", this.isAdmin);
+      console.log("userName:", this.currentUserName);
+    },
+    showLoginModal() {
+      this.showLogin = true;
+      this.showRegister = false;
+    },
 
-        showRegisterModal() {
-            this.showRegister = true;
-            this.showLogin = false;
-        },
+    showRegisterModal() {
+      this.showRegister = true;
+      this.showLogin = false;
+    },
 
-        closeLoginModal() {
-            this.showLogin = false;
-        },
+    closeLoginModal() {
+      this.showLogin = false;
+    },
 
-        closeRegisterModal() {
-        this.showRegister = false;
-        },
+    closeRegisterModal() {
+      this.showRegister = false;
+    },
 
-        validatePassword() {
-            const password = this.user.u_password;
+    validatePassword() {
+      const password = this.user.u_password;
 
-            this.isValidLength = password.length >= 8 && password.length <= 16;
-            this.isValidLowercase = /[a-z]/.test(password);
-            this.isValidUppercase = /[A-Z]/.test(password);
-            this.isValidNumber = /\d/.test(password);
-            this.isValidSpecialChar = /[#$@!%&*?_]/.test(password);
+      this.isValidLength = password.length >= 8 && password.length <= 16;
+      this.isValidLowercase = /[a-z]/.test(password);
+      this.isValidUppercase = /[A-Z]/.test(password);
+      this.isValidNumber = /\d/.test(password);
+      this.isValidSpecialChar = /[#$@!%&*?_]/.test(password);
 
-            this.isValidPassword = this.isValidLength &&
-                                this.isValidLowercase &&
-                                this.isValidUppercase &&
-                                this.isValidNumber &&
-                                this.isValidSpecialChar;
+      this.isValidPassword = this.isValidLength &&
+        this.isValidLowercase &&
+        this.isValidUppercase &&
+        this.isValidNumber &&
+        this.isValidSpecialChar;
 
-            return this.isValidPassword && this.isValidLength &&
-                                this.isValidLowercase &&
-                                this.isValidUppercase &&
-                                this.isValidNumber &&
-                                this.isValidSpecialChar;
-        },
+      return this.isValidPassword && this.isValidLength &&
+        this.isValidLowercase &&
+        this.isValidUppercase &&
+        this.isValidNumber &&
+        this.isValidSpecialChar;
+    },
 
-        handleLogin() {
-            console.log("Iniciar sesión con:", this.user);// user es tu objeto reactivo
-            if (!this.user.u_password || !this.user.u_mail) {
-                alert("Por favor, completa todos los campos.");
-                return;
-            }
+    handleLogin() {
+      console.log("Iniciar sesión con:", this.user);
+      if (!this.user.u_password || !this.user.u_mail) {
+        alert("Por favor, completa todos los campos.");
+        return;
+      }
 
-            console.log("Datos a enviar:", JSON.stringify(this.user));
+      console.log("Datos a enviar:", JSON.stringify(this.user));
 
-            axios.post('https://localhost:7198/api/Login/login', this.user )
-            .then(response => {
-                if (response.data.message === 'Login exitoso') {
-                    const userName = response.data.nombre;
-                    const email = this.user.u_mail;
+      axios.post('https://localhost:7198/api/Login/login', this.user)
+        .then(response => {
+          if (response.data.message === 'Login exitoso') {
+            const userName = response.data.nombre;
+            const email = this.user.u_mail;
 
-                    this.$emit('login-success', {
-                        isAdmin: email === 'admin@admin.com'
-                    });
-
-                    localStorage.setItem('authToken', response.data.token);
-                    localStorage.setItem('userName', userName);
-                    localStorage.setItem('isAdmin', email === 'admin@admin.com' ? 'true' : 'false');
-
-                    this.loggedIn = true;
-                    this.currentUserName = userName;
-                    this.isAdmin = email === 'admin@admin.com';
-
-                    this.user = { u_name: '', u_mail: '', u_password: '' };
-                    this.showLogin = false;
-
-                    this.checkRole();
-                    window.location.reload();
-                    } else {
-                        alert("Credenciales incorrectas");
-                    }
-                })
-            .catch(error => {
-                console.error("Error en la petición:", error);
-
-                if (error.response) {
-                    console.error("Respuesta del servidor:", error.response.data);
-                } else if (error.request) {
-                    console.error("No hubo respuesta del servidor:", error.request);
-                    alert("No hubo respuesta del servidor.");
-                } else {
-                    console.error("Error al configurar la petición:", error.message);
-                    alert(`Error: ${error.message}`);
-                }
-
-                alert("Hubo un problema con el inicio de sesión, intenta nuevamente.");
+            this.$emit('login-success', {
+              isAdmin: email === 'admin@admin.com'
             });
-        },
 
-        fetchUsers() {
-            console.log("Fetching users...");
-        },
+            localStorage.setItem('authToken', response.data.token);
+            localStorage.setItem('userName', userName);
+            localStorage.setItem('isAdmin', email === 'admin@admin.com' ? 'true' : 'false');
 
-        handleRegister() {
-            // if (!this.validatePassword()) return;
-            axios.post('https://localhost:7198/api/Users', this.user)
-            .then(response => {
-                this.showRegister = false;
-                this.fetchUsers();
-                console.log(response.data);
-            })
-            .catch(error => {
-                console.error("Error al registrar usuario", error);
-                alert("Error al registrar usuario");
-            });
-        },
+            this.loggedIn = true;
+            this.currentUserName = userName;
+            this.isAdmin = email === 'admin@admin.com';
 
-        logout() {
-            this.$emit('logout');
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('userName');
-            localStorage.setItem('isAdmin', 'false');
-            localStorage.removeItem('isAdmin');
-            this.loggedIn = false;
-            this.currentUserName = '';
-            this.isAdmin = false;
+            this.user = { u_name: '', u_mail: '', u_password: '' };
+            this.showLogin = false;
+
+            this.checkRole();
             window.location.reload();
-        }
+          } else {
+            alert("Credenciales incorrectas");
+          }
+        })
+        .catch(error => {
+          console.error("Error en la petición:", error);
+
+          if (error.response) {
+            console.error("Respuesta del servidor:", error.response.data);
+          } else if (error.request) {
+            console.error("No hubo respuesta del servidor:", error.request);
+            alert("No hubo respuesta del servidor.");
+          } else {
+            console.error("Error al configurar la petición:", error.message);
+            alert(`Error: ${error.message}`);
+          }
+
+          alert("Hubo un problema con el inicio de sesión, intenta nuevamente.");
+        });
+    },
+
+    fetchUsers() {
+      console.log("Fetching users...");
+    },
+
+    handleRegister() {
+      // if (!this.validatePassword()) return;
+      axios.post('https://localhost:7198/api/Users', this.user)
+        .then(response => {
+          this.showRegister = false;
+          this.fetchUsers();
+          console.log(response.data);
+        })
+        .catch(error => {
+          console.error("Error al registrar usuario", error);
+          alert("Error al registrar usuario");
+        });
+    },
+
+    logout() {
+      this.$emit('logout');
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userName');
+      localStorage.setItem('isAdmin', 'false');
+      localStorage.removeItem('isAdmin');
+      this.loggedIn = false;
+      this.currentUserName = '';
+      this.isAdmin = false;
+      window.location.reload();
+    }
   },
 };
 </script>
@@ -839,17 +979,22 @@ export default {
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 2rem; /* Espacio alrededor del modal */
-  overflow-y: auto; /* Permite scroll si el contenido es muy largo */
+  padding: 2rem;
+  /* Espacio alrededor del modal */
+  overflow-y: auto;
+  /* Permite scroll si el contenido es muy largo */
 }
 
 .modal-content {
   background-color: #ffffff;
   border-radius: 12px;
   width: 90%;
-  max-width: 800px; /* Un poco más ancho para dos columnas */
-  max-height: 90vh; /* Limita la altura máxima */
-  overflow-y: auto; /* Scroll interno si es necesario */
+  max-width: 800px;
+  /* Un poco más ancho para dos columnas */
+  max-height: 90vh;
+  /* Limita la altura máxima */
+  overflow-y: auto;
+  /* Scroll interno si es necesario */
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
   animation: fadeIn 0.3s ease-in-out;
   padding: 2rem;
@@ -955,7 +1100,7 @@ export default {
     flex-direction: column;
     gap: 1rem;
   }
-  
+
   .modal-content {
     width: 95%;
     padding: 1.5rem;
@@ -964,37 +1109,44 @@ export default {
 
 
 /* Estilos para las tablas */
-.table, .tabla {
+.table,
+.tabla {
   width: 100%;
   border-collapse: collapse;
   margin-top: 1rem;
 }
 
-.table th, .table td, .tabla th, .tabla td {
+.table th,
+.table td,
+.tabla th,
+.tabla td {
   border: 1px solid #ccc;
   padding: 8px;
   text-align: center;
 }
 
 
-.table td, .tabla td {
+.table td,
+.tabla td {
   color: #050715;
-  background-color: #fff; 
+  background-color: #fff;
 }
 
 
-.table th, .tabla th {
+.table th,
+.tabla th {
   background-color: #2e2f36;
   color: #fff;
 }
 
-.table img, .tabla img {
+.table img,
+.tabla img {
   cursor: pointer;
   width: 20px;
   align-items: center;
 }
 
-/* Estilos para el menu */ 
+/* Estilos para el menu */
 
 .admin-menu {
   display: flex;
@@ -1057,22 +1209,43 @@ export default {
   text-align: center;
   color: #2e2f36;
 }
+
 .catalogo-productos {
   padding: 40px;
   text-align: center;
 }
+
 .catalogo-unidades {
   padding: 40px;
   text-align: center;
 }
+
 .catalogo-iva {
   padding: 40px;
   text-align: center;
 }
-.catalogo-familia {
+
+.catalogo-familias {
   padding: 40px;
   text-align: center;
 }
+
+.catalogo-marcas {
+  padding: 40px;
+  text-align: center;
+}
+
+.catalogo-proveedores {
+  padding: 40px;
+  text-align: center;
+}
+
+.catalogo-historial {
+  padding: 40px;
+  text-align: center;
+}
+
+
 
 .search-input {
   padding: 10px;
@@ -1098,9 +1271,11 @@ export default {
 .unidad-card h2 {
   margin-top: 0;
 }
+
 .iva-card h2 {
   margin-top: 0;
 }
+
 .familia-card h2 {
   margin-top: 0;
 }
