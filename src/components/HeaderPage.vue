@@ -105,7 +105,7 @@ import axios from 'axios';
 import { API_BASE_URL } from '@/config/apiConfig.js';
 import { jwtDecode } from 'jwt-decode';
 
-const ADMIN_EMAIL = 'admin@admin.com';
+const ADMIN_EMAIL = 'antonio.carnero@star-group.net';
 
 export default {
     name: "HeaderPage",
@@ -121,7 +121,6 @@ export default {
             loggedIn: false,
             currentUserName: '',
             showRegister: false,
-            isAdmin: false,
 
             isValidPassword: false,
             isValidLength: false,
@@ -131,22 +130,9 @@ export default {
             isValidSpecialChar: false
         };
     },
-
-    mounted() {
-        this.checkRole();
-    },
-
     created() {
-        // Verifica si ya hay sesión iniciada
-        const token = localStorage.getItem('authToken');
-        const userName = localStorage.getItem('userName');
-        if (token && userName) {
-            this.loggedIn = true;
-            this.currentUserName = userName;
-            this.isAdmin = localStorage.getItem("isAdmin") === 'true';
-        }
+        this.checkAuthStatus();
     },
-
     watch: {
         showLogin(newValue) {
             if (newValue) {
@@ -161,6 +147,18 @@ export default {
             } else {
                 document.body.classList.remove('no-scroll');
             }
+        },
+        isAdmin() {
+            if (!this.loggedIn) return false;
+            const token = localStorage.getItem('authToken');
+            if (!token) return false;
+            try {
+                const decodedToken = jwtDecode(token);
+                // El claim de email estándar es 'email' o ClaimTypes.Email
+                return decodedToken.email && decodedToken.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+            } catch (e) {
+                return false;
+            }
         }
     },
 
@@ -170,19 +168,78 @@ export default {
         },
         isRegisterValid() {
             return this.user.u_name && this.user.u_mail && this.user.u_password;
+        },
+        isAdmin() {
+            if (!this.loggedIn) return false; // Si no está logueado, no es admin
+            const token = localStorage.getItem('authToken');
+            if (!token) return false; // Si no hay token, no es admin
+
+            try {
+                const decodedToken = jwtDecode(token);
+                console.log("Token decodificado en isAdmin (computed):", decodedToken);
+
+                // 1. Primero, chequear el claim 'isAdmin' que el backend añade
+                if (decodedToken.isAdmin !== undefined) { // Asegurarse que el claim existe
+                    // El claim 'isAdmin' del backend es un string "true"
+                    return decodedToken.isAdmin.toString().toLowerCase() === 'true';
+                }
+                
+                // 2. Si no hay claim 'isAdmin', fallback a la verificación por email
+                // (Esto es por si decides quitar el claim 'isAdmin' del backend)
+                // return decodedToken.email && decodedToken.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+                
+                // Si solo confías en el claim 'isAdmin' del backend:
+                return false; // Si no hay claim 'isAdmin', no es admin
+
+            } catch (e) {
+                console.error("Error decodificando token en isAdmin (computed):", e);
+                return false; // Si el token es inválido, no es admin
+            }
         }
     },
-
     beforeUnmount() {
         localStorage.removeItem('authToken');
         localStorage.removeItem('userName');
     },
 
     methods: {
-        checkRole() {
-            this.isAdmin = localStorage.getItem("isAdmin") === 'true';
-            console.log("isAdmin:", this.isAdmin);
-            console.log("userName:", this.currentUserName);
+        checkAuthStatus() {
+            const token = localStorage.getItem('authToken');
+            if (token) { // Si hay un token en localStorage
+                try {
+                    // Intenta decodificar el token
+                    const decodedToken = jwtDecode(token);
+                    console.log("Token decodificado en checkAuthStatus:", decodedToken); // <-- CLAVE PARA DEBUG
+
+                    // 1. Chequeo de expiración
+                    if (decodedToken.exp * 1000 < Date.now()) {
+                        console.log("Token expirado, llamando a logout.");
+                        this.logout(); // Esto te sacará del if (token) en la siguiente ejecución si window.reload está presente
+                        return; // Importante salir aquí para no procesar un token expirado
+                    }
+
+                    // 2. Si el token es válido y no ha expirado:
+                    this.loggedIn = true;
+                    this.currentUserName = decodedToken.unique_name; // Usar la propiedad correcta del token // Asigna el nombre del claim 'name'
+                    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                    
+                    // 3. Emitir evento
+                    // 'this.isAdmin' aquí usará la propiedad computada 'isAdmin'
+                    console.log("Emitiendo loginSuccess desde checkAuthStatus. isAdmin:", this.isAdmin, "userName:", this.currentUserName);
+                    this.$emit('loginSuccess', { isAdmin: this.isAdmin, userName: this.currentUserName });
+
+                } catch (error) {
+                    // Si jwtDecode falla (token malformado, etc.)
+                    console.error("Error decodificando token en checkAuthStatus (catch):", error);
+                    this.logout(); // Llama a logout, lo que eventualmente ejecutará este 'else' si hay reload
+                }
+            } else { // Si NO hay token en localStorage
+                console.log("No hay token en localStorage, reseteando estado de login.");
+                this.loggedIn = false;
+                this.currentUserName = '';
+                delete axios.defaults.headers.common['Authorization'];
+                this.$emit('loginSuccess', { isAdmin: false, userName: '' });
+            }
         },
         showLoginModal() {
             this.showLogin = true;
@@ -228,57 +285,30 @@ export default {
                                 this.isValidSpecialChar;
         },
 
-        handleLogin() {
-            console.log("Iniciar sesión con:", this.user);// user es tu objeto reactivo
-            if (!this.user.u_password || !this.user.u_mail) {
-                alert("Por favor, completa todos los campos.");
-                return;
-            }
+         handleLogin() {
+            if (!this.user.u_mail || !this.user.u_password) { /* ... */ }
+            axios.post(`${API_BASE_URL}Login/login`, this.user)
+                .then(response => {
+                    const token = response.data.token;
+                    // const userName = response.data.userName; // Ya lo obtenemos del token decodificado
 
-            console.log("Datos a enviar:", JSON.stringify(this.user));
+                    localStorage.setItem('authToken', token);
+                    // localStorage.setItem('userName', userName); // No es estrictamente necesario si está en el token
 
-            axios.post(API_BASE_URL+'Login/login', this.user )
-            .then(response => {
-                if (response.data.message === 'Login exitoso') {
-                    const userName = response.data.nombre;
-                    const email = this.user.u_mail;
-
-                    this.$emit('login-success', {
-                        isAdmin: email === 'admin@admin.com'
-                    });
-
-                    localStorage.setItem('authToken', response.data.token);
-                    localStorage.setItem('userName', userName);
-                    localStorage.setItem('isAdmin', email === 'admin@admin.com' ? 'true' : 'false');
-
-                    this.loggedIn = true;
-                    this.currentUserName = userName;
-                    this.isAdmin = email === 'admin@admin.com';
+                    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                    
+                    // Actualizar estado local y luego emitir. checkAuthStatus puede hacer esto.
+                    this.checkAuthStatus(); // Esto actualizará loggedIn, currentUserName y activará la computada isAdmin
 
                     this.user = { u_name: '', u_mail: '', u_password: '' };
                     this.showLogin = false;
 
-                    this.checkRole();
                     window.location.reload();
-                    } else {
-                        alert("Credenciales incorrectas");
-                    }
                 })
-            .catch(error => {
-                console.error("Error en la petición:", error);
-
-                if (error.response) {
-                    console.error("Respuesta del servidor:", error.response.data);
-                } else if (error.request) {
-                    console.error("No hubo respuesta del servidor:", error.request);
-                    alert("No hubo respuesta del servidor.");
-                } else {
-                    console.error("Error al configurar la petición:", error.message);
-                    alert(`Error: ${error.message}`);
-                }
-
-                alert("Hubo un problema con el inicio de sesión, intenta nuevamente.");
-            });
+                .catch(error => {
+                    console.error("Error en login:", error.response ? error.response.data : error.message);
+                    alert("Credenciales incorrectas o error en el servidor.");
+                });
         },
 
         fetchUsers() {
@@ -287,7 +317,7 @@ export default {
 
         handleRegister() {
             // if (!this.validatePassword()) return;
-            axios.post('http://localhost:5289/api/Users', this.user)
+            axios.post(API_BASE_URL+'Users', this.user)
             .then(response => {
                 this.showRegister = false;
                 this.fetchUsers();
@@ -299,15 +329,15 @@ export default {
             });
         },
 
-        logout() {
-            this.$emit('logout');
+         logout() {
             localStorage.removeItem('authToken');
             localStorage.removeItem('userName');
-            localStorage.setItem('isAdmin', 'false');
-            localStorage.removeItem('isAdmin');
-            this.loggedIn = false;
-            this.currentUserName = '';
-            this.isAdmin = false;
+        
+            this.checkAuthStatus();
+
+            // if (this.$route.meta.requiresAuth) { // Si usas route guards
+            //     this.$router.push('/');
+            // }
             window.location.reload();
         }
 

@@ -1,6 +1,6 @@
 <template>
 
-  <div class="usuarios" v-if="isAdmin">
+  <div class="usuarios" v-if="currentUserIsAdmin">
     <h1>Lista de Usuarios</h1>
 
     <input
@@ -87,6 +87,9 @@
 import HeaderPage from '@/components/HeaderPage.vue';
 import axios from 'axios';
 import { API_BASE_URL } from '@/config/apiConfig.js';
+import { jwtDecode } from 'jwt-decode';
+
+const ADMIN_EMAIL = 'antonio.carnero@star-group.net';
 
 export default {
   name: "UserList",
@@ -100,11 +103,27 @@ export default {
     };
   },
   mounted() {
-    if (this.isAdmin) {
+    if (this.currentUserIsAdmin) {
       this.fetchUsers();
     }
   },
   computed: {
+     currentUserIsAdmin() {
+      const token = localStorage.getItem('authToken');
+      if (!token) return false;
+      try {
+        const decodedToken = jwtDecode(token);
+        // Verificar expiración también
+        if (decodedToken.exp * 1000 < Date.now()) {
+            localStorage.removeItem('authToken'); // Limpiar token expirado
+            return false;
+        }
+        return decodedToken.email && decodedToken.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+      } catch (e) {
+        localStorage.removeItem('authToken'); // Limpiar token inválido
+        return false;
+      }
+    },
     filteredUsers() {
       const query = this.searchQuery.toLowerCase();
       return this.usersList.filter(user =>
@@ -125,14 +144,13 @@ export default {
       });
     },
     deleteUser(id) {
-      //cambiar la url Rafa
       localStorage.setItem('userId', id);
       if (id === localStorage.getItem("userId")) {
         alert("No puedes eliminar tu propio usuario");
         return;
       }
       axios
-        .delete(API_BASE_URL`Users/${id}`)
+        .delete(API_BASE_URL+`Users/${id}`)
         .then(() => {
           this.fetchUsers();
           HeaderPage.methods.logout();
@@ -153,9 +171,8 @@ export default {
     },
     updateUser() {
       axios
-      // cambiar la url Rafa
         .put(
-          API_BASE_URL`Users/${this.selectedUser.id}`,
+          API_BASE_URL+`Users/${this.selectedUser.id}`,
           this.selectedUser
         )
         .then(() => {

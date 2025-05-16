@@ -300,7 +300,9 @@
 </template>
 
 <script>
+import { API_BASE_URL } from "@/config/apiConfig";
 import axios from "axios";
+import { jwtDecode } from 'jwt-decode';
 
 export default {
   name: "CatalogoProductos",
@@ -323,54 +325,97 @@ export default {
       },
      
       selectedProducto: null,
-      mostrarFormularioArticulo: false,
+      showEditForm: false, // Para el modal de edición de producto
+      mostrarFormularioArticulo: false, // Para el modal de nuevo artículo
       searchQuery: "",
+      isUserAdmin: false, // Nueva propiedad en data para almacenar el resultado de la verificación
+      authChecked: false, // Para saber si la verificación inicial ya se hizo
     };
   },
-  computed: {
+ computed: {
+    // Propiedad computada para determinar si el usuario es admin
+    isAdmin() {
+      return this.isUserAdmin;
+    },
+    // ... (tus otras propiedades computadas filteredProductos, filteredUnidades, etc. permanecen igual)
     filteredProductos() {
+      if (!this.isAdmin) return []; // No mostrar productos si no es admin
       const query = this.searchQuery.toLowerCase();
       return this.productos.filter((producto) =>
-        [producto.a_nombre, producto.a_cod, producto.familia]
-          .some((field) => field && field.toLowerCase().includes(query))
+        [producto.a_nombre, producto.a_cod, this.getFamiliaNombre(producto.fa_id)] // Incluir nombre de familia en la búsqueda
+          .some((field) => field && field.toString().toLowerCase().includes(query))
       );
     },
     filteredUnidades() {
+      if (!this.isAdmin) return [];
       const query = this.searchQuery.toLowerCase();
       return this.unidades.filter((unidad) =>
         [unidad.un_nombre]
-          .some((field) => field && field.toLowerCase().includes(query))
+          .some((field) => field && field.toString().toLowerCase().includes(query))
       );
     },
     filteredIvas() {
+      if (!this.isAdmin) return [];
       const query = this.searchQuery.toLowerCase();
       return this.ivas.filter((iva) =>
-        [iva.iva_nombre, iva.iva_value]
+        [iva.iva_nombre, iva.iva_value.toString()] // Convertir valor a string para includes
           .some((field) => field && field.toLowerCase().includes(query))
       );
     },
-
     filteredFamilias() {
+      if (!this.isAdmin) return [];
       const query = this.searchQuery.toLowerCase();
       return this.familias.filter((familia) =>
         [familia.fa_nombre]
-          .some((field) => field && field.toLowerCase().includes(query))
+          .some((field) => field && field.toString().toLowerCase().includes(query))
       );
     },
-    
   },
-  mounted() {
-    if (this.isAdmin) {
+  created() {
+    // Llama al método para verificar la autenticación y el rol al crear el componente
+    this.verifyAuthAndSetAdminStatus();
+  },
+
+  methods: {
+    verifyAuthAndSetAdminStatus() {
+      const token = localStorage.getItem('authToken');
+      let isAdminUser = false; // Valor por defecto
+
+      if (token) {
+        try {
+          const decodedToken = jwtDecode(token);
+          if (decodedToken.exp * 1000 < Date.now()) {
+            console.warn("CatalogoProductos: Token expirado.");
+            localStorage.removeItem('authToken');
+            // No redirigir desde aquí directamente para evitar bucles si esta página es '/'
+            // La redirección debería manejarla el router guard o App.vue
+          } else {
+            // console.log("CatalogoProductos - Decoded token:", decodedToken);
+            if (decodedToken.isAdmin !== undefined && decodedToken.isAdmin.toString().toLowerCase() === 'true') {
+              isAdminUser = true;
+            }
+          }
+        } catch (e) {
+          console.error("CatalogoProductos - Error decoding token:", e);
+          localStorage.removeItem('authToken');
+        }
+      }
+      this.isUserAdmin = isAdminUser;
+      this.authChecked = true; // Marcar que la verificación se ha hecho
+
+      // Después de verificar, si es admin, inicializa los datos
+      if (this.isUserAdmin) {
+        this.initializeAdminData();
+      }
+    },
+
+    initializeAdminData() {
+      console.log("CatalogoProductos: Inicializando datos de admin.");
       this.selectSection('articulos');
-      this.fetchProductos();
       this.fetchUnidades();
       this.fetchIvas();
       this.fetchFamilias();
-    }
-  },
-
-
-  methods: {
+    },
     selectSection(section) {
       this.activeSection = section;
       if (section === 'articulos') {
@@ -400,7 +445,7 @@ export default {
     },
     async fetchProductos() {
       try {
-        const response = await axios.get("https://localhost:7198/api/articulos");
+        const response = await axios.get(API_BASE_URL+"articulos");
         this.productos = response.data.map((p) => ({
           ...p,
           familia: p.familia?.fa_nombre || "Sin familia",
@@ -414,7 +459,7 @@ export default {
 
     async fetchUnidades() {
       try {
-        const response = await axios.get("https://localhost:7198/api/Unidades");
+        const response = await axios.get(API_BASE_URL+"Unidades");
         this.unidades = response.data;
       } catch (error) {
         console.error("Error al cargar las unidades:", error);
@@ -423,7 +468,7 @@ export default {
 
     async fetchIvas() {
       try {
-        const response = await axios.get("https://localhost:7198/api/Iva");
+        const response = await axios.get(API_BASE_URL+"Iva");
         this.ivas = response.data;
       } catch (error) {
         console.error("Error al cargar los IVA:", error);
@@ -432,7 +477,7 @@ export default {
 
     async fetchFamilias() {
       try {
-        const response = await axios.get("https://localhost:7198/api/Familias");
+        const response = await axios.get(API_BASE_URL+"Familias");
         this.familias = response.data;
       } catch (error) {
         console.error("Error al cargar las familias:", error);
@@ -442,7 +487,7 @@ export default {
 
     deleteProduct(id) {
       localStorage.setItem('productId', id);
-      axios.delete("https://localhost:7198/api/articulos/" + id)
+      axios.delete(API_BASE_URL+"articulos/" + id)
         .then(() => {
           this.fetchProductos();
           alert("Producto eliminado correctamente");
@@ -464,7 +509,7 @@ export default {
       this.showEditForm = true;
     },
     updateProducto() {
-      axios.put(`https://localhost:7198/api/Articulos/${this.selectedProducto.a_id}`, this.selectedProducto
+      axios.put(API_BASE_URL+`Articulos/${this.selectedProducto.a_id}`, this.selectedProducto
 
       )
       .then(() => {
@@ -478,7 +523,7 @@ export default {
     },
     guardarArticulo() {
       this.mostrarFormularioArticulo = true;
-      axios.post("https://localhost:7198/api/Articulos", this.nuevoArticulo)
+      axios.post(API_BASE_URL+"Articulos", this.nuevoArticulo)
         .then(() => {
           this.fetchProductos();
           this.cancelarFormulario();
