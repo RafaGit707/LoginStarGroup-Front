@@ -290,8 +290,6 @@
           <th>Proveedor</th>
           <th>Precio</th>
           <th>Fecha</th>
-          <th>Editar</th>
-          <th>Eliminar</th>
         </tr>
       </thead>
       <tbody>
@@ -300,9 +298,6 @@
           <td>{{ getNombreProveedor(historial.p_id) }}</td>
           <td>{{ historial.hc_precio.toFixed(2) }}€</td>
           <td>{{ historial.hc_fecha }}</td>
-          <td><img class="edit" src="../assets/edit_ic.svg" alt="" @click="selectHistorialForEdit(historial)" /></td>
-          <td><img class="delete" src="../assets/delete_ic.svg" alt=""
-              @click="confirmDeleteHistorial(historial.hc_fecha)" /></td>
         </tr>
       </tbody>
     </table>
@@ -314,7 +309,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h2>Nuevo Artículo</h2>
-        <button class="close-btn" @click="cancelarFormulario">&times;</button>
+        <button class="close-btn" @click="cancela">&times;</button>
       </div>
 
       <form @submit.prevent="guardarArticulo" class="formulario-articulo">
@@ -389,7 +384,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h2>Nueva Unidad</h2>
-        <button class="close-btn" @click="cancelarFormulario">&times;</button>
+        <button class="close-btn" @click="cancelarFormularioUnidad">&times;</button>
       </div>
 
       <form @submit.prevent="guardarUnidad" class="formulario-unidad">
@@ -403,7 +398,7 @@
         </div>
 
         <div class="button-group">
-          <button type="button" @click="cancelarFormulario" class="btn-cancel">Cancelar</button>
+          <button type="button" @click="cancelarFormularioUnidad" class="btn-cancel">Cancelar</button>
           <button type="submit" class="btn-save">Guardar</button>
         </div>
       </form>
@@ -415,7 +410,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h2>Nuevo IVA</h2>
-        <button class="close-btn" @click="cancelarFormulario">&times;</button>
+        <button class="close-btn" @click="cancelarFormularioIva">&times;</button>
       </div>
 
       <form @submit.prevent="guardarIva" class="formulario-iva">
@@ -434,7 +429,7 @@
         </div>
 
         <div class="button-group">
-          <button type="button" @click="cancelarFormulario" class="btn-cancel">Cancelar</button>
+          <button type="button" @click="cancelarFormularioIva" class="btn-cancel">Cancelar</button>
           <button type="submit" class="btn-save">Guardar</button>
         </div>
       </form>
@@ -447,7 +442,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h2>Nueva Familia</h2>
-        <button class="close-btn" @click="cancelarFormulario">&times;</button>
+        <button class="close-btn" @click="cancelarFormularioFamilia">&times;</button>
       </div>
 
       <form @submit.prevent="guardarFamilia" class="formulario-familia">
@@ -461,7 +456,7 @@
         </div>
 
         <div class="button-group">
-          <button type="button" @click="cancelarFormulario" class="btn-cancel">Cancelar</button>
+          <button type="button" @click="cancelarFormularioFamilia" class="btn-cancel">Cancelar</button>
           <button type="submit" class="btn-save">Guardar</button>
         </div>
       </form>
@@ -474,7 +469,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h2>Nueva Marca</h2>
-        <button class="close-btn" @click="cancelarFormulario">&times;</button>
+        <button class="close-btn" @click="cancelarFormularioMarca">&times;</button>
       </div>
 
       <form @submit.prevent="guardarMarca" class="formulario-marca">
@@ -488,7 +483,7 @@
         </div>
 
         <div class="button-group">
-          <button type="button" @click="cancelarFormulario" class="btn-cancel">Cancelar</button>
+          <button type="button" @click="cancelarFormularioMarca" class="btn-cancel">Cancelar</button>
           <button type="submit" class="btn-save">Guardar</button>
         </div>
       </form>
@@ -501,7 +496,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h2>Nuevo Proveedor</h2>
-        <button class="close-btn" @click="cancelarFormulario">&times;</button>
+        <button class="close-btn" @click="cancelarFormularioProveedor">&times;</button>
       </div>
 
       <form @submit.prevent="guardarProveedor" class="formulario-proveedor">
@@ -527,7 +522,54 @@
         </div>
 
         <div class="button-group">
-          <button type="button" @click="cancelarFormulario" class="btn-cancel">Cancelar</button>
+          <button type="button" @click="cancelarFormularioProveedor" class="btn-cancel">Cancelar</button>
+          <button type="submit" class="btn-save">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- FORMULARIO CREAR HISTORIALCOMPRAS (Modal) -->
+
+  <div v-if="mostrarFormularioHistorial" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Nuevo Historial de Compras</h2>
+        <button class="close-btn" @click="cancelarFormularioHistorial">&times;</button>
+      </div>
+
+      <form @submit.prevent="guardarHistorialCompras" class="formulario-historial-compras">
+        <div class="form-columns">
+          <div class="form-column">
+            <div class="form-group">
+              <label>Artículo:</label>
+              <select v-model="nuevoHistorial.a_id" required>
+                <option v-for="producto in productos" :key="producto.a_id" :value="producto.a_id">
+                  {{ producto.a_nombre }}
+                </option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Proveedor:</label>
+              <select v-model="nuevoHistorial.p_id" required>
+                <option v-for="proveedor in proveedores" :key="proveedor.p_id" :value="proveedor.p_id">
+                  {{ proveedor.p_nombre }}
+                </option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Precio:</label>
+              <input v-model="nuevoHistorial.hc_precio" required />
+            </div>
+            <div class="form-group">
+              <label>Fecha:</label>
+              <input type="date" v-model="nuevoHistorial.hc_fecha" required />
+            </div>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button type="button" @click="cancelarFormularioHistorial" class="btn-cancel">Cancelar</button>
           <button type="submit" class="btn-save">Guardar</button>
         </div>
       </form>
@@ -768,6 +810,46 @@
     </div>
   </div>
 
+  <!-- FORMULARIO DE EDICION HISTORIAL DE COMPRAS 
+
+  <div v-if="showEditFormHistorial" class="modal-overlay">
+  <div class="modal-content">
+    <form @submit.prevent="updateHistorial">
+      <h2>Editar Historial de Compras</h2>
+      <div class="form-group">
+        <label for="edit-articulo">Artículo</label>
+        <select v-model="selectedHistorial.a_id" required>
+          <option v-for="producto in productos" :key="producto.a_id" :value="producto.a_id">
+            {{ producto.a_nombre }}
+          </option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="edit-proveedor">Proveedor</label>
+        <select v-model="selectedHistorial.p_id" required>
+          <option v-for="proveedor in proveedores" :key="proveedor.p_id" :value="proveedor.p_id">
+            {{ proveedor.p_nombre }}
+          </option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="edit-precio">Precio</label>
+        <input v-model="selectedHistorial.hc_precio" type="number" id="edit-precio" required />
+      </div>
+      <div class="form-group">
+        <label for="edit-fecha">Fecha</label>
+        <input v-model="selectedHistorial.hc_fecha" type="date" id="edit-fecha" required />
+      </div>
+      <div class="modal-buttons">
+        <button type="submit" class="submit-btn">Guardar</button>
+        <button type="button" @click="closeEditFormHistorial" class="cancel-btn">
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>-->
+
 
 </template>
 
@@ -816,6 +898,13 @@ export default {
         p_email: "",
         p_telefono: "",
       },
+
+      nuevoHistorial: {
+        a_id: '',
+        p_id: '',
+        hc_precio: '',
+        hc_fecha: ''
+      },
       user: {
         u_mail: "",
         u_password: "",
@@ -832,18 +921,21 @@ export default {
       showEditFormFamilia: false,
       showEditFormMarca: false,
       showEditFormProveedor: false,
+      showEditFormHistorial: false,
       selectedProducto: null,
       selectedUnidad: null,
       selectedIva: null,
       selectedFamilia: null,
       selectedMarca: null,
       selectedProveedor: null,
+      selectedHistorial: null,
       mostrarFormularioArticulo: false,
       mostrarFormularioUnidades: false,
       mostrarFormularioIva: false,
       mostrarFormularioFamilia: false,
       mostrarFormularioMarca: false,
       mostrarFormularioProveedor: false,
+      mostrarFormularioHistorial: false,
 
       isValidPassword: false,
       isValidLength: false,
@@ -1196,6 +1288,12 @@ export default {
       }
     },
 
+    confirmDeleteHistorial(id) {
+      if (confirm("¿Deseas eliminar este historial de compra?")) {
+        this.deleteHistorial(id);
+      }
+    },
+
     selectArticuloForEdit(producto) {
       console.log("Producto seleccionado para edición:", producto);
       this.selectedProducto = { ...producto };
@@ -1224,6 +1322,12 @@ export default {
       this.selectedProveedor = { ...proveedor };
       this.showEditFormProveedor = true;
     },
+
+    /*selectHistorialForEdit(historial) {
+      console.log("Historial seleccionado para edición:", historial);
+      this.selectedHistorial = { ...historial };
+      this.showEditFormHistorial = true;
+    },*/
 
     selectFamiliaForEdit(familia) {
       console.log("Familia seleccionada para edición:", familia);
@@ -1308,6 +1412,19 @@ export default {
         })
     },
 
+    /*updateHistorial() {
+      this.mostrarFormularioHistorial = true;
+      axios.put("https://127.0.0.1:7198/api/historialCompra/" + this.selectedHistorial.hc_fecha, this.selectedHistorial)
+        .then(() => {
+          alert("Historial actualizado correctamente");
+          this.fetchHistorial();
+          this.closeEditFormHistorial();
+        })
+        .catch((error) => {
+          console.error("Error al actualizar historial", error);
+        })
+    },*/
+
 
     guardarArticulo() {
       this.mostrarFormularioArticulo = true;
@@ -1381,6 +1498,18 @@ export default {
         })
     },
 
+    guardarHistorialCompras() {
+      this.mostrarFormularioHistorial = true;
+      axios.post("https://localhost:7198/api/HistorialCompra", this.nuevoHistorial)
+        .then(() => {
+          this.fetchHistorialCompras();
+          this.cancelarFormularioHistorial();
+        })
+        .catch((error) => {
+          console.error("Error al crear historial", error);
+        })
+    },
+
     abrirFormularioArticulo() {
       this.mostrarFormularioArticulo = true;
     },
@@ -1390,7 +1519,7 @@ export default {
     abrirFormularioIva() {
       this.mostrarFormularioIva = true;
     },
-    abrirFormularioMarca(){
+    abrirFormularioMarca() {
       this.mostrarFormularioMarca = true;
     },
     abrirFormularioFamilia() {
@@ -1398,6 +1527,10 @@ export default {
     },
     abrirFormularioProveedor() {
       this.mostrarFormularioProveedor = true;
+    },
+
+    abrirFormularioHistorial() {
+      this.mostrarFormularioHistorial = true;
     },
 
     cancelarFormulario() {
@@ -1428,6 +1561,11 @@ export default {
     cancelarFormularioProveedor() {
       this.mostrarFormularioProveedor = false;
       this.resetFormularioProveedor();
+    },
+
+    cancelarFormularioHistorial() {
+      this.mostrarFormularioHistorial = false;
+      this.resetFormularioHistorial();
     },
 
     resetFormulario() {
@@ -1477,6 +1615,15 @@ export default {
       }
     },
 
+    resetFormularioHistorial() {
+      this.nuevoHistorial = {
+        a_id: null,
+        p_id: null,
+        hc_precio: 0,
+        hc_fecha: ''
+      }
+    },
+
     closeEditForm() {
       this.showEditForm = false;
       this.selectedProducto = null;
@@ -1506,13 +1653,13 @@ export default {
       this.selectedProveedor = null;
     },
 
+    closeEditFormHistorial() {
+      this.showEditFormHistorial = false;
+      this.selectedHistorial = null;
+    },
 
 
 
-
-
-
-    
     checkRole() {
       this.isAdmin = localStorage.getItem("isAdmin") === 'true';
       console.log("isAdmin:", this.isAdmin);
