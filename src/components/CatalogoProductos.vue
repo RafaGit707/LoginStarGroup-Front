@@ -1693,7 +1693,6 @@ export default {
   }
 }
 
-
 /* Estilos para las tablas */
 .table, .tabla {
   width: 100%;

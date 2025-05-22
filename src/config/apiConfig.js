@@ -1,6 +1,5 @@
 export const API_BASE_URL = 'http://localhost:5289/api/';
 
-
 export const ENDPOINTS = {
     GET_USERS: `${API_BASE_URL}/users`,
     GET_USER_BY_ID: (userId) => `${API_BASE_URL}/users/${userId}`,
@@ -13,4 +12,3 @@ export const ENDPOINTS = {
     REGISTER: `${API_BASE_URL}/auth/register`,
 
 };
- 
