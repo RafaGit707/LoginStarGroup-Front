@@ -1,17 +1,39 @@
                                             /*APP.VUE*/
 
 
+html, body {
+    height: 100%; 
+    margin: 0;
+    padding: 0;
+}
+
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: white;
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: white; 
+    display: flex; 
+    flex-direction: column; 
+    min-height: 100vh; /* Ocupa al menos el 100% de la altura del viewport */
+}
+
+
+.main-container {
+    flex-grow: 1; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: flex-start; 
+    background-color: white; 
+    padding: 20px; 
+    box-sizing: border-box; 
+    width: 100%;
 }
 
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 html {
@@ -27,18 +49,11 @@ body.no-scroll {
     overflow: hidden;
 }
 
-.main-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: white;
-}
-
 ul li a {
     color: white;
     text-decoration: none;
 }
+
  
                                                       /* Catalogo Productos */
 

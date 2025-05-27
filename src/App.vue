@@ -1,12 +1,13 @@
 <template>
-  
-  <HeaderPage @login-success="handleLoginSuccess"/>
-  <main class="main-container">
-    <router-view/>
-  </main>
-  
-  <FooterPage/>
+  <div id="app">
+    <HeaderPage @login-success="handleLoginSuccess"/>
 
+    <main class="main-container">
+      <router-view/>
+    </main>
+
+    <FooterPage/>
+  </div>
 </template>
 
 <script>

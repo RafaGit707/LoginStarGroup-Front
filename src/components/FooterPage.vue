@@ -13,13 +13,10 @@
         </a>
     </div>
     <div class="footer-content">
+
+        
         <div class="footer-links">
-            <ul>
-                <li><a href="#">Política de privacidad</a></li>
-                <li><a href="#">Política de cookies</a></li>
-                <li><a href="#">Aviso legal</a></li>
-                <li><a href="#">Condiciones de uso</a></li>
-            </ul>
+            <p>© 2025. Realizado Por Raúl Plaza Gálvez y Rafael Galván Calvo</p>
         </div>
         <div class="social-media">
             <ul>
@@ -28,9 +25,6 @@
                 <li><a href=""><img class="social-img" src="../assets/instagram.png" alt="Instagram"></a></li>
             </ul>
         </div>
-    </div>
-    <div class="tag">
-        <p>© 2025. Realizado Por Raúl Plaza Gálvez y Rafael Galván Calvo</p>
     </div>
 </footer>
 
