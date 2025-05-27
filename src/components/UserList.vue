@@ -1,5 +1,6 @@
 <template>
-  <div class="usuarios" v-if="isAdmin">
+
+  <div class="usuarios" v-if="currentUserIsAdmin">
     <h1>Lista de Usuarios</h1>
 
     <input
@@ -19,13 +20,14 @@
         </tr>
       </thead>
       <tbody>
+        <!-- <tr v-for="usuario in usersList" :key="usuario.id"> -->
         <tr v-for="usuario in filteredUsers" :key="usuario.id">
           <td>{{ usuario.u_name }}</td>
           <td>{{ usuario.u_mail }}</td>
           <td>{{ usuario.u_password }}</td>
           <td>
-            <img class="edit" src="../assets/edit_ic.svg" alt="Editar" @click="selectUserForEdit(usuario)" />
-            <img class="delete" src="../assets/delete_ic.svg" alt="Eliminar" @click="confirmDelete(usuario.id)" />
+            <img class="edit" src="../assets/edit_ic.svg" alt="" @click="selectUserForEdit(usuario)">
+            <img class="delete" src="../assets/delete_ic.svg" alt="" @click="confirmDelete(usuario.id)">
           </td>
         </tr>
       </tbody>
@@ -78,26 +80,49 @@
       </form>
     </div>
   </div>
+
 </template>
 
 <script>
-import HomePage from '@/components/HomePage.vue';
+import HeaderPage from '@/components/HeaderPage.vue';
 import axios from 'axios';
+import { API_BASE_URL } from '@/config/apiConfig.js';
+import { jwtDecode } from 'jwt-decode';
+
+const ADMIN_EMAIL = 'antonio.carnero@star-group.net';
 
 export default {
   name: "UserList",
+  props: ['isAdmin'],
   data() {
     return {
-      usersList: [],
-      selectedUser: null,
-      showEditForm: false,
-      searchQuery: ""
+        usersList: [],
+        selectedUser: null,
+        showEditForm: false,
+        searchQuery: ""
     };
   },
+  mounted() {
+    if (this.currentUserIsAdmin) {
+      this.fetchUsers();
+    }
+  },
   computed: {
-    isAdmin() {
-      const username = localStorage.getItem('userName');
-      return username && username.toLowerCase() === 'admin';
+     currentUserIsAdmin() {
+      const token = localStorage.getItem('authToken');
+      if (!token) return false;
+      try {
+        const decodedToken = jwtDecode(token);
+        // Verificar expiración también
+        if (decodedToken.exp * 1000 < Date.now()) {
+            localStorage.removeItem('authToken'); // Limpiar token expirado
+            return false;
+        }
+        return decodedToken.email && decodedToken.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+      } catch (e) {
+        localStorage.removeItem('authToken'); // Limpiar token inválido
+        return false;
+      }
     },
     filteredUsers() {
       const query = this.searchQuery.toLowerCase();
@@ -107,20 +132,16 @@ export default {
       );
     }
   },
-  mounted() {
-    if (this.isAdmin) {
-      this.fetchUsers();
-    }
-  },
   methods: {
+
     fetchUsers() {
-      axios.get('https://localhost:7198/api/Users')
-        .then(response => {
+      axios.get(API_BASE_URL+'Users')
+      .then(response => {
           this.usersList = response.data;
-        })
-        .catch(error => {
+      })
+      .catch(error => {
           console.error("Error al cargar usuarios", error);
-        });
+      });
     },
     deleteUser(id) {
       localStorage.setItem('userId', id);
@@ -129,10 +150,10 @@ export default {
         return;
       }
       axios
-        .delete(`https://localhost:7198/api/Users/${id}`)
+        .delete(API_BASE_URL+`Users/${id}`)
         .then(() => {
           this.fetchUsers();
-          HomePage.methods.logout();
+          HeaderPage.methods.logout();
           alert("Usuario eliminado correctamente");
         })
         .catch((error) => {
@@ -151,7 +172,7 @@ export default {
     updateUser() {
       axios
         .put(
-          `https://localhost:7198/api/Users/${this.selectedUser.id}`,
+          API_BASE_URL+`Users/${this.selectedUser.id}`,
           this.selectedUser
         )
         .then(() => {
@@ -169,7 +190,6 @@ export default {
   }
 }
 </script>
-
 
 <style scoped>
 
@@ -489,8 +509,8 @@ th {
     height: 18px;
     margin-left: 10px;
   }
-}
 
+}
 
 </style>
   
