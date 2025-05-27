@@ -1555,5 +1555,5 @@ export default {
     },
   },
 };
-</script>
 
+</script>

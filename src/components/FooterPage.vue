@@ -40,5 +40,6 @@
 export default {
     name: "FooterPage"
 };
+
 </script>
 
