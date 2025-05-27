@@ -1348,106 +1348,106 @@ header nav ul li a:hover {
 
 }
 
-                                                      /*User List*/
+  /* User List */
 
 .usuarios {
-  display: flex;
-  flex-direction: column;
-  padding: 50px;
-  width: 100%;
-  max-width: 100%;
-  font-size: large;
-  background: none;
-  color: black;
-  align-items: left;
-  text-align: center;
+    display: flex;
+    flex-direction: column;
+    padding: 50px;
+    width: 100%;
+    max-width: 100%;
+    font-size: large;
+    background: none;
+    color: black;
+    align-items: left;
+    text-align: center;
 }
 
 .filter-input {
-  padding: 10px;
-  margin-bottom: 20px;
-  font-size: 16px;
-  width: 100%;
-  max-width: 400px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  justify-content: left;
+    padding: 10px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    justify-content: left;
 }
 
 h1 {
-  text-align: center;
-  font-size: xx-large;
-  margin-bottom: 20px;
+    text-align: center;
+    font-size: xx-large;
+    margin-bottom: 20px;
 }
 
 ul {
-  list-style: none;
-  text-align: center;
-  padding: 10px;
+    list-style: none;
+    text-align: center;
+    padding: 10px;
 }
 
 li {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 16px;
-  font-size: large;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+    font-size: large;
 }
 
 .delete-btn {
-  font-size: large;
-  padding: 10px 15px 10px 15px;
-  background: none;
-  font-size: 14px;
-  margin-right: 30px;
-  font-weight: 700;
-  color: red;
-  border: 2px solid red;
-  width: fit-content;
-  cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+    font-size: large;
+    padding: 10px 15px 10px 15px;
+    background: none;
+    font-size: 14px;
+    margin-right: 30px;
+    font-weight: 700;
+    color: red;
+    border: 2px solid red;
+    width: fit-content;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
 }
 
 td {
-  padding: 8px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
 }
 
 th {
-  background-color: #f2f2f2;
-  color: black;
-  padding: 8px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
+    background-color: #f2f2f2;
+    color: black;
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
 }
 
 .botones-accion {
-  text-align: right;
-  justify-content: right;
+    text-align: right;
+    justify-content: right;
 }
 
 .add-button {
-  max-width: 35px;
-  margin-right: 30px;
+    max-width: 35px;
+    margin-right: 30px;
 }
 
 .search-button {
-  margin-left: 20px;
-  max-width: 30px;
-  cursor: pointer;
+    margin-left: 20px;
+    max-width: 30px;
+    cursor: pointer;
 }
 
 .busqueda {
-  display: inline-flex;
-  align-items: flex-start;
-  justify-content: left;
+    display: inline-flex;
+    align-items: flex-start;
+    justify-content: left;
 }
 
 .img-titulo {
@@ -1465,107 +1465,167 @@ th {
 }
 
 .button {
-  margin-top: 20px;
-  background-color: #2e2f36;
-  color: white;
-  padding: 10px 20px;
-  border: white 2px solid;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-inline: 50px;
+    margin-top: 20px;
+    background-color: #2e2f36;
+    color: white;
+    padding: 10px 20px;
+    border: white 2px solid;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-inline: 50px;
 }
 
+/* --- ESTILOS DEL MODAL PARA CREAR/EDITAR USUARIOS (COMO "NUEVO ARTÍCULO") --- */
+
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7); /* Fondo oscuro semitransparente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
 .modal-content {
-  background-color: #222;
-  padding: 40px;
-  border-radius: 10px;
-  max-width: 90%;
-  width: 500px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  color: white;
+    background-color: #2e2f36; /* Fondo oscuro del modal, similar al de la imagen */
+    padding: 40px;
+    border-radius: 12px; /* Bordes redondeados */
+    max-width: 90%;
+    width: 500px; /* Ancho fijo para el modal */
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5); /* Sombra más pronunciada */
+    color: white; /* Texto blanco dentro del modal */
+    position: relative; /* Para posicionar el close-btn */
 }
 
-.modal-content h2 {
-  margin-bottom: 20px;
-  text-align: center;
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px; /* Más espacio debajo del header */
+    /* No hay border-bottom para replicar el estilo de la imagen */
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.6rem; /* Tamaño del título */
+    color: white; /* Título blanco */
+    font-weight: 600; /* Negrita */
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 2rem; /* Tamaño de la 'X' */
+    color: #e67e22; /* Color naranja para la 'X' */
+    cursor: pointer;
+    transition: color 0.3s ease;
+    padding: 0; /* Eliminar padding para que la X esté justo en la esquina */
+    line-height: 1; /* Ajustar altura de línea */
+}
+
+.close-btn:hover {
+    color: #eb9c57; /* Naranja más claro al pasar el ratón */
 }
 
 .form-group {
-  margin-bottom: 15px;
-  text-align: left;
+    margin-bottom: 18px; /* Espacio entre grupos de formulario */
+    text-align: left;
 }
 
 .form-group label {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: 500;
+    display: block;
+    margin-bottom: 8px; /* Espacio entre label e input */
+    font-weight: 500;
+    color: white; /* Labels blancas */
+    font-size: 0.95rem; /* Un poco más pequeño que el input */
 }
 
-.form-group input {
-  width: 100%;
-  padding: 8px;
-  background-color: #333;
-  border: 1px solid #555;
-  color: white;
-  border-radius: 5px;
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group select { /* Añadido select por si lo usas en el futuro para roles, etc. */
+    width: 100%;
+    padding: 10px 12px; /* Padding ajustado */
+    background-color: #3f404d; /* Fondo oscuro para los inputs */
+    border: 1px solid #5a5c6b; /* Borde más sutil */
+    color: white; /* Texto blanco en los inputs */
+    border-radius: 6px; /* Bordes un poco más redondeados */
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #e67e22; /* Borde naranja al enfocar */
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.3); /* Sombra naranja al enfocar */
 }
 
 .modal-buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
+    display: flex;
+    justify-content: flex-end; /* Alinea los botones a la derecha */
+    gap: 15px; /* Espacio entre botones */
+    margin-top: 30px; /* Más espacio encima de los botones */
+}
+
+.submit-btn, .cancel-btn {
+    padding: 10px 25px; /* Padding más generoso para los botones */
+    border: none;
+    border-radius: 6px; /* Bordes redondeados para botones */
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .submit-btn {
-  background-color: #2ecc71;
-  color: white;
-  border: none;
-  padding: 10px 16px;
-  cursor: pointer;
-  border-radius: 5px;
+    background-color: #2ecc71; /* Verde */
+    color: black; /* Texto negro en el botón Guardar */
+}
+
+.submit-btn:hover {
+    background-color: #27ae60; /* Verde más oscuro al pasar el ratón */
+    transform: translateY(-2px); /* Pequeño efecto de elevación */
 }
 
 .cancel-btn {
-  background-color: #e67e22;
-  color: white;
-  border: none;
-  padding: 10px 16px;
-  cursor: pointer;
-  border-radius: 5px;
+    background-color: #e67e22; /* Naranja */
+    color: black; /* Texto negro en el botón Cancelar */
+}
+
+.cancel-btn:hover {
+    background-color: #d35400; /* Naranja más oscuro al pasar el ratón */
+    transform: translateY(-2px);
 }
 
 .error {
-  color: red;
-  text-align: center;
-  margin-top: 30px;
-  margin-bottom: 30px;
+    color: red;
+    text-align: center;
+    margin-top: 15px; /* Ajustado para el nuevo estilo */
+    margin-bottom: 0; /* No margin-bottom aquí */
+    font-size: 0.9rem;
 }
 
+/* --- Fin de ESTILOS DEL MODAL --- */
+
+
 .edit {
-  cursor: pointer;
-  width: 30px;
-  height: 30px;
-  margin-right: 20px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    margin-right: 20px;
 }
 
 .delete {
-  cursor: pointer;
-  width: 30px;
-  height: 30px;
-  margin-left: 20px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    margin-left: 20px;
 }
 
 
@@ -1574,133 +1634,147 @@ th {
 /* Para pantallas menores a 1024px (tablets y móviles grandes) */
 @media (max-width: 1024px) {
 
-  .usuarios {
-    padding: 60px;
-  }
+    .usuarios {
+        padding: 60px;
+    }
 
-  h1 {
-    font-size: x-large;
-  }
+    h1 {
+        font-size: x-large;
+    }
 
-  table {
-    font-size: medium;
-  }
+    table {
+        font-size: medium;
+    }
 
-  .modal-content {
-    max-width: 90%;
-  }
+    .modal-content {
+        max-width: 90%;
+        padding: 30px; /* Ajusta el padding para pantallas más pequeñas */
+    }
 
-  .modal-buttons {
-    flex-direction: column;
-    align-items: center;
-  }
+    .modal-buttons {
+        flex-direction: column; /* Apila los botones */
+        align-items: center;
+        gap: 10px; /* Espacio entre botones apilados */
+    }
 
-  .submit-btn, .cancel-btn {
-    width: 100%;
-    margin-bottom: 10px;
-  }
-  .submit-btn {
-    margin-bottom: 0;
-  }
+    .submit-btn, .cancel-btn {
+        width: 100%; /* Ocupan todo el ancho disponible */
+        margin-bottom: 0; /* Quitar margen inferior si ya están apilados */
+    }
 
-  .edit {
-    width: 24px;
-    height: 24px;
-    margin-right: 18px;
-  }
+    .edit {
+        width: 24px;
+        height: 24px;
+        margin-right: 18px;
+    }
 
-  .delete {
-    width: 24px;
-    height: 24px;
-    margin-left: 18px;
-  }
+    .delete {
+        width: 24px;
+        height: 24px;
+        margin-left: 18px;
+    }
 
 }
 
 /* Para pantallas menores a 768px (móviles) */
 @media (max-width: 768px) {
 
-  .usuarios {
-    padding: 5px;
-    padding: 50px;
-  }
+    .usuarios {
+        padding: 50px; /* Mantener padding o ajustar si es necesario */
+    }
 
-  table {
-    max-width: 95%;
-  }
+    table {
+        max-width: 95%;
+    }
 
-  .modal-buttons {
-    flex-direction: column;
-    align-items: center;
-  }
+    .modal-content {
+        padding: 25px; /* Un poco menos de padding */
+    }
 
-  .submit-btn, .cancel-btn {
-    width: 100%;
-    margin-bottom: 10px;
-  }
+    /* Los botones ya están apilados desde 1024px */
 
-  .submit-btn {
-    margin-bottom: 0;
-  }
+    .edit {
+        width: 22px;
+        height: 22px;
+        margin-right: 18px;
+    }
 
-  .edit {
-    width: 22px;
-    height: 22px;
-    margin-right: 18px;
-  }
-
-  .delete {
-    width: 22px;
-    height: 22px;
-    margin-left: 18px;
-  }
+    .delete {
+        width: 22px;
+        height: 22px;
+        margin-left: 18px;
+    }
 
 }
 
 /* Para pantallas muy pequeñas (menores a 480px) */
 @media (max-width: 480px) {
 
-  .usuarios {
-    padding: 5px;
-    padding: 35px;
-  }
+    .usuarios {
+        padding: 35px; /* Más reducido */
+    }
 
-  table {
-    max-width: 95%;
-    font-size: 15px;
-  }
+    table {
+        max-width: 95%;
+        font-size: 15px;
+    }
 
-  td {
-    padding: 7px;
-  }
+    td {
+        padding: 7px;
+    }
 
-  th {
-    padding: 7px;
-  }
+    th {
+        padding: 7px;
+    }
 
-  .modal-buttons {
-    flex-direction: column;
+    .modal-content {
+        padding: 20px; /* Padding mínimo */
+    }
+
+    /* Los botones ya están apilados */
+
+    .edit {
+        width: 18px;
+        height: 18px;
+        margin-right: 10px;
+    }
+
+    .delete {
+        width: 18px;
+        height: 18px;
+        margin-left: 10px;
+    }
+
+}
+
+/*Paginacion de usuarios*/
+
+.pagination-controls {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
     align-items: center;
-  }
+    gap: 10px;
+}
 
-  .submit-btn, .cancel-btn {
-    width: 100%;
-  }
+.pagination-controls button {
+    padding: 8px 15px;
+    border: 1px solid #ccc;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
 
-  .submit-btn {
-    margin-bottom: 14px;
-  }
+.pagination-controls button:hover:not(:disabled) {
+    background-color: #e0e0e0;
+}
 
-  .edit {
-    width: 18px;
-    height: 18px;
-    margin-right: 10px;
-  }
+.pagination-controls button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
 
-  .delete {
-    width: 18px;
-    height: 18px;
-    margin-left: 10px;
-  }
-
+.pagination-controls span {
+    font-weight: bold;
 }

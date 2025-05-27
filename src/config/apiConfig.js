@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'http://localhost:5289/api/';
+export const API_BASE_URL = 'https://localhost:7198/api/';
 
 export const ENDPOINTS = {
     GET_USERS: `${API_BASE_URL}/users`,
