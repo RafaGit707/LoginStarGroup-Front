@@ -2,10 +2,10 @@
 
 <div class="container-header">
 
-    <section class="img-titulo">
+    <!-- <section class="img-titulo">
         <img src="../assets/app-black.png" class="img-top" alt="Imagen de fondo arriba">
         <h1 class="titulo-top">Bienvenidos al Proyecto</h1>
-    </section>
+    </section> -->
 
     <header id="#">
         <div class="topheader">

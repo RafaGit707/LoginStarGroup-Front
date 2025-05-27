@@ -1,14 +1,20 @@
 <template>
 
   <div class="usuarios" v-if="currentUserIsAdmin">
-    <h1>Lista de Usuarios</h1>
 
-    <input
-      v-model="searchQuery"
-      type="text"
-      placeholder="Buscar por nombre o correo"
-      class="filter-input"
-    />
+    <section class="img-titulo">
+        <h1 class="titulo-top">Usuarios</h1>
+    </section>
+
+    <div class="busqueda">
+      <input
+        v-model="searchQuery"
+        type="text"
+        placeholder="Buscar por nombre o correo"
+        class="filter-input"
+      />
+      <img class="search-button" src="../assets/search_icon.svg" alt="">
+    </div>
 
     <table>
       <thead>
@@ -16,7 +22,7 @@
           <th>Nombre</th>
           <th>Correo</th>
           <th>Contraseña</th>
-          <th>Acciones</th>
+          <th class="botones-accion"><img class="add-button" src="../assets/ic-add.png" alt=""></th>
         </tr>
       </thead>
       <tbody>
@@ -25,7 +31,7 @@
           <td>{{ usuario.u_name }}</td>
           <td>{{ usuario.u_mail }}</td>
           <td>{{ usuario.u_password }}</td>
-          <td>
+          <td class="botones-accion">
             <img class="edit" src="../assets/edit_ic.svg" alt="" @click="selectUserForEdit(usuario)">
             <img class="delete" src="../assets/delete_ic.svg" alt="" @click="confirmDelete(usuario.id)">
           </td>
@@ -196,14 +202,13 @@ export default {
 .usuarios {
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  padding: 50px;
   width: 100%;
   max-width: 100%;
-  padding: var(--header-height);
   font-size: large;
   background: none;
   color: black;
-  align-items: center;
+  align-items: left;
   text-align: center;
 }
 
@@ -215,6 +220,7 @@ export default {
   max-width: 400px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  justify-content: left;
 }
 
 h1 {
@@ -259,7 +265,7 @@ table {
 
 td {
   padding: 8px;
-  text-align: center;
+  text-align: left;
   border-bottom: 1px solid #ddd;
 }
 
@@ -267,8 +273,44 @@ th {
   background-color: #f2f2f2;
   color: black;
   padding: 8px;
-  text-align: center;
+  text-align: left;
   border-bottom: 1px solid #ddd;
+}
+
+.botones-accion {
+  text-align: right;
+  justify-content: right;
+}
+
+.add-button {
+  max-width: 35px;
+  margin-right: 30px;
+}
+
+.search-button {
+  margin-left: 20px;
+  max-width: 30px;
+  cursor: pointer;
+}
+
+.busqueda {
+  display: inline-flex;
+  align-items: flex-start;
+  justify-content: left;
+}
+
+.img-titulo {
+    display: flex;
+    max-width: 100%;
+    align-items: center;
+}
+
+.titulo-top {
+    display: flex;
+    max-width: 100%;
+    font-size: 2.2em;
+    font-weight: bold;
+    color: black;
 }
 
 .button {
