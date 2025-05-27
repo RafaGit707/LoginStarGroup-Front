@@ -1,14 +1,20 @@
 <template>
 
   <div class="usuarios" v-if="currentUserIsAdmin">
-    <h1>Lista de Usuarios</h1>
 
-    <input
-      v-model="searchQuery"
-      type="text"
-      placeholder="Buscar por nombre o correo"
-      class="filter-input"
-    />
+    <section class="img-titulo">
+        <h1 class="titulo-top">Usuarios</h1>
+    </section>
+
+    <div class="busqueda">
+      <input
+        v-model="searchQuery"
+        type="text"
+        placeholder="Buscar por nombre o correo"
+        class="filter-input"
+      />
+      <img class="search-button" src="../assets/search_icon.svg" alt="">
+    </div>
 
     <table>
       <thead>
@@ -16,7 +22,7 @@
           <th>Nombre</th>
           <th>Correo</th>
           <th>Contraseña</th>
-          <th>Acciones</th>
+          <th class="botones-accion"><img class="add-button" src="../assets/ic-add.png" alt=""></th>
         </tr>
       </thead>
       <tbody>
@@ -25,7 +31,7 @@
           <td>{{ usuario.u_name }}</td>
           <td>{{ usuario.u_mail }}</td>
           <td>{{ usuario.u_password }}</td>
-          <td>
+          <td class="botones-accion">
             <img class="edit" src="../assets/edit_ic.svg" alt="" @click="selectUserForEdit(usuario)">
             <img class="delete" src="../assets/delete_ic.svg" alt="" @click="confirmDelete(usuario.id)">
           </td>
