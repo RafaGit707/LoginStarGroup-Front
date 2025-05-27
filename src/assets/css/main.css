@@ -2008,14 +2008,13 @@ header nav ul li a:hover {
 .usuarios {
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  padding: 50px;
   width: 100%;
   max-width: 100%;
-  padding: var(--header-height);
   font-size: large;
   background: none;
   color: black;
-  align-items: center;
+  align-items: left;
   text-align: center;
 }
 
@@ -2027,6 +2026,7 @@ header nav ul li a:hover {
   max-width: 400px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  justify-content: left;
 }
 
 h1 {
@@ -2071,7 +2071,7 @@ table {
 
 td {
   padding: 8px;
-  text-align: center;
+  text-align: left;
   border-bottom: 1px solid #ddd;
 }
 
@@ -2079,8 +2079,44 @@ th {
   background-color: #f2f2f2;
   color: black;
   padding: 8px;
-  text-align: center;
+  text-align: left;
   border-bottom: 1px solid #ddd;
+}
+
+.botones-accion {
+  text-align: right;
+  justify-content: right;
+}
+
+.add-button {
+  max-width: 35px;
+  margin-right: 30px;
+}
+
+.search-button {
+  margin-left: 20px;
+  max-width: 30px;
+  cursor: pointer;
+}
+
+.busqueda {
+  display: inline-flex;
+  align-items: flex-start;
+  justify-content: left;
+}
+
+.img-titulo {
+    display: flex;
+    max-width: 100%;
+    align-items: center;
+}
+
+.titulo-top {
+    display: flex;
+    max-width: 100%;
+    font-size: 2.2em;
+    font-weight: bold;
+    color: black;
 }
 
 .button {
