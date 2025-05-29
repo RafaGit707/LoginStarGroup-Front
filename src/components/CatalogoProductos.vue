@@ -19,60 +19,50 @@
     <p>Si eres un administrador, por favor inicia sesión.</p>
   </div>
 
-  <div class="catalogo-productos" v-if="activeSection === 'articulos' && isAdmin"> <!-- Contenedor principal de la sección -->
-  <h1 class="catalogo-titulo">Artículos</h1> <!-- Título de la sección -->
+  <div class="catalogo-productos" v-if="activeSection === 'articulos' && isAdmin">
+    <!-- Contenedor principal de la sección -->
+    <h1 class="catalogo-titulo">Artículos</h1> <!-- Título de la sección -->
 
-  <div class="busqueda-catalogo"> <!-- Barra de búsqueda -->
-    <input
-      v-model="searchQuery"
-      type="text"
-      placeholder="Buscar por nombre, código o familia"
-      class="search-input"
-      @keyup.enter="performSearchArticulos" /> <!-- Necesitarás un método performSearchArticulos o generalizarlo -->
-    <img
-      class="search-button-catalogo"
-      src="../assets/search_icon.svg"  
-      alt="Buscar"
-      @click="performSearchArticulos" >
-  </div>
+    <div class="busqueda-catalogo"> <!-- Barra de búsqueda -->
+      <input v-model="searchQuery" type="text" placeholder="Buscar por nombre, código o familia" class="search-input"
+        @keyup.enter="performSearchArticulos" /> <!-- Necesitarás un método performSearchArticulos o generalizarlo -->
+      <img class="search-button-catalogo" src="../assets/search_icon.svg" alt="Buscar" @click="performSearchArticulos">
+    </div>
 
-  <table class="tabla">
-    <thead>
-      <tr>
-        <th>Nombre</th>
-        <th>Código</th>
-        <th>Familia</th>
-        <th>Unidad</th>
-        <th>Precio</th>
-        <th>IVA</th>
-        <th>Último precio compra</th>
-        <th>Código de barras</th>
-        <th class="columna-acciones"> <!-- Última columna para el botón de añadir -->
-          <img
-            class="add-button-catalogo"
-            src="../assets/ic-add.png"
-            alt="Agregar Artículo"
-            @click="abrirFormularioArticulo">
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="producto in paginatedArticulos" :key="producto.a_id">
-        <td>{{ producto.a_nombre }}</td>
-        <td>{{ producto.a_cod }}</td>
-        <td>{{ getFamiliaNombre(producto.fa_id) }}</td>
-        <td>{{ getUnidadNombre(producto.un_id) }}</td>
-        <td>{{ producto.a_pvp.toFixed(2) }}€</td>
-        <td>{{ getIvaValor(producto.iva_id) }}%</td>
-        <td>{{ producto.a_ultimo_pc.toFixed(2) }}€</td>
-        <td>{{ producto.a_cod_barras }}</td>
-        <td class="columna-acciones"> <!-- Última columna para editar/borrar -->
-          <img class="edit" src="../assets/editar.png" alt="Editar" @click="selectArticuloForEdit(producto)">
-          <img class="delete" src="../assets/borrar.png" alt="Eliminar" @click="confirmDelete(producto.a_id)">
-        </td>
-      </tr>
-    </tbody>
-  </table>
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Código</th>
+          <th>Familia</th>
+          <th>Unidad</th>
+          <th>Precio</th>
+          <th>IVA</th>
+          <th>Último precio compra</th>
+          <th>Código de barras</th>
+          <th class="columna-acciones"> <!-- Última columna para el botón de añadir -->
+            <img class="add-button-catalogo" src="../assets/ic-add.png" alt="Agregar Artículo"
+              @click="abrirFormularioArticulo">
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="producto in paginatedArticulos" :key="producto.a_id">
+          <td>{{ producto.a_nombre }}</td>
+          <td>{{ producto.a_cod }}</td>
+          <td>{{ getFamiliaNombre(producto.fa_id) }}</td>
+          <td>{{ getUnidadNombre(producto.un_id) }}</td>
+          <td>{{ producto.a_pvp.toFixed(2) }}€</td>
+          <td>{{ getIvaValor(producto.iva_id) }}%</td>
+          <td>{{ producto.a_ultimo_pc.toFixed(2) }}€</td>
+          <td>{{ producto.a_cod_barras }}</td>
+          <td class="columna-acciones"> <!-- Última columna para editar/borrar -->
+            <img class="edit" src="../assets/editar.png" alt="Editar" @click="selectArticuloForEdit(producto)">
+            <img class="delete" src="../assets/borrar.png" alt="Eliminar" @click="confirmDelete(producto.a_id)">
+          </td>
+        </tr>
+      </tbody>
+    </table>
     <div class="pagination-controls" v-if="totalPagesArticulos > 0">
       <button @click="prevPageArticulos" :disabled="currentPageArticulos === 1">Anterior</button>
       <span>Página {{ currentPageArticulos }} de {{ totalPagesArticulos }}</span>
@@ -83,157 +73,126 @@
 
 
   <div class="catalogo-unidades" v-if="activeSection === 'unidades' && isAdmin">
-  <h1 class="catalogo-titulo">Unidades</h1>
+    <h1 class="catalogo-titulo">Unidades</h1>
 
-  <div class="busqueda-catalogo">
-    <input
-      v-model="searchQuery"
-      type="text"
-      placeholder="Buscar por nombre"
-      class="search-input"
-      @keyup.enter="performSearchUnidades" /> <!-- O método de búsqueda general -->
-    <img
-      class="search-button-catalogo"
-      src="../assets/search_icon.svg"
-      alt="Buscar"
-      @click="performSearchUnidades" > <!-- O método de búsqueda general -->
+    <div class="busqueda-catalogo">
+      <input v-model="searchQuery" type="text" placeholder="Buscar por nombre" class="search-input"
+        @keyup.enter="performSearchUnidades" /> <!-- O método de búsqueda general -->
+      <img class="search-button-catalogo" src="../assets/search_icon.svg" alt="Buscar" @click="performSearchUnidades">
+      <!-- O método de búsqueda general -->
+    </div>
+
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th class="columna-acciones">
+            <img class="add-button-catalogo" src="../assets/ic-add.png" alt="Agregar Unidad"
+              @click="abrirFormularioUnidades">
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="unidad in paginatedUnidades" :key="unidad.un_id">
+          <td>{{ unidad.un_id }}</td>
+          <td>{{ unidad.un_nombre }}</td>
+          <td class="columna-acciones">
+            <img class="edit" src="../assets/editar.png" alt="Editar" @click="selectUnidadForEdit(unidad)">
+            <img class="delete" src="../assets/borrar.png" alt="Eliminar" @click="confirmDeleteUnidad(unidad.un_id)">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pagination-controls" v-if="totalPagesUnidades > 0">
+      <button @click="prevPageUnidades" :disabled="currentPageUnidades === 1">Anterior</button>
+      <span>Página {{ currentPageUnidades }} de {{ totalPagesUnidades }}</span>
+      <button @click="nextPageUnidades" :disabled="currentPageUnidades === totalPagesUnidades">Siguiente</button>
+    </div>
   </div>
-
-  <table class="tabla">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th class="columna-acciones">
-          <img
-            class="add-button-catalogo"
-            src="../assets/ic-add.png"
-            alt="Agregar Unidad"
-            @click="abrirFormularioUnidades">
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="unidad in paginatedUnidades" :key="unidad.un_id">
-        <td>{{ unidad.un_id }}</td>
-        <td>{{ unidad.un_nombre }}</td>
-        <td class="columna-acciones">
-          <img class="edit" src="../assets/editar.png" alt="Editar" @click="selectUnidadForEdit(unidad)">
-          <img class="delete" src="../assets/borrar.png" alt="Eliminar" @click="confirmDeleteUnidad(unidad.un_id)">
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <div class="pagination-controls" v-if="totalPagesUnidades > 0">
-    <button @click="prevPageUnidades" :disabled="currentPageUnidades === 1">Anterior</button>
-    <span>Página {{ currentPageUnidades }} de {{ totalPagesUnidades }}</span>
-    <button @click="nextPageUnidades" :disabled="currentPageUnidades === totalPagesUnidades">Siguiente</button>
-  </div>
-</div>
 
 
   <div class="catalogo-iva" v-if="activeSection === 'iva' && isAdmin">
-  <h1 class="catalogo-titulo">IVA</h1>
+    <h1 class="catalogo-titulo">IVA</h1>
 
-  <div class="busqueda-catalogo">
-    <input
-      v-model="searchQuery"
-      type="text"
-      placeholder="Buscar por nombre o valor"
-      class="search-input"
-      @keyup.enter="performSearchIvas" /> <!-- O método de búsqueda general -->
-    <img
-      class="search-button-catalogo"
-      src="../assets/search_icon.svg"
-      alt="Buscar"
-      @click="performSearchIvas" > <!-- O método de búsqueda general -->
+    <div class="busqueda-catalogo">
+      <input v-model="searchQuery" type="text" placeholder="Buscar por nombre o valor" class="search-input"
+        @keyup.enter="performSearchIvas" /> <!-- O método de búsqueda general -->
+      <img class="search-button-catalogo" src="../assets/search_icon.svg" alt="Buscar" @click="performSearchIvas">
+      <!-- O método de búsqueda general -->
+    </div>
+
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Valor</th>
+          <th class="columna-acciones">
+            <img class="add-button-catalogo" src="../assets/ic-add.png" alt="Agregar IVA" @click="abrirFormularioIva">
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="ivaItem in paginatedIvas" :key="ivaItem.iva_id">
+          <td>{{ ivaItem.iva_id }}</td>
+          <td>{{ ivaItem.iva_nombre }}</td>
+          <td>{{ ivaItem.iva_value }}%</td>
+          <td class="columna-acciones">
+            <img class="edit" src="../assets/editar.png" alt="Editar" @click="selectIvaForEdit(ivaItem)">
+            <img class="delete" src="../assets/borrar.png" alt="Eliminar" @click="confirmDeleteIva(ivaItem.iva_id)">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pagination-controls" v-if="totalPagesIvas > 0">
+      <button @click="prevPageIvas" :disabled="currentPageIvas === 1">Anterior</button>
+      <span>Página {{ currentPageIvas }} de {{ totalPagesIvas }}</span>
+      <button @click="nextPageIvas" :disabled="currentPageIvas === totalPagesIvas">Siguiente</button>
+    </div>
   </div>
-
-  <table class="tabla">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>Valor</th>
-        <th class="columna-acciones">
-          <img
-            class="add-button-catalogo"
-            src="../assets/ic-add.png"
-            alt="Agregar IVA"
-            @click="abrirFormularioIva">
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="ivaItem in paginatedIvas" :key="ivaItem.iva_id">
-        <td>{{ ivaItem.iva_id }}</td>
-        <td>{{ ivaItem.iva_nombre }}</td>
-        <td>{{ ivaItem.iva_value }}%</td>
-        <td class="columna-acciones">
-          <img class="edit" src="../assets/editar.png" alt="Editar" @click="selectIvaForEdit(ivaItem)">
-          <img class="delete" src="../assets/borrar.png" alt="Eliminar" @click="confirmDeleteIva(ivaItem.iva_id)">
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <div class="pagination-controls" v-if="totalPagesIvas > 0">
-    <button @click="prevPageIvas" :disabled="currentPageIvas === 1">Anterior</button>
-    <span>Página {{ currentPageIvas }} de {{ totalPagesIvas }}</span>
-    <button @click="nextPageIvas" :disabled="currentPageIvas === totalPagesIvas">Siguiente</button>
-  </div>
-</div>
 
   <div class="catalogo-marcas" v-if="activeSection === 'marcas' && isAdmin">
-  <h1 class="catalogo-titulo">Marcas</h1>
+    <h1 class="catalogo-titulo">Marcas</h1>
 
-  <div class="busqueda-catalogo">
-    <input
-      v-model="searchQuery"
-      type="text"
-      placeholder="Buscar por nombre"
-      class="search-input"
-      @keyup.enter="performSearchMarcas" /> <!-- O método de búsqueda general -->
-    <img
-      class="search-button-catalogo"
-      src="../assets/search_icon.svg"
-      alt="Buscar"
-      @click="performSearchMarcas" > <!-- O método de búsqueda general -->
+    <div class="busqueda-catalogo">
+      <input v-model="searchQuery" type="text" placeholder="Buscar por nombre" class="search-input"
+        @keyup.enter="performSearchMarcas" /> <!-- O método de búsqueda general -->
+      <img class="search-button-catalogo" src="../assets/search_icon.svg" alt="Buscar" @click="performSearchMarcas">
+      <!-- O método de búsqueda general -->
+    </div>
+
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th class="columna-acciones">
+            <img class="add-button-catalogo" src="../assets/ic-add.png" alt="Agregar Marca"
+              @click="abrirFormularioMarca">
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="marca in paginatedMarcas" :key="marca.ma_id">
+          <td>{{ marca.ma_id }}</td>
+          <td>{{ marca.ma_nombre }}</td>
+          <td class="columna-acciones">
+            <img class="edit" src="../assets/editar.png" alt="Editar" @click="selectMarcaForEdit(marca)">
+            <img class="delete" src="../assets/borrar.png" alt="Eliminar" @click="confirmDeleteMarca(marca.ma_id)">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pagination-controls" v-if="totalPagesMarcas > 0">
+      <button @click="prevPageMarcas" :disabled="currentPageMarcas === 1">Anterior</button>
+      <span>Página {{ currentPageMarcas }} de {{ totalPagesMarcas }}</span>
+      <button @click="nextPageMarcas" :disabled="currentPageMarcas === totalPagesMarcas">Siguiente</button>
+    </div>
   </div>
-
-  <table class="tabla">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th class="columna-acciones">
-          <img
-            class="add-button-catalogo"
-            src="../assets/ic-add.png"
-            alt="Agregar Marca"
-            @click="abrirFormularioMarca">
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="marca in paginatedMarcas" :key="marca.ma_id">
-        <td>{{ marca.ma_id }}</td>
-        <td>{{ marca.ma_nombre }}</td>
-        <td class="columna-acciones">
-          <img class="edit" src="../assets/editar.png" alt="Editar" @click="selectMarcaForEdit(marca)">
-          <img class="delete" src="../assets/borrar.png" alt="Eliminar" @click="confirmDeleteMarca(marca.ma_id)">
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <div class="pagination-controls" v-if="totalPagesMarcas > 0">
-    <button @click="prevPageMarcas" :disabled="currentPageMarcas === 1">Anterior</button>
-    <span>Página {{ currentPageMarcas }} de {{ totalPagesMarcas }}</span>
-    <button @click="nextPageMarcas" :disabled="currentPageMarcas === totalPagesMarcas">Siguiente</button>
-  </div>
-</div>
 
   <!---<div class="catalogo-articulo-marca" v-if="activeSection === 'articulo-marca'">
     <h1 class="catalogo-titulo">Articulo & Marcas</h1>
@@ -264,156 +223,133 @@
   </div>-->
 
   <div class="catalogo-familias" v-if="activeSection === 'familias' && isAdmin">
-  <h1 class="catalogo-titulo">Familias</h1>
+    <h1 class="catalogo-titulo">Familias</h1>
 
-  <div class="busqueda-catalogo">
-    <input
-      v-model="searchQuery"
-      type="text"
-      placeholder="Buscar por nombre"
-      class="search-input"
-      @keyup.enter="performSearchFamilias" /> <!-- O método de búsqueda general -->
-    <img
-      class="search-button-catalogo"
-      src="../assets/search_icon.svg"
-      alt="Buscar"
-      @click="performSearchFamilias" > <!-- O método de búsqueda general -->
+    <div class="busqueda-catalogo">
+      <input v-model="searchQuery" type="text" placeholder="Buscar por nombre" class="search-input"
+        @keyup.enter="performSearchFamilias" /> <!-- O método de búsqueda general -->
+      <img class="search-button-catalogo" src="../assets/search_icon.svg" alt="Buscar" @click="performSearchFamilias">
+      <!-- O método de búsqueda general -->
+    </div>
+
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th class="columna-acciones">
+            <img class="add-button-catalogo" src="../assets/ic-add.png" alt="Agregar Familia"
+              @click="abrirFormularioFamilia">
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="familia in paginatedFamilias" :key="familia.fa_id">
+          <td>{{ familia.fa_id }}</td>
+          <td>{{ familia.fa_nombre }}</td>
+          <td class="columna-acciones">
+            <img class="edit" src="../assets/editar.png" alt="Editar" @click="selectFamiliaForEdit(familia)">
+            <img class="delete" src="../assets/borrar.png" alt="Eliminar" @click="confirmDeleteFamilia(familia.fa_id)">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pagination-controls" v-if="totalPagesFamilias > 0">
+      <button @click="prevPageFamilias" :disabled="currentPageFamilias === 1">Anterior</button>
+      <span>Página {{ currentPageFamilias }} de {{ totalPagesFamilias }}</span>
+      <button @click="nextPageFamilias" :disabled="currentPageFamilias === totalPagesFamilias">Siguiente</button>
+    </div>
   </div>
-
-  <table class="tabla">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th class="columna-acciones">
-          <img
-            class="add-button-catalogo"
-            src="../assets/ic-add.png"
-            alt="Agregar Familia"
-            @click="abrirFormularioFamilia">
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="familia in paginatedFamilias" :key="familia.fa_id">
-        <td>{{ familia.fa_id }}</td>
-        <td>{{ familia.fa_nombre }}</td>
-        <td class="columna-acciones">
-          <img class="edit" src="../assets/editar.png" alt="Editar" @click="selectFamiliaForEdit(familia)">
-          <img class="delete" src="../assets/borrar.png" alt="Eliminar" @click="confirmDeleteFamilia(familia.fa_id)">
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <div class="pagination-controls" v-if="totalPagesFamilias > 0">
-    <button @click="prevPageFamilias" :disabled="currentPageFamilias === 1">Anterior</button>
-    <span>Página {{ currentPageFamilias }} de {{ totalPagesFamilias }}</span>
-    <button @click="nextPageFamilias" :disabled="currentPageFamilias === totalPagesFamilias">Siguiente</button>
-  </div>
-</div>
 
   <div class="catalogo-proveedores" v-if="activeSection === 'proveedores' && isAdmin">
-  <h1 class="catalogo-titulo">Proveedores</h1>
+    <h1 class="catalogo-titulo">Proveedores</h1>
 
-  <div class="busqueda-catalogo">
-    <input
-      v-model="searchQuery"
-      type="text"
-      placeholder="Buscar por nombre o email"
-      class="search-input"
-      @keyup.enter="performSearchProveedores" /> <!-- O método de búsqueda general -->
-    <img
-      class="search-button-catalogo"
-      src="../assets/search_icon.svg"
-      alt="Buscar"
-      @click="performSearchProveedores" > <!-- O método de búsqueda general -->
+    <div class="busqueda-catalogo">
+      <input v-model="searchQuery" type="text" placeholder="Buscar por nombre o email" class="search-input"
+        @keyup.enter="performSearchProveedores" /> <!-- O método de búsqueda general -->
+      <img class="search-button-catalogo" src="../assets/search_icon.svg" alt="Buscar"
+        @click="performSearchProveedores"> <!-- O método de búsqueda general -->
+    </div>
+
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>CIF</th>
+          <th>Email</th>
+          <th>Teléfono</th>
+          <th class="columna-acciones">
+            <img class="add-button-catalogo" src="../assets/ic-add.png" alt="Agregar Proveedor"
+              @click="abrirFormularioProveedor">
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="proveedor in paginatedProveedores" :key="proveedor.p_id">
+          <td>{{ proveedor.p_id }}</td>
+          <td>{{ proveedor.p_nombre }}</td>
+          <td>{{ proveedor.p_cif }}</td>
+          <td>{{ proveedor.p_email }}</td>
+          <td>{{ proveedor.p_telefono }}</td>
+          <td class="columna-acciones">
+            <img class="edit" src="../assets/editar.png" alt="Editar" @click="selectProveedorForEdit(proveedor)">
+            <img class="delete" src="../assets/borrar.png" alt="Eliminar"
+              @click="confirmDeleteProveedor(proveedor.p_id)">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pagination-controls" v-if="totalPagesProveedores > 0">
+      <button @click="prevPageProveedores" :disabled="currentPageProveedores === 1">Anterior</button>
+      <span>Página {{ currentPageProveedores }} de {{ totalPagesProveedores }}</span>
+      <button @click="nextPageProveedores"
+        :disabled="currentPageProveedores === totalPagesProveedores">Siguiente</button>
+    </div>
   </div>
-
-  <table class="tabla">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>CIF</th>
-        <th>Email</th>
-        <th>Teléfono</th>
-        <th class="columna-acciones">
-          <img
-            class="add-button-catalogo"
-            src="../assets/ic-add.png"
-            alt="Agregar Proveedor"
-            @click="abrirFormularioProveedor">
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="proveedor in paginatedProveedores" :key="proveedor.p_id">
-        <td>{{ proveedor.p_id }}</td>
-        <td>{{ proveedor.p_nombre }}</td>
-        <td>{{ proveedor.p_cif }}</td>
-        <td>{{ proveedor.p_email }}</td>
-        <td>{{ proveedor.p_telefono }}</td>
-        <td class="columna-acciones">
-          <img class="edit" src="../assets/editar.png" alt="Editar" @click="selectProveedorForEdit(proveedor)">
-          <img class="delete" src="../assets/borrar.png" alt="Eliminar" @click="confirmDeleteProveedor(proveedor.p_id)">
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <div class="pagination-controls" v-if="totalPagesProveedores > 0">
-    <button @click="prevPageProveedores" :disabled="currentPageProveedores === 1">Anterior</button>
-    <span>Página {{ currentPageProveedores }} de {{ totalPagesProveedores }}</span>
-    <button @click="nextPageProveedores" :disabled="currentPageProveedores === totalPagesProveedores">Siguiente</button>
-  </div>
-</div>
 
   <div class="catalogo-historial" v-if="activeSection === 'historialCompras' && isAdmin">
-  <h1 class="catalogo-titulo">Historial de Compras</h1>
+    <h1 class="catalogo-titulo">Historial de Compras</h1>
 
-  <div class="top-bar-catalogo"> <!-- Usaremos una clase específica para evitar conflictos -->
-    <div class="search-container-catalogo"> <!-- Contenedor para el input y el icono de búsqueda -->
-      <input
-        v-model="searchQuery"
-        type="text"
-        placeholder="Buscar por artículo, proveedor o fecha"
-        class="search-input"
-        @keyup.enter="performSearchHistorialCompras" />
-      <img
-        class="search-button-catalogo"
-        src="../assets/search_icon.svg"
-        alt="Buscar"
-        @click="performSearchHistorialCompras" >
+    <div class="top-bar-catalogo"> <!-- Usaremos una clase específica para evitar conflictos -->
+      <div class="search-container-catalogo"> <!-- Contenedor para el input y el icono de búsqueda -->
+        <input v-model="searchQuery" type="text" placeholder="Buscar por artículo, proveedor o fecha"
+          class="search-input" @keyup.enter="performSearchHistorialCompras" />
+        <img class="search-button-catalogo" src="../assets/search_icon.svg" alt="Buscar"
+          @click="performSearchHistorialCompras">
+      </div>
+      <button class="agregar-btn-catalogo" @click="abrirFormularioHistorial">+ Agregar Historial</button>
     </div>
-    <button class="agregar-btn-catalogo" @click="abrirFormularioHistorial">+ Agregar Historial</button>
-  </div>
 
-  <table class="tabla">
-    <thead>
-      <tr>
-        <th>Artículo</th>
-        <th>Proveedor</th>
-        <th>Precio</th>
-        <th>Fecha</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="historial in paginatedHistorialCompras" :key="historial.hc_id || `${historial.a_id}-${historial.p_id}-${historial.hc_fecha}`">
-        <td>{{ getNombreArticulo(historial.a_id) }}</td>
-        <td>{{ getNombreProveedor(historial.p_id) }}</td>
-        <td>{{ historial.hc_precio.toFixed(2) }}€</td>
-        <td>{{ historial.hc_fecha }}</td>
-      </tr>
-    </tbody>
-  </table>
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Artículo</th>
+          <th>Proveedor</th>
+          <th>Precio</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="historial in paginatedHistorialCompras"
+          :key="historial.hc_id || `${historial.a_id}-${historial.p_id}-${historial.hc_fecha}`">
+          <td>{{ getNombreArticulo(historial.a_id) }}</td>
+          <td>{{ getNombreProveedor(historial.p_id) }}</td>
+          <td>{{ historial.hc_precio.toFixed(2) }}€</td>
+          <td>{{ historial.hc_fecha }}</td>
+        </tr>
+      </tbody>
+    </table>
 
-  <div class="pagination-controls" v-if="totalPagesHistorialCompras > 0">
-    <button @click="prevPageHistorialCompras" :disabled="currentPageHistorialCompras === 1">Anterior</button>
-    <span>Página {{ currentPageHistorialCompras }} de {{ totalPagesHistorialCompras }}</span>
-    <button @click="nextPageHistorialCompras" :disabled="currentPageHistorialCompras === totalPagesHistorialCompras">Siguiente</button>
+    <div class="pagination-controls" v-if="totalPagesHistorialCompras > 0">
+      <button @click="prevPageHistorialCompras" :disabled="currentPageHistorialCompras === 1">Anterior</button>
+      <span>Página {{ currentPageHistorialCompras }} de {{ totalPagesHistorialCompras }}</span>
+      <button @click="nextPageHistorialCompras"
+        :disabled="currentPageHistorialCompras === totalPagesHistorialCompras">Siguiente</button>
+    </div>
   </div>
-</div>
 
   <!-- FORMULARIO CREAR ARTICULO (Modal) -->
   <div v-if="mostrarFormularioArticulo" class="modal-overlay">
@@ -945,7 +881,7 @@ export default {
       currentPageFamilias: 1,
       currentPageMarcas: 1,
       currentPageProveedores: 1,
-      currentPageHistorial: 1,
+      currentPageHistorialCompras: 1,
 
       selectedProducto: null,
       selectedUnidad: null,
@@ -955,7 +891,7 @@ export default {
       selectedProveedor: null,
       selectedHistorial: null,
 
-      showEditForm: false, // Para el modal de edición de producto
+      showEditForm: false,
       showEditFormUnidad: false,
       showEditFormIva: false,
       showEditFormFamilia: false,
@@ -963,7 +899,7 @@ export default {
       showEditFormProveedor: false,
       showEditFormHistorial: false,
 
-      mostrarFormularioArticulo: false, // Para el modal de nuevo artículo
+      mostrarFormularioArticulo: false,
       mostrarFormularioUnidades: false,
       mostrarFormularioIva: false,
       mostrarFormularioFamilia: false,
@@ -972,34 +908,28 @@ export default {
       mostrarFormularioHistorial: false,
 
       searchQuery: "",
-      isUserAdmin: false, // Nueva propiedad en data para almacenar el resultado de la verificación
-      authChecked: false, // Para saber si la verificación inicial ya se hizo
+      currentSearchTerm: "",
+      isUserAdmin: false,
+      authChecked: false,
     };
   },
 
-  watch: {
-    searchQuery() {
-      // NUEVO: Resetear la página actual para todas las secciones al cambiar la búsqueda
-      this.currentPageArticulos = 1;
-      this.currentPageUnidades = 1;
-      this.currentPageIvas = 1;
-      this.currentPageFamilias = 1;
-      this.currentPageMarcas = 1;
-      this.currentPageProveedores = 1;
-      this.currentPageHistorialCompras = 1;
-    }
-  },
   computed: {
     // Propiedad computada para determinar si el usuario es admin
     isAdmin() {
       return this.isUserAdmin;
     },
-    // ... (tus otras propiedades computadas filteredProductos, filteredUnidades, etc. permanecen igual)
+
+    /*Funciones para los Filtros*/
+
     filteredProductos() {
-      if (!this.isAdmin) return []; // No mostrar productos si no es admin
-      const query = this.searchQuery.toLowerCase();
+      if (!this.isAdmin) return [];
+      const query = this.currentSearchTerm.toLowerCase();
+      if (!query) {
+        return this.productos;
+      }
       return this.productos.filter((producto) =>
-        [producto.a_nombre, producto.a_cod, this.getFamiliaNombre(producto.fa_id)] // Incluir nombre de familia en la búsqueda
+        [producto.a_nombre, producto.a_cod, this.getFamiliaNombre(producto.fa_id)]
           .some((field) => field && field.toString().toLowerCase().includes(query))
       );
     },
@@ -1016,11 +946,9 @@ export default {
 
     filteredUnidades() {
       if (!this.isAdmin) return [];
-      const query = this.searchQuery.toLowerCase();
-      return this.unidades.filter((unidad) =>
-        [unidad.un_nombre]
-          .some((field) => field && field.toString().toLowerCase().includes(query))
-      );
+      const query = (this.currentSearchTerm || "").toLowerCase();
+      if (!query) { return this.unidades; }
+      return this.unidades.filter(u => u.un_nombre && u.un_nombre.toLowerCase().includes(query));
     },
 
     totalPagesUnidades() {
@@ -1034,10 +962,11 @@ export default {
 
     filteredIvas() {
       if (!this.isAdmin) return [];
-      const query = this.searchQuery.toLowerCase();
-      return this.ivas.filter((iva) =>
-        [iva.iva_nombre, iva.iva_value.toString()]
-          .some((field) => field && field.toLowerCase().includes(query))
+      const query = (this.currentSearchTerm || "").toLowerCase();
+      if (!query) { return this.ivas; }
+      return this.ivas.filter(i =>
+        (i.iva_nombre && i.iva_nombre.toLowerCase().includes(query)) ||
+        (i.iva_value != null && i.iva_value.toString().toLowerCase().includes(query))
       );
     },
 
@@ -1050,13 +979,11 @@ export default {
     },
 
 
-    filteredFamilias() {
+     filteredFamilias() {
       if (!this.isAdmin) return [];
-      const query = this.searchQuery.toLowerCase();
-      return this.familias.filter((familia) =>
-        [familia.fa_nombre]
-          .some((field) => field && field.toString().toLowerCase().includes(query))
-      );
+      const query = (this.currentSearchTerm || "").toLowerCase();
+      if (!query) { return this.familias; }
+      return this.familias.filter(f => f.fa_nombre && f.fa_nombre.toLowerCase().includes(query));
     },
 
     totalPagesFamilias() {
@@ -1067,12 +994,11 @@ export default {
       return this.filteredFamilias.slice(startIndex, startIndex + this.itemsPerPage);
     },
 
-    filteredMarcas() {
-      const query = this.searchQuery.toLowerCase();
-      return this.marcas.filter((marca) =>
-        [marca.ma_nombre]
-          .some((field) => field && field.toLowerCase().includes(query))
-      );
+     filteredMarcas() {
+      if (!this.isAdmin) return []; // Asegurar que también verifica isAdmin
+      const query = (this.currentSearchTerm || "").toLowerCase();
+      if (!query) { return this.marcas; }
+      return this.marcas.filter(m => m.ma_nombre && m.ma_nombre.toLowerCase().includes(query));
     },
 
     totalPagesMarcas() {
@@ -1084,10 +1010,12 @@ export default {
     },
 
     filteredProveedores() {
-      const query = this.searchQuery.toLowerCase();
-      return this.proveedores.filter((proveedor) =>
-        [proveedor.p_nombre, proveedor.p_email]
-          .some((field) => field && field.toLowerCase().includes(query))
+      if (!this.isAdmin) return []; // Asegurar que también verifica isAdmin
+      const query = (this.currentSearchTerm || "").toLowerCase();
+      if (!query) { return this.proveedores; }
+      return this.proveedores.filter(p =>
+        (p.p_nombre && p.p_nombre.toLowerCase().includes(query)) ||
+        (p.p_email && p.p_email.toLowerCase().includes(query))
       );
     },
 
@@ -1102,10 +1030,15 @@ export default {
 
 
     filteredHistorialCompras() {
-      const query = this.searchQuery.toLowerCase();
+      if (!this.isAdmin) return [];
+      const query = (this.currentSearchTerm || "").toLowerCase();
+      if (!query) { return this.historialCompras; }
       return this.historialCompras.filter((historial) =>
-        [historial.hc_fecha]
-          .some((field) => field && field.toLowerCase().includes(query))
+        [
+          this.getNombreArticulo(historial.a_id),
+          this.getNombreProveedor(historial.p_id),
+          historial.hc_fecha
+        ].some((field) => field && field.toString().toLowerCase().includes(query))
       );
     },
 
@@ -1131,11 +1064,45 @@ export default {
 
 
   created() {
-    // Llama al método para verificar la autenticación y el rol al crear el componente
     this.verifyAuthAndSetAdminStatus();
   },
 
   methods: {
+
+    /* Metodos para busqueda con filtro */
+
+    performSearchArticulos() {
+      this.currentSearchTerm = this.searchQuery;
+      this.currentPageArticulos = 1;
+    },
+
+    performSearchUnidades() {
+      this.currentSearchTerm = this.searchQuery;
+      this.currentPageUnidades = 1;
+    },
+    performSearchIvas() {
+      this.currentSearchTerm = this.searchQuery;
+      this.currentPageIvas = 1;
+    },
+    performSearchFamilias() {
+      this.currentSearchTerm = this.searchQuery;
+      this.currentPageFamilias = 1;
+    },
+    performSearchMarcas() {
+      this.currentSearchTerm = this.searchQuery;
+      this.currentPageMarcas = 1;
+    },
+    performSearchProveedores() {
+      this.currentSearchTerm = this.searchQuery;
+      this.currentPageProveedores = 1;
+    },
+    performSearchHistorialCompras() {
+      this.currentSearchTerm = this.searchQuery;
+      this.currentPageHistorialCompras = 1;
+    },
+
+
+
     verifyAuthAndSetAdminStatus() {
       const token = localStorage.getItem('authToken');
       let isAdminUser = false; // Valor por defecto
@@ -1179,41 +1146,44 @@ export default {
       this.fetchHistorialCompras();
     },
 
-    async selectSection(section) {
+    async selectSection(section) { // Mantenemos async aquí por si en el futuro necesitas un await al inicio
       this.activeSection = section;
-      //this.searchQuery = ""; // Opcional: Limpiar búsqueda al cambiar de sección
+      this.currentSearchTerm = "";
+      this.searchQuery = "";
+
       switch (section) {
         case 'articulos':
           this.currentPageArticulos = 1;
-          this.fetchProductos();
-          if (!this.familias.length) this.fetchFamilias();
-          if (!this.unidades.length) this.fetchUnidades();
-          if (!this.ivas.length) this.fetchIvas();
+          this.fetchProductos(); // SIN await
+          if (!this.familias.length) this.fetchFamilias(); // SIN await
+          if (!this.unidades.length) this.fetchUnidades(); // SIN await
+          if (!this.ivas.length) this.fetchIvas(); // SIN await
           break;
         case 'unidades':
           this.currentPageUnidades = 1;
-          this.fetchUnidades();
+          this.fetchUnidades(); // SIN await
           break;
         case 'iva':
           this.currentPageIvas = 1;
-          this.fetchIvas();
+          this.fetchIvas(); // SIN await
           break;
         case 'familias':
           this.currentPageFamilias = 1;
-          this.fetchFamilias();
+          this.fetchFamilias(); // SIN await
           break;
         case 'marcas':
           this.currentPageMarcas = 1;
-          this.fetchMarcas();
+          this.fetchMarcas(); // SIN await
           break;
         case 'proveedores':
           this.currentPageProveedores = 1;
-          this.fetchProveedores();
+          this.fetchProveedores(); // SIN await
           break;
         case 'historialCompras':
           this.currentPageHistorialCompras = 1;
-          if (!this.productos.length) await this.fetchProductos();
-          if (!this.proveedores.length) await this.fetchProveedores();
+          // Si estas fetch no tienen dependencias entre sí, también puedes quitar await
+          if (!this.productos.length) this.fetchProductos();
+          if (!this.proveedores.length) this.fetchProveedores();
           this.fetchHistorialCompras();
           break;
       }
