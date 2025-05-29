@@ -2,12 +2,14 @@ import { createRouter, createWebHistory } from 'vue-router'
 import CatalogoProductos from '@/components/CatalogoProductos.vue'
 import UserList from '@/components/UserList.vue'
 import { jwtDecode } from 'jwt-decode';
+import HeaderPage from '@/components/HeaderPage.vue';
 
 const ADMIN_EMAIL = 'antonio.carnero@star-group.net';
 
 const routes = [
-  { path: '/admin-dashboard', name: 'Admin', component: UserList },
-  { path: '/catalogo', name: 'Catalogo', component: CatalogoProductos }
+  { path: '/index', name: 'HeaderPage', component: HeaderPage },
+  { path: '/admin-dashboard', name: 'Catalogo Productos', component: CatalogoProductos, meta: { requiresAdmin: true } },
+  { path: '/users-dashboard', name: 'Admin', component: UserList, meta: { requiresAdmin: true } },
 ]
 
 function isAuthenticatedAndAdmin() {
@@ -42,9 +44,9 @@ router.beforeEach((to, from, next) => {
     } else {
       alert('Acceso denegado. Se requieren permisos de administrador.');
       if (authStatus.authenticated) {
-        next(from.path || '/catalogo'); // Si está logueado pero no es admin, a la página anterior o catálogo
+        next(from.path || '/admin-dashboard'); // Si está logueado pero no es admin, a la página anterior o catálogo
       } else {
-        next('/'); // Si no está logueado, a la página principal (que podría tener el login)
+        next('/index'); // Si no está logueado, a la página principal (que podría tener el login)
       }
     }
   } else if (to.matched.some(record => record.meta.requiresAuth)) { // Para rutas que solo requieren autenticación
@@ -52,7 +54,7 @@ router.beforeEach((to, from, next) => {
         next();
     } else {
         alert('Por favor, inicia sesión para acceder a esta página.');
-        next('/');
+        next('/index');
     }
   }
   else {

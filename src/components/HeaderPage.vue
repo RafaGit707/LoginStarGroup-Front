@@ -2,45 +2,109 @@
 
 <div class="container-header">
 
-    <!-- <section class="img-titulo">
-        <img src="../assets/app-black.png" class="img-top" alt="Imagen de fondo arriba">
-        <h1 class="titulo-top">Bienvenidos al Proyecto</h1>
-    </section> -->
-
     <header id="#">
         <div class="topheader">
-            <div class="logo">
-                <a href="/">
+            <div class="logo-container">
+                <router-link to="/index">
                     <img src="@/assets/app.png" class="img-logo">
-                </a>
-                <nav class="nav-enlaces">
+                </router-link>
+                <nav class="nav-enlaces nav-enlaces-desktop">
                     <ul>
-                        <router-link to="/catalogo">
-                            <li><a class="enlaces">Catalogo</a></li>
+                        <li v-if="loggedIn && isAdmin" class="dropdown-li" ref="gestionDropdownContainer">
+                            <a class="enlaces" @click.prevent="toggleGestionDropdown" href="#">
+                            Gestor <span class="dropdown-arrow" :class="{'open': showGestionDropdown}">▼</span>
+                            </a>
+                            <ul class="dropdown-menu" v-if="showGestionDropdown">
+                                <router-link to="/admin-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, 'articulos')"><a>Artículos</a></li></router-link>
+                                <router-link to="/admin-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, 'unidades')"><a>Unidades</a></li></router-link>
+                                <router-link to="/admin-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, 'iva')"><a>IVA</a></li></router-link>
+                                <router-link to="/admin-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, 'familias')"><a>Familias</a></li></router-link>
+                                <router-link to="/admin-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, 'marcas')"><a>Marcas</a></li></router-link>
+                                <router-link to="/admin-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, 'proveedores')"><a>Proveedores</a></li></router-link>
+                                <router-link to="/admin-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, 'historialCompras')"><a>Hist. Compras</a></li></router-link>
+                                <router-link to="/users-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, null, '/users-dashboard')"><a>Usuarios</a></li></router-link>
+                            </ul>
+                        </li>
+                        <!-- Enlace "Catálogo" para usuarios no-admin o si no está logueado -->
+                        <router-link v-else to="/admin-dashboard" custom v-slot="{ navigate, isActive }">
+                            <li :class="{ 'active-link': isActive }" @click="navigate">
+                            <a class="enlaces">Gestor</a>
+                            </li>
                         </router-link>
-                        <li><a class="enlaces" href = #contacto>Contacto</a></li>
+                        <li><a class="enlaces" @click="scrollToContact('#contacto')">Contacto</a></li>
                     </ul>
                 </nav>
             </div>
-            <nav>
-                <ul>
-                    <li v-if="!loggedIn">
-                    <a href="#mostrar">
-                        <button type="button" class="button-iniciar-sesion" id="abrir-login" @click="showLoginModal">
-                        Iniciar Sesión
-                        </button>
-                    </a>
-                    </li>
-                    <li class="user-sesion" v-else>
-                        <span class="user" style="color: white; cursor: pointer;" @click="toggleUserDetails"> {{ currentUserName }}</span>
-                        <button @click="logout" type="button" class="button-cerrar-sesion">Cerrar sesión</button>
-                        <router-link to="admin-dashboard"><a v-if="isAdmin" class="button-admin-panel" >Admin Panel</a></router-link>
-                    </li>
-                </ul>
-            </nav>
-
+        
+            <div class="session-burger-container">
+            <!-- Botones de Sesión / Usuario para Escritorio -->
+                <nav class="nav-session nav-session-desktop">
+                    <ul>
+                        <li v-if="!loggedIn">
+                            <button type="button" class="button-iniciar-sesion" @click="showLoginModal">
+                            Iniciar Sesión
+                            </button>
+                        </li>
+                        <li class="user-sesion" v-else>
+                            <span class="user" @click="toggleUserDetails">{{ currentUserName }}</span>
+                            <button @click="logout" type="button" class="button-cerrar-sesion">Cerrar sesión</button>
+                        </li>
+                    </ul>
+                </nav>
+            <!-- Icono de Hamburguesa para Móvil -->
+                <div class="burger-menu-icon" @click="toggleMobileMenu" :class="{ 'active': isMobileMenuOpen }">
+                    <div class="bar1"></div>
+                    <div class="bar2"></div>
+                    <div class="bar3"></div>
+                </div>
+            </div>
         </div>
     </header>
+</div>
+
+ <!-- Menú Desplegable para Móvil (Overlay) -->
+<div class="mobile-menu-overlay" :class="{ 'open': isMobileMenuOpen }">
+    <div class="mobile-menu-header">
+    <router-link to="/index" @click="closeMenuAndNavigate(() => $router.push('/index'))">
+        <img src="@/assets/app.png" class="mobile-menu-logo" alt="Logo">
+    </router-link>
+    <!-- Botón de Iniciar Sesión o Info de Usuario en Móvil -->
+    <div class="mobile-session-controls">
+        <button v-if="!loggedIn" type="button" class="button-iniciar-sesion mobile" @click="showLoginModalAndCloseMenu">
+            Iniciar Sesión
+        </button>
+        <div v-else class="mobile-user-info">
+            <span class="user">{{ currentUserName }}</span>
+            <!-- <button @click="logoutAndCloseMenu" type="button" class="button-cerrar-sesion mobile">Cerrar</button> -->
+        </div>
+    </div>
+    <img src="@/assets/X-green.png" class="mobile-menu-close" @click="toggleMobileMenu" alt="Cerrar menú">
+    </div>
+    <nav class="mobile-menu-nav">
+        <ul>
+            <router-link to="/admin-dashboard" custom v-slot="{ navigate }">
+                <li @click="closeMenuAndNavigate(navigate)"><a>Gestor</a></li>
+            </router-link>
+            <li><a @click="closeMenuAndNavigate('#contacto')">Contacto</a></li>
+
+            <hr v-if="loggedIn && isAdmin">
+
+            <template v-if="loggedIn && isAdmin">
+            <li class="mobile-menu-section-title"><a>Gestión</a></li>
+                <router-link to="/admin-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, 'articulos', null, true)"><a>Artículos</a></li></router-link>
+                <router-link to="/admin-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, 'unidades', null, true)"><a>Unidades</a></li></router-link>
+                <router-link to="/admin-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, 'iva', null, true)"><a>IVA</a></li></router-link>
+                <router-link to="/admin-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, 'familias', null, true)"><a>Familias</a></li></router-link>
+                <router-link to="/admin-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, 'marcas', null, true)"><a>Marcas</a></li></router-link>
+                <router-link to="/admin-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, 'proveedores', null, true)"><a>Proveedores</a></li></router-link>
+                <router-link to="/admin-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, 'historialCompras', null, true)"><a>Hist. Compras</a></li></router-link>
+                <router-link to="/users-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, null, '/users-dashboard', true)"><a>Usuarios</a></li></router-link>
+            </template>
+            
+            <hr v-if="loggedIn">
+            <li v-if="loggedIn" @click="logoutAndCloseMenu"><a>Cerrar Sesión</a></li>
+        </ul>
+    </nav>
 </div>
 
 <!--FORMULARIO INICIO SESION -->
@@ -50,11 +114,11 @@
     <div class="contenido">
         <form class="form-container" @submit.prevent="handleLogin">
         <h1>Iniciar sesión</h1>
-        <div class="form-group">
+        <div class="form-group-session">
             <label for="email">Correo electrónico</label>
             <input v-model="user.u_mail" type="email" id="email" name="email" autocomplete="off" required>
         </div>
-        <div class="form-group">
+        <div class="form-group-session">
             <label for="password">Contraseña</label>
             <input v-model="user.u_password" type="password" id="password" name="password" autocomplete="off" required>
         </div>
@@ -72,15 +136,15 @@
     <div class="contenido">
         <form class="form-container" @submit.prevent="handleRegister">
         <h1>Registrarse</h1>
-        <div class="form-group">
+        <div class="form-group-session">
             <label for="name">Nombre</label>
             <input v-model="user.u_name" type="text" id="name" name="name" autocomplete="off" required>
         </div>
-        <div class="form-group">
+        <div class="form-group-session">
             <label for="email">Correo electrónico</label>
             <input v-model="user.u_mail" type="email" id="email" name="email" autocomplete="off" required>
         </div>
-        <div class="form-group">
+        <div class="form-group-session">
             <label for="password2">Contraseña</label>
             <input v-model="user.u_password" type="password" id="password2" name="password2" autocomplete="off" required @input="validatePassword">
         </div>
@@ -105,11 +169,11 @@ import axios from 'axios';
 import { API_BASE_URL } from '@/config/apiConfig.js';
 import { jwtDecode } from 'jwt-decode';
 
-const ADMIN_EMAIL = 'antonio.carnero@star-group.net';
+// const ADMIN_EMAIL = 'antonio.carnero@star-group.net';
 
 export default {
     name: "HeaderPage",
-    emits: ['loginSuccess'],
+    emits: ['loginSuccess', 'navigateAdminSection'],
     data() {
         return {
             user: {
@@ -121,6 +185,8 @@ export default {
             loggedIn: false,
             currentUserName: '',
             showRegister: false,
+            isMobileMenuOpen: false,
+            showGestionDropdown: false,
 
             isValidPassword: false,
             isValidLength: false,
@@ -132,6 +198,8 @@ export default {
     },
     created() {
         this.checkAuthStatus();
+        window.addEventListener('resize', this.handleResize);
+        document.addEventListener('click', this.handleClickOutsideDropdown);
     },
     watch: {
         showLogin(newValue) {
@@ -148,18 +216,9 @@ export default {
                 document.body.classList.remove('no-scroll');
             }
         },
-        isAdmin() {
-            if (!this.loggedIn) return false;
-            const token = localStorage.getItem('authToken');
-            if (!token) return false;
-            try {
-                const decodedToken = jwtDecode(token);
-                // El claim de email estándar es 'email' o ClaimTypes.Email
-                return decodedToken.email && decodedToken.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
-            } catch (e) {
-                return false;
-            }
-        }
+        isMobileMenuOpen(newValue) {
+            this.updateNoScroll(newValue || this.showLogin || this.showRegister);
+        },
     },
 
     computed: {
@@ -198,11 +257,153 @@ export default {
         }
     },
     beforeUnmount() {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userName');
+        // localStorage.removeItem('authToken');
+        // localStorage.removeItem('userName');
+        window.removeEventListener('resize', this.handleResize);
+        document.removeEventListener('click', this.handleClickOutsideDropdown);
     },
 
     methods: {
+       updateNoScroll(shouldBeNoScroll) {
+            document.body.classList.toggle('no-scroll', shouldBeNoScroll);
+        },
+        handleResize() {
+            if (window.innerWidth > 768 && this.isMobileMenuOpen) {
+                this.isMobileMenuOpen = false;
+            }
+            // Cerrar el dropdown de gestión si la pantalla se hace demasiado pequeña
+            if (window.innerWidth <= 768 && this.showGestionDropdown) {
+                this.showGestionDropdown = false;
+            }
+        },
+        toggleGestionDropdown(event) {
+            event.stopPropagation(); // Evitar que el click se propague al document
+            this.showGestionDropdown = !this.showGestionDropdown;
+        },
+        handleClickOutsideDropdown(event) {
+            // Usar this.$refs para acceder al elemento
+            const dropdownContainer = this.$refs.gestionDropdownContainer;
+
+            // Verificar si el dropdown existe y si el clic fue fuera de él
+            if (dropdownContainer && !dropdownContainer.contains(event.target)) {
+                if (this.showGestionDropdown) { // Solo cerrar si está abierto
+                    this.showGestionDropdown = false;
+                }
+            }
+        },
+        navigateToAdminSection(navigateFunc, section = null, path = null, closeMobile = false) {
+            if (closeMobile) {
+                this.isMobileMenuOpen = false;
+            }
+            this.showGestionDropdown = false; // Siempre cerrar dropdown de escritorio
+            // Llamar al método estático de CatalogoProductos
+            this.$nextTick(() => {
+                if (path) { // Si se proporciona una ruta específica (ej. para Usuarios)
+                    if (this.$route.path !== path) {
+                        this.$router.push(path);
+                    }
+                } else { // Para secciones dentro de admin-dashboard
+                    if (this.$route.path !== '/admin-dashboard') {
+                        this.$router.push('/admin-dashboard').then(() => {
+                            if (section) this.$emit('navigateAdminSection', section);
+                        });
+                    } else {
+                        if (section) this.$emit('navigateAdminSection', section);
+                    }
+                }
+            });
+        },
+        // handleAdminSectionNavigation(sectionOrPath, isMobileAction = false) {
+        //     if (isMobileAction) {
+        //         this.isMobileMenuOpen = false;
+        //     }
+        //     this.showGestionDropdown = false;
+
+        //     this.$nextTick(() => {
+        //         const targetPath = (typeof sectionOrPath === 'string' && sectionOrPath.startsWith('/'))
+        //             ? sectionOrPath
+        //             : '/admin-dashboard';
+        //         const sectionName = (typeof sectionOrPath === 'string' && !sectionOrPath.startsWith('/'))
+        //             ? sectionOrPath
+        //             : null;
+
+        //         if (this.$route.path !== targetPath) {
+        //             this.$router.push(targetPath).then(() => {
+        //                 if (sectionName) this.$emit('navigateAdminSection', sectionName);
+        //             }).catch(err => {
+        //                 if (err.name !== 'NavigationDuplicated' && err.name !== 'NavigationCancelled') {
+        //                      console.error("Error de navegación:", err);
+        //                 }
+        //                 // Incluso si es duplicado o cancelado (ej. por un guard), si hay sección, intenta emitir
+        //                 if (sectionName) this.$emit('navigateAdminSection', sectionName);
+        //             });
+        //         } else {
+        //             if (sectionName) this.$emit('navigateAdminSection', sectionName);
+        //         }
+        //     });
+        // },
+        handleAdminSectionNavigation(sectionOrPath, isMobileAction = false) {
+            if (isMobileAction) {
+                this.isMobileMenuOpen = false;
+            }
+            this.showGestionDropdown = false;
+
+            this.$nextTick(() => {
+                const targetPath = (typeof sectionOrPath === 'string' && sectionOrPath.startsWith('/'))
+                    ? sectionOrPath
+                    : '/admin-dashboard'; // La ruta donde vive CatalogoProductos
+                const sectionName = (typeof sectionOrPath === 'string' && !sectionOrPath.startsWith('/'))
+                    ? sectionOrPath
+                    : null;
+
+                // Primero, asegurar que estamos en la ruta correcta
+                if (this.$route.path !== targetPath && targetPath === '/admin-dashboard') {
+                    this.$router.push(targetPath).then(() => {
+                        if (sectionName) {
+                            // console.log(`HeaderPage: Emitting navigateAdminSection with '${sectionName}' after navigation`);
+                            this.$emit('navigateAdminSection', sectionName);
+                        }
+                    }).catch(err => {
+                        if (err.name !== 'NavigationDuplicated' && err.name !== 'NavigationCancelled') {
+                            console.error("Error de navegación desde HeaderPage:", err);
+                        }
+                        // Incluso si la navegación fue duplicada/cancelada (ej. ya estábamos allí),
+                        // si hay una sectionName, intentamos emitir para que se cambie la pestaña.
+                        else if (sectionName) {
+                            // console.log(`HeaderPage: Emitting navigateAdminSection with '${sectionName}' (already on route)`);
+                            this.$emit('navigateAdminSection', sectionName);
+                        }
+                    });
+                } else if (targetPath.startsWith('/')) { // Si es una ruta directa como /admin-users
+                    if (this.$route.path !== targetPath) this.$router.push(targetPath);
+                } else { // Ya estamos en /admin-dashboard, solo emitir
+                    if (sectionName) {
+                        // console.log(`HeaderPage: Emitting navigateAdminSection with '${sectionName}' (no navigation needed)`);
+                        this.$emit('navigateAdminSection', sectionName);
+                    }
+                }
+            });
+        },
+        toggleMobileMenu() { this.isMobileMenuOpen = !this.isMobileMenuOpen; },
+        closeMenuAndNavigate(action) {
+            this.isMobileMenuOpen = false;
+            this.$nextTick(() => {
+                if (typeof action === 'function') { action(); }
+                else if (typeof action === 'string' && action.startsWith('#')) { this.scrollToContact(action); }
+            });
+        },
+        scrollToContact(hash = '#contacto') {
+            const targetId = hash.substring(1);
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                targetElement.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                console.warn(`Elemento con id '${targetId}' no encontrado.`);
+                 if (this.$route.path !== '/index') this.$router.push('/index');
+            }
+        },
+        showLoginModalAndCloseMenu() { this.isMobileMenuOpen = false; this.showLoginModal(); },
+        logoutAndCloseMenu() { this.isMobileMenuOpen = false; this.logout(); },
         checkAuthStatus() {
             const token = localStorage.getItem('authToken');
             if (token) { // Si hay un token en localStorage
@@ -214,7 +415,7 @@ export default {
                     // 1. Chequeo de expiración
                     if (decodedToken.exp * 1000 < Date.now()) {
                         console.log("Token expirado, llamando a logout.");
-                        this.logout(); // Esto te sacará del if (token) en la siguiente ejecución si window.reload está presente
+                        this.performLogoutActions(true, false);
                         return; // Importante salir aquí para no procesar un token expirado
                     }
 
@@ -231,14 +432,13 @@ export default {
                 } catch (error) {
                     // Si jwtDecode falla (token malformado, etc.)
                     console.error("Error decodificando token en checkAuthStatus (catch):", error);
-                    this.logout(); // Llama a logout, lo que eventualmente ejecutará este 'else' si hay reload
+                     this.performLogoutActions(true, false);
                 }
             } else { // Si NO hay token en localStorage
-                console.log("No hay token en localStorage, reseteando estado de login.");
-                this.loggedIn = false;
-                this.currentUserName = '';
-                delete axios.defaults.headers.common['Authorization'];
-                this.$emit('loginSuccess', { isAdmin: false, userName: '' });
+                // console.log("checkAuthStatus - No hay token, estado de logout.");
+                // No es necesario llamar a performLogoutActions aquí si ya está limpio,
+                // pero es seguro para asegurar el estado. No recargar.
+                this.performLogoutActions(false, false); 
             }
         },
         showLoginModal() {
@@ -328,677 +528,28 @@ export default {
                 alert("Error al registrar usuario");
             });
         },
+        performLogoutActions(clearToken = true, reloadPage = true) {
+            if (clearToken) localStorage.removeItem('authToken');
+            this.loggedIn = false;
+            this.currentUserName = '';
+            delete axios.defaults.headers.common['Authorization'];
+            this.$emit('loginSuccess', { isAdmin: false, userName: '' });
+            if (reloadPage) window.location.reload();
+        },
+        logout() { this.performLogoutActions(true, true); },
 
-         logout() {
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('userName');
+        //  logout() {
+        //     localStorage.removeItem('authToken');
+        //     localStorage.removeItem('userName');
         
-            this.checkAuthStatus();
+        //     this.checkAuthStatus();
 
-            // if (this.$route.meta.requiresAuth) { // Si usas route guards
-            //     this.$router.push('/');
-            // }
-            window.location.reload();
-        }
+        //     // if (this.$route.meta.requiresAuth) { // Si usas route guards
+        //     //     this.$router.push('/');
+        //     // }
+        //     window.location.reload();
+        // }
 
     },
 };
 </script>
-
-<style scoped>
-
-/* MEDIA */
-
-.img-logo {
-    width: min-content;
-    height: min-content;
-    max-width: 70px;
-    max-height: 70px;
-}
-
-/* HEADER */
-
-.container-header {
-    display: flex;
-    max-width: 100%;
-    width: 100%;
-    justify-content: center;
-    padding-top: var(--header-height);
-}
-
-.img-titulo {
-    display: flex;
-    margin: 40px;
-    max-width: 100%;
-    align-items: center;
-}
-
-.img-top {
-    width: 120px;
-    height: auto;
-}
-
-.titulo-top {
-    display: flex;
-    max-width: 100%;
-    font-size: 2.2em;
-    font-weight: bold;
-    color: black;
-}
-
-/* TOPHEADER */
-
-.logo {
-    display: flex;
-    align-items: center;
-    margin-left: 30px;
-}
-
-.nav-enlaces {
-    margin-left: 30px;
-}
-
-.button-iniciar-sesion {
-    padding: 8px 12px 8px 12px;
-    background: none;
-    font-size: 14px;
-    margin-right: 30px;
-    color: white;
-    font-weight: 700;
-    border: 2px solid white;
-    width: fit-content;
-    cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.button-iniciar-sesion:hover {
-    transform: translateY(-5px);
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.9);
-}
-
-.user-sesion {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.user {
-    margin-right: 30px;
-    font-size: 16px;
-    font-weight: 700;
-}
-
-.button-admin-panel {
-    padding: 8px 12px 8px 12px;
-    background: none;
-    font-size: 14px;
-    margin-right: 30px;
-    color: yellow;
-    font-weight: 700;
-    border: 2px solid white;
-    width: fit-content;
-    cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.button-admin-panel:hover {
-    transform: translateY(-5px);
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.9);
-}
-
-.button-cerrar-sesion {
-    padding: 8px 12px 8px 12px;
-    background: none;
-    font-size: 14px;
-    margin-right: 30px;
-    font-weight: 700;
-    color: red;
-    border: 2px solid red;
-    width: fit-content;
-    cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.button-cerrar-sesion:hover {
-    transform: translateY(-5px);
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.9);
-}
-
-ul {
-    list-style: none;
-    display: flex;
-    gap: 20px;
-}
-
-ul li a {
-    color: white;
-    text-decoration: none;
-}
-
-header {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 998;
-    transition: all 0.3s ease-in-out;
-}
-
-.topheader {
-    display: flex;
-    max-width: 100%;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    background-color: #2e2f36;
-    color: black;
-    transition: all 0.3s ease-in-out;
-}
-
-header nav ul li a {
-    color: white;
-    font-size: large;
-}
-
-header nav ul li a:hover {
-    color: #CCCCCC;
-}
-
-/*** INICIAR SESION ***/
-
-.container1 {
-    display: none;
-    position: fixed;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    overflow: visible;
-    z-index: 999;
-}
-
-.fondo {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(7px);
-    transition: 0.5s ease-in-out;
-    transition-delay: 0.25s;
-    z-index: 1;
-}
-
-.contenido {
-    position: relative;
-    z-index: 2;
-}
-
-.form-container {
-    background-color: #050715;
-    border-radius: 8px;
-    box-shadow: 0 0 20px 1px #ffffff;
-    padding: 50px;
-    width: 650px;
-    max-width: 100%;
-}
-
-.form-container h1 {
-    color: white;
-    font-size: 30px;
-    font-weight: 700;
-    margin-bottom: 32px;
-    margin-top: 30px;
-    text-align: center;
-}
-
-.form-group {
-    margin-bottom: 24px;
-}
-
-.form-group label {
-    display: block;
-    color: white;
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: 8px;
-}
-
-.form-group label {
-    display: block;
-    color: white;
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: 8px;
-}
-
-.form-group input {
-    background-color: transparent;
-    border: none;
-    border-bottom: 1px solid white;
-    color: #ffffff;
-    font-size: 16px;
-    padding: 10px 0;
-    width: 100%;
-}
-
-.form-group input:focus {
-    outline: none;
-    border-bottom-color: white;
-}
-
-.submit-btn {
-    background-color: #41b883;
-    border: none;
-    border-radius: 4px;
-    color: #fff;
-    cursor: pointer;
-    font-size: 18px;
-    font-weight: 700;
-    padding: 12px;
-    width: 100%;
-    transition: background-color 0.25s ease-in-out;
-    transition-delay: 0.1s;
-}
-
-.X1 {
-    width: 25px;
-    height: 25px;
-    cursor: pointer;
-}
-
-.X2 {
-    width: 15px;
-    height: 15px;
-    margin-right: 5px;
-}
-
-.message {
-    display: flex;
-    margin-bottom: 5px;
-    align-items: center;
-}
-
-.cerrar {
-    top: 0;
-    right: 12px;
-    display: inline;
-    position: absolute;
-    margin-top: 12px;
-    text-align: center;
-    border: none;
-    text-decoration: none;
-    border-radius: 8px;
-    color: #fff;
-    cursor: pointer;
-    font-size: 15px;
-    transition: transform 0.25s ease-out;
-}
-
-.registrarse {
-    margin-top: 15px;
-    text-align: center;
-    color: #fff;
-    cursor: pointer;
-    font-size: 18px;
-    text-decoration-color:grey;
-    border: none;
-    font-weight: 700;
-    transition: background-color 0.25s ease-in-out;
-    transition-delay: 0.1s;
-}
-
-.cuenta_p {
-    display: block;
-    margin-top: 24px;
-    text-decoration: none;
-    text-align: center;
-    border: none;
-    color: #fff;
-    font-size: 18px;
-    width: 100%;
-    transition: background-color 0.25s ease-in-out;
-    transition-delay: 0.1s;
-}
-
-#error_message {
-    display: none;
-    color: #FFFFFF;
-    margin-top: 18px;
-    margin-bottom: 20px;
-}
-
-.registrarse:hover {
-    text-decoration-color: #FFFFFF;
-}
-
-.submit-btn:hover {
-    background-color: #38996d;
-}
-
-#mostrar:target {
-    display: flex;
-}
-
-#registro:target {
-    display: flex;
-}
-
-#cerrar:target {
-    display: none;
-}
-
-#cerrar:hover {
-    transform: scale(1.2);
-}
-
-/* Media Queries */
-
-/* Para pantallas menores a 1024px (tablets y móviles grandes) */
-@media (max-width: 1024px) {
-
-    .user {
-        margin-right: 20px;
-        font-size: 14px;
-    }
-
-    .button-cerrar-sesion {
-        padding: 8px 12px 8px 12px;
-        font-size: 13px;
-        margin-right: 24px;
-    }
-
-    header nav ul li a {
-        font-size: medium;
-    }
-
-    .form-container {
-        padding: 40px;
-        width: 550px;
-    }
-
-    .form-container h1 {
-        font-size: 24px;
-        font-weight: 700;
-        margin-bottom: 22px;
-        margin-top: 22px;
-    }
-
-    .form-group {
-        margin-bottom: 22px;
-    }
-
-    .form-group label {
-        font-size: 15px;
-        font-weight: 700;
-        margin-bottom: 7px;
-    }
-
-    .form-group input {
-        font-size: 14px;
-        padding: 8px 0;
-        width: 100%;
-    }
-
-    #error_message {
-        margin-top: 18px;
-        margin-bottom: 18px;
-        font-size: 13px;
-    }
-
-    .cuenta_p {
-        margin-top: 20px;
-        font-size: 15px;
-    }
-
-    .registrarse {
-        margin-top: 16px;
-        font-size: 16px;
-    }
-
-    .submit-btn {
-        font-size: 16px;
-    }
-
-    .X1 {
-        width: 22px;
-        height: 22px;
-    }
-    
-    .X2 {
-        width: 12px;
-        height: 12px;
-    }
-
-    .img-titulo {
-        margin: 34px;
-    }
-    
-    .img-top {
-        width: 120px;
-        height: auto;
-    }
-    
-    .titulo-top {
-        font-size: 2.1em;
-    }
-
-    .logo {
-        margin-left: 24px;
-    }
-    
-    .nav-enlaces {
-        margin-left: 24px;
-    }
-
-    .button-iniciar-sesion {
-        margin-right: 24px;
-    }
-    
-}
-
-/* Para pantallas menores a 768px (móviles) */
-@media (max-width: 768px) {
-
-    .user {
-        margin-right: 18px;
-        font-size: 12px;
-    }
-
-    .button-cerrar-sesion {
-        padding: 6px 10px 6px 10px;
-        font-size: 12px;
-        margin-right: 20px;
-    }
-    
-    header nav ul li a {
-        font-size: medium;
-    }
-
-    .form-container {
-        padding: 35px;
-        width: 500px;
-    }
-
-    .form-container h1 {
-        font-size: 22px;
-        font-weight: 700;
-        margin-bottom: 20px;
-        margin-top: 20px;
-    }
-
-    .form-group {
-        margin-bottom: 18px;
-    }
-
-    .form-group label {
-        font-size: 14px;
-        font-weight: 700;
-        margin-bottom: 5px;
-    }
-
-    .form-group input {
-        font-size: 13px;
-        padding: 8px 0;
-        width: 100%;
-    }
-
-    #error_message {
-        margin-top: 16px;
-        margin-bottom: 16px;
-        font-size: 12px;
-    }
-
-    .cuenta_p {
-        margin-top: 18px;
-        font-size: 14px;
-    }
-
-    .registrarse {
-        margin-top: 12px;
-        font-size: 15px;
-    }
-
-    .submit-btn {
-        font-size: 15px;
-    }
-    
-    .X2 {
-        width: 10px;
-        height: 10px;
-    }
-
-    header nav ul li a {
-        font-size: medium;
-    }
-
-    .img-titulo {
-        margin: 30px;
-    }
-    
-    .img-top {
-        width: 100px;
-        height: auto;
-    }
-    
-    .titulo-top {
-        font-size: 1.9em;
-    }
-
-    .logo {
-        margin-left: 20px;
-    }
-    
-    .nav-enlaces {
-        margin-left: 20px;
-    }
-
-    ul {
-        gap: 18px;
-    }
-
-    .img-logo {
-        max-width: 65px;
-        max-height: 65px;
-    }
-
-    .button-iniciar-sesion {
-        padding: 6px 10px 6px 10px;
-        font-size: 12px;
-        margin-right: 20px;
-    }
-
-}
-
-/* Para pantallas muy pequeñas (menores a 480px) */
-@media (max-width: 480px) {
-
-    .form-container {
-        padding: 25px;
-        width: 360px;
-    }
-
-    .form-container h1 {
-        margin-top: 18px;
-    }
-
-    .form-group {
-        margin-bottom: 10px;
-    }
-
-    #error_message {
-        margin-top: 14px;
-        margin-bottom: 14px;
-        font-size: 11px;
-    }
-
-    .cuenta_p {
-        margin-top: 18px;
-    }
-
-    .registrarse {
-        margin-top: 14px;
-    }
-
-    .submit-btn {
-        padding: 9px;
-        margin-top: 10px;
-    }
-
-    header nav ul li a {
-        font-size: small;
-    }
-
-    .img-titulo {
-        margin: 16px;
-    }
-    
-    .img-top {
-        width: 55px;
-        height: auto;
-    }
-    
-    .titulo-top {
-        font-size: 1.4em;
-    }
-
-    .logo {
-        margin-left: 12px;
-    }
-    
-    .nav-enlaces {
-        margin-left: 12px;
-    }
-
-    ul {
-        gap: 14px;
-    }
-
-    .img-logo {
-        max-width: 40px;
-        max-height: 40px;
-    }
-
-    .button-iniciar-sesion {
-        padding: 6px 8px 6px 8px;
-        font-size: 11px;
-        margin-right: 14px;
-    }
-
-    .user {
-        margin-right: 15px;
-        font-size: 12px;
-    }
-
-    .button-cerrar-sesion {
-        padding: 6px 8px 6px 8px;
-        font-size: 10px;
-        margin-right: 15px;
-    }
-
-}
-
-</style>
