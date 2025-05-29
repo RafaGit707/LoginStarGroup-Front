@@ -246,350 +246,321 @@ ul li a {
   background-color: #006666;
 }
 
+.tabla { /*  Asegúrate de que todas tus tablas en CatalogoProductos tengan esta clase */
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px; /* o 1rem si prefieres */
+  color: black; /* Color de texto general para las celdas, si no es blanco por defecto */
+}
+
+.tabla td {
+  padding: 8px;
+  text-align: left; /* Como en UserList */
+  border-bottom: 1px solid #ddd; /* Como en UserList */
+  background-color: #fff; /* Fondo blanco para las celdas de datos si es necesario */
+  color: #050715; /* Color de texto específico para celdas de datos si es diferente al general */
+}
+
+.tabla th {
+  background-color: #f2f2f2; /* Como en UserList */
+  color: black;               /* Como en UserList */
+  padding: 8px;
+  text-align: left;           /* Como en UserList */
+  border-bottom: 1px solid #ddd; /* Como en UserList */
+  font-weight: bold; /* Añadir si quieres los encabezados en negrita */
+}
+
+/* Estilos para iconos de acción dentro de las tablas de CatalogoProductos */
+/* Estos ya los tienes y parecen correctos, solo asegúrate que los nombres de clase coincidan */
+.tabla .edit, 
+.tabla .delete { /* Es buena práctica ser más específico si están dentro de .tabla */
+  cursor: pointer;
+  width: 30px;  /* O el tamaño que prefieras, ej: 24px */
+  height: 30px; /* O el tamaño que prefieras, ej: 24px */
+  /* No necesitas 'align-items: center;' aquí, se aplica al contenido de la celda */
+}
+
+.tabla .edit {
+  margin-right: 10px; /* Ajusta el espaciado como necesites */
+}
+
+.tabla .delete {
+  margin-left: 10px; /* Ajusta el espaciado como necesites */
+}
+
+/* Si tienes una celda específica para botones de acción como en UserList,
+   puedes añadir estilos para ella, aunque en CatalogoProductos parece que los iconos
+   están directamente en celdas de Editar/Eliminar */
+.tabla .botones-accion-catalogo { /* Si creas una clase así para las celdas de acción */
+    text-align: right; /* o center, según prefieras para estos iconos */
+}
+
+
 /* Estilos para agregar articulo */
 
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.search-input {
-  flex: 1;
-  max-width: 60%;
-  padding: 8px;
-  font-size: 1rem;
-}
-
-.agregar-btn {
-  background-color: #2e2f36;
-  color: #fff;
-  border: none;
-  padding: 10px 16px;
-  font-size: 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-left: 1rem;
-}
-
-.agregar-btn:hover {
-  background-color: #44454d;
-}
-
-.catalogo-titulo {
-  padding: 40px;
-  text-align: center;
-  color: #2e2f36;
-}
-
-.catalogo-productos {
-  padding: 40px;
-  text-align: center;
-}
-
-.catalogo-unidades {
-  padding: 40px;
-  text-align: center;
-}
-
-.catalogo-iva {
-  padding: 40px;
-  text-align: center;
-}
-
-.catalogo-familias {
-  padding: 40px;
-  text-align: center;
-}
-
-.catalogo-marcas {
-  padding: 40px;
-  text-align: center;
-}
-
-.catalogo-proveedores {
-  padding: 40px;
-  text-align: center;
-}
-
+/* Estilos para los contenedores de cada sección de catálogo,
+   para que se asemejen al contenedor .usuarios de UserList */
+.catalogo-productos,
+.catalogo-unidades,
+.catalogo-iva,
+.catalogo-familias,
+.catalogo-marcas,
+.catalogo-proveedores,
 .catalogo-historial {
-  padding: 40px;
-  text-align: center;
-}
-
-.search-input {
-  padding: 10px;
-  width: 100%;
-  max-width: 400px;
-  margin-bottom: 30px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.grid-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-}
-
-.producto-card h2 {
-  margin-top: 0;
-  margin-bottom: 15px;
-  text-align: center;
-}
-
-.unidad-card h2 {
-  margin-top: 0;
-}
-.iva-card h2 {
-  margin-top: 0;
-}
-.familia-card h2 {
-  margin-top: 0;
-}
-
-.edit {
-  cursor: pointer;
-  width: 30px;
-  height: 30px;
-}
-
-.delete {
-  cursor: pointer;
-  width: 30px;
-  height: 30px;
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
   display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+  flex-direction: column;
+  padding: 50px; /* Como en .usuarios */
+  width: 100%;
+  background-color: white; /* Asumiendo que el fondo de .usuarios es blanco o el de la página */
+  color: black;
+  /* text-align: center; /* UserList lo tiene, pero puede que no lo quieras para el título y la búsqueda */
 }
 
-.modal-content {
-  background-color: #222;
-  padding: 40px;
-  border-radius: 10px;
-  max-width: 90%;
-  width: 500px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  color: white;
-}
-
-.modal-content h2 {
+/* Título de cada sección (Artículos, Unidades, etc.) */
+.catalogo-titulo {
+  text-align: left; /* Como el "Usuarios" de UserList */
+  font-size: 2.2em; /* Como el .titulo-top de UserList */
+  font-weight: bold;
+  color: black;
   margin-bottom: 20px;
-  text-align: center;
+  /* Si tenías un .img-titulo para un icono al lado del título, mantenlo */
 }
 
-.form-group {
-  margin-bottom: 15px;
-  text-align: left;
+/* Barra de búsqueda para cada sección */
+.busqueda-catalogo { 
+  display: flex; 
+  align-items: center;
+  margin-bottom: 20px;
+  justify-content: left;
 }
 
-.form-group label {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: 500;
-}
-
-.form-group input {
+/* --- ESTILOS DE TABLAS --- */
+.tabla {
   width: 100%;
-  padding: 8px;
-  background-color: #333;
-  border: 1px solid #555;
-  color: white;
-  border-radius: 5px;
-}
-
-.modal-buttons {
-  display: flex;
-  justify-content: space-between;
+  border-collapse: collapse;
   margin-top: 20px;
 }
 
-.submit-btn {
-  background-color: #2ecc71;
+.tabla th,
+.tabla td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  color: black;
+}
+
+.tabla th {
+  background-color: #f2f2f2;
+  font-weight: bold; 
+}
+
+/* Para la última columna del encabezado y de datos (botones de acción) */
+.tabla .columna-acciones {
+  text-align: right; 
+  
+}
+
+/* Icono de Añadir en el encabezado de la tabla */
+.tabla th.columna-acciones .add-button-catalogo { 
+  max-width: 24px; 
+  cursor: pointer;
+  
+}
+
+/* Iconos de Editar y Borrar en las filas de datos */
+.tabla td.columna-acciones .edit,
+.tabla td.columna-acciones .delete {
+  cursor: pointer;
+  width: 22px;  
+  height: 22px;
+  vertical-align: middle;
+}
+
+.tabla td.columna-acciones .edit {
+  margin-right: 15px;
+  
+}
+
+/* --- FIN ESTILOS DE TABLA UserList --- */
+
+
+/* Paginación (tus estilos de paginación actuales parecen bien) */
+.pagination-controls {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+.pagination-controls button {
+  padding: 8px 15px; /* Usando los que tenías para paginación de usuarios */
+  border: 1px solid #ccc;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+.pagination-controls button:hover:not(:disabled) {
+  background-color: #e0e0e0;
+}
+.pagination-controls button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.pagination-controls span {
+  font-weight: bold;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 1000;
+}
+.modal-content {
+    background-color: #2e2f36;
+    padding: 40px;
+    border-radius: 12px;
+    max-width: 90%; width: 500px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    color: white;
+    position: relative;
+}
+.modal-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 25px;
+}
+.modal-header h2 {
+    margin: 0; font-size: 1.6rem; color: white; font-weight: 600;
+}
+.close-btn { /* Para el botón de cerrar (X) del modal */
+    background: none; border: none; font-size: 2rem;
+    color: #e67e22; /* Naranja como en UserList */
+    cursor: pointer; transition: color 0.3s ease;
+    padding: 0; line-height: 1;
+    position: absolute; /* Para colocarlo en la esquina si es necesario */
+    top: 20px; right: 20px;
+}
+.close-btn:hover { color: #eb9c57; }
+.form-group { margin-bottom: 18px; text-align: left; }
+.form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: white; font-size: 0.95rem; }
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group input[type="number"], /* Añadido por si lo necesitas */
+.form-group select {
+    width: 100%; padding: 10px 12px;
+    background-color: #3f404d; border: 1px solid #5a5c6b;
+    color: white; border-radius: 6px; font-size: 1rem;
+    box-sizing: border-box; transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.form-group input:focus, .form-group select:focus {
+    border-color: #e67e22; outline: none;
+    box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.3);
+}
+.modal-buttons {
+    display: flex; justify-content: flex-end;
+    gap: 15px; margin-top: 30px;
+}
+.submit-btn, .cancel-btn { /* Clases de UserList para los botones del modal */
+    padding: 10px 25px; border: none; border-radius: 6px;
+    cursor: pointer; font-weight: bold; font-size: 1rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.submit-btn { background-color: #2ecc71; color: black; /* Verde con texto negro */ }
+.submit-btn:hover { background-color: #27ae60; transform: translateY(-2px); }
+.cancel-btn { background-color: #e67e22; color: black; /* Naranja con texto negro */ }
+.cancel-btn:hover { background-color: #d35400; transform: translateY(-2px); }
+
+/* Estilos para el menú de admin, para que no desentone */
+.admin-menu {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 30px; /* Más espacio antes de la primera tabla */
+  padding: 10px 0;
+}
+.admin-menu button {
+  padding: 10px 15px;
+  background-color: #6c757d; /* Gris neutro */
   color: white;
   border: none;
-  padding: 10px 16px;
-  cursor: pointer;
   border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-size: 0.95em;
+}
+.admin-menu button:hover, .admin-menu button.active {
+  background-color: #5a6268;
 }
 
-.cancel-btn {
-  background-color: #e67e22;
+.search-container-catalogo {
+  display: flex;
+  align-items: center;
+  flex-grow: 1; 
+  max-width: 500px;
+ 
+}
+
+.search-input:focus {
+  border-color: #007bff; /* Cambia el color del borde al hacer focus */
+}
+
+.search-button-catalogo img, /* Si usas <img> dentro */
+.search-button-catalogo svg { /* O si usas <svg> directamente */
+    width: 40px; /* Tamaño del icono interno */
+    height: 40px;
+}
+
+.agregar-btn-catalogo {
+  padding: 10px 20px;
+  background-color: #28a745; /* Un verde bonito para "Agregar" */
   color: white;
   border: none;
-  padding: 10px 16px;
-  cursor: pointer;
   border-radius: 5px;
-}
-
-.error {
-  color: red;
-  text-align: center;
-  margin-top: 30px;
-  margin-bottom: 30px;
-}
-
-.producto-card {
-  border: 1px solid #ddd;
-  padding: 20px;
-  border-radius: 10px;
-  text-align: left;
-  background-color: #f9f9f9;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-}
-
-.unidad-card {
-  border: 1px solid #ddd;
-  padding: 20px;
-  border-radius: 10px;
-  text-align: left;
-  background-color: #f9f9f9;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-}
-
-.iva-card {
-  border: 1px solid #ddd;
-  padding: 20px;
-  border-radius: 10px;
-  text-align: left;
-  background-color: #f9f9f9;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-}
-
-.familia-card {
-  border: 1px solid #ddd;
-  padding: 20px;
-  border-radius: 10px;
-  text-align: left;
-  background-color: #f9f9f9;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-}
-
-.producto-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-}
-
-.unidad-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-}
-
-.iva-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-}
-
-.familia-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-}
-
-.producto-card h2 {
-  margin-top: 0;
-  font-size: 18px;
-  font-weight: bold;
-  color: #333;
-}
-
-.unidad-card h2 {
-  margin-top: 0;
-  font-size: 18px;
-  font-weight: bold;
-  color: #333;
-}
-
-.iva-card h2 {
-  margin-top: 0;
-  font-size: 18px;
-  font-weight: bold;
-  color: #333;
-}
-
-.familia-card h2 {
-  margin-top: 0;
-  font-size: 18px;
-  font-weight: bold;
-  color: #333;
-}
-
-.producto-card p {
   font-size: 16px;
-  color: #666;
-  margin-bottom: 10px;
+  font-weight: 500; /* Un poco de negrita */
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+  margin-left: 20px; /* Espacio entre la búsqueda y el botón */
+  white-space: nowrap; /* Para que el texto no se parta */
 }
 
-.unidad-card p {
-  font-size: 16px;
-  color: #666;
-  margin-bottom: 10px;
+.agregar-btn-catalogo:hover {
+  background-color: #218838; /* Verde más oscuro al pasar el ratón */
+  transform: translateY(-1px); /* Pequeño efecto al pasar el ratón */
 }
 
-.iva-card p {
-  font-size: 16px;
-  color: #666;
-  margin-bottom: 10px;
+.agregar-btn-catalogo:active {
+  background-color: #1e7e34; /* Verde aún más oscuro al hacer clic */
+  transform: translateY(0px);
 }
 
-.familia-card p {
-  font-size: 16px;
-  color: #666;
-  margin-bottom: 10px;
+.search-button-catalogo { 
+    cursor: pointer;
+    margin-left: 20px;
+    margin-bottom: 20px;
+    max-width: 30px;
+
 }
 
-.producto-card strong {
-  font-weight: bold;
-  color: #333;
+.search-input { 
+    padding: 10px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
 
-.unidad-card strong {
-  font-weight: bold;
-  color: #333;
-}
-
-.iva-card strong {
-  font-weight: bold;
-  color: #333;
-}
-
-.familia-card strong {
-  font-weight: bold;
-  color: #333;
-}
-
-.grid-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-  padding: 20px;
-}
-
-@media (max-width: 768px) {
-  .grid-container {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  }
-}
-
-@media (max-width: 480px) {
-  .grid-container {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  }
+.top-bar-catalogo {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  margin-bottom: 25px;
+  width: 100%;
 }
 
 .denegado {
@@ -603,6 +574,51 @@ ul li a {
   font-size: large;
   padding: 60px;
 }
+
+
+                                                    /*Estilos para paginacion*/
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  padding: 10px;
+  /* background-color: #f9f9f9; Opcional: para destacar el área de paginación */
+  /* border-radius: 5px; */
+}
+
+.pagination-controls button {
+  background-color: #007bff; /* Color de tus botones de admin menu */
+  color: white;
+  border: none;
+  padding: 8px 12px; /* Ajusta el padding */
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px; /* Ajusta el tamaño de fuente */
+  margin: 0 5px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.pagination-controls button:disabled {
+  background-color: #cccccc;
+  color: #666666;
+  cursor: not-allowed;
+}
+
+.pagination-controls button:hover:not(:disabled) {
+  background-color: #0056b3; /* Un tono más oscuro al pasar el ratón */
+}
+
+.pagination-controls span {
+  margin: 0 10px;
+  font-size: 14px; /* Ajusta el tamaño de fuente */
+  color: #333;
+}
+
 
                                                       /* Estilos para FOOTER*/
 

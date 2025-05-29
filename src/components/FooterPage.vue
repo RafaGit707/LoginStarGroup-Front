@@ -28,7 +28,7 @@
     </div>
 </footer>
 
-</template>
+</template> 
 
 <script>
 export default {
