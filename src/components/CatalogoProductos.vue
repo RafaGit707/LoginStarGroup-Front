@@ -1,24 +1,4 @@
 <template>
-
-  <!-- Menú de selección para el admin -->
-  <div v-if="isAdmin" class="admin-menu">
-    <button @click="selectSection('articulos')">Artículos</button>
-    <button @click="selectSection('unidades')">Unidades</button>
-    <button @click="selectSection('iva')">IVA</button>
-    <button @click="selectSection('familias')">Familias</button>
-
-    <button @click="selectSection('marcas')">Marcas</button>
-    <!--<button @click="selectSection('articulo_marca')">Articulo_Marca</button>-->
-    <button @click="selectSection('proveedores')">Proveedores</button>
-    <button @click="selectSection('historialCompras')">Historial Compras</button>
-  </div>
-
-  <div v-else class="denegado">
-    <h1>Acceso denegado</h1>
-    <p>Solo los administradores pueden ver la lista de articulos y sus relaciones.</p>
-    <p>Si eres un administrador, por favor inicia sesión.</p>
-  </div>
-
   <div class="catalogo-productos" v-if="activeSection === 'articulos' && isAdmin">
     <!-- Contenedor principal de la sección -->
     <h1 class="catalogo-titulo">Artículos</h1> <!-- Título de la sección -->
@@ -322,7 +302,7 @@
       </div>
       <button class="agregar-btn-catalogo" @click="abrirFormularioHistorial">+ Agregar Historial</button>
     </div>
-
+    <div class="tabla-responsive-wrapper">
     <table class="tabla">
       <thead>
         <tr>
@@ -342,6 +322,7 @@
         </tr>
       </tbody>
     </table>
+    </div>
 
     <div class="pagination-controls" v-if="totalPagesHistorialCompras > 0">
       <button @click="prevPageHistorialCompras" :disabled="currentPageHistorialCompras === 1">Anterior</button>
@@ -830,7 +811,7 @@ export default {
   name: "CatalogoProductos",
   data() {
     return {
-      activeSection: null,
+      activeSection: '',
       productos: [],
       unidades: [],
       ivas: [],
@@ -914,6 +895,21 @@ export default {
     };
   },
 
+  watch: {
+    '$route.query.section': {
+      immediate: false, // No se ejecuta inmediatamente al crear, created() lo manejará
+      handler(newSection, oldSection) {
+        console.log(`WATCHER Catalogo: Query 'section' cambió de '${oldSection}' a '${newSection}'`);
+        if (this.authChecked && this.isUserAdmin) { // Solo si la auth ya se verificó y es admin
+          const sectionToUpdate = newSection || 'articulos'; // Fallback si la query se borra
+          if (this.activeSection !== sectionToUpdate) {
+            this.selectSection(sectionToUpdate);
+          }
+        }
+      }
+    }
+  },
+
   computed: {
     // Propiedad computada para determinar si el usuario es admin
     isAdmin() {
@@ -979,7 +975,7 @@ export default {
     },
 
 
-     filteredFamilias() {
+    filteredFamilias() {
       if (!this.isAdmin) return [];
       const query = (this.currentSearchTerm || "").toLowerCase();
       if (!query) { return this.familias; }
@@ -994,7 +990,7 @@ export default {
       return this.filteredFamilias.slice(startIndex, startIndex + this.itemsPerPage);
     },
 
-     filteredMarcas() {
+    filteredMarcas() {
       if (!this.isAdmin) return []; // Asegurar que también verifica isAdmin
       const query = (this.currentSearchTerm || "").toLowerCase();
       if (!query) { return this.marcas; }
@@ -1137,56 +1133,40 @@ export default {
 
     initializeAdminData() {
       console.log("CatalogoProductos: Inicializando datos de admin.");
-      this.selectSection('articulos');
+      // this.selectSection('articulos');
       this.fetchUnidades();
       this.fetchIvas();
       this.fetchFamilias();
       this.fetchMarcas();
       this.fetchProveedores();
       this.fetchHistorialCompras();
+      const initialSection = this.$route.query.section || 'articulos';
+      this.selectSection(initialSection);
     },
 
-    async selectSection(section) { // Mantenemos async aquí por si en el futuro necesitas un await al inicio
-      this.activeSection = section;
-      this.currentSearchTerm = "";
-      this.searchQuery = "";
-
-      switch (section) {
-        case 'articulos':
-          this.currentPageArticulos = 1;
-          this.fetchProductos(); // SIN await
-          if (!this.familias.length) this.fetchFamilias(); // SIN await
-          if (!this.unidades.length) this.fetchUnidades(); // SIN await
-          if (!this.ivas.length) this.fetchIvas(); // SIN await
-          break;
-        case 'unidades':
-          this.currentPageUnidades = 1;
-          this.fetchUnidades(); // SIN await
-          break;
-        case 'iva':
-          this.currentPageIvas = 1;
-          this.fetchIvas(); // SIN await
-          break;
-        case 'familias':
-          this.currentPageFamilias = 1;
-          this.fetchFamilias(); // SIN await
-          break;
-        case 'marcas':
-          this.currentPageMarcas = 1;
-          this.fetchMarcas(); // SIN await
-          break;
-        case 'proveedores':
-          this.currentPageProveedores = 1;
-          this.fetchProveedores(); // SIN await
-          break;
-        case 'historialCompras':
-          this.currentPageHistorialCompras = 1;
-          // Si estas fetch no tienen dependencias entre sí, también puedes quitar await
-          if (!this.productos.length) this.fetchProductos();
-          if (!this.proveedores.length) this.fetchProveedores();
-          this.fetchHistorialCompras();
-          break;
+    selectSection(section) {
+      console.log(`CatalogoProductos: selectSection llamado con '${section}'`);
+      if (!this.isUserAdmin) {
+        console.warn("Intento de seleccionar sección sin ser admin.");
+        return;
       }
+      this.activeSection = section;
+      // Actualizar la query en la URL si es diferente, sin recargar la página.
+      // Esto también ayuda a que los bookmarks funcionen.
+      if (this.$route.query.section !== section) {
+        this.$router.replace({ query: { ...this.$route.query, section: section } }).catch(err => {
+          if (err.name !== 'NavigationDuplicated') console.error(err);
+        });
+      }
+
+      // Cargar datos específicos de la sección
+      if (section === 'articulos') this.fetchProductos();
+      else if (section === 'unidades') this.fetchUnidades();
+      else if (section === 'ivas') this.fetchIvas();
+      else if (section === 'familias') this.fetchFamilias();
+      else if (section === 'marcas') this.fetchMarcas();
+      else if (section === 'proveedores') this.fetchProveedores();
+      else if (section === 'historialCompras') this.fetchHistorialCompras();
     },
 
     prevPageArticulos() { if (this.currentPageArticulos > 1) this.currentPageArticulos--; },
