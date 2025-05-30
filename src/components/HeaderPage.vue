@@ -14,16 +14,22 @@
                             <a class="enlaces" @click.prevent="toggleGestionDropdown" href="#">
                             Gestor <span class="dropdown-arrow" :class="{'open': showGestionDropdown}">▼</span>
                             </a>
-                            <ul class="dropdown-menu" v-if="showGestionDropdown">
-                                <router-link to="/admin-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, 'articulos')"><a>Artículos</a></li></router-link>
-                                <router-link to="/admin-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, 'unidades')"><a>Unidades</a></li></router-link>
-                                <router-link to="/admin-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, 'iva')"><a>IVA</a></li></router-link>
-                                <router-link to="/admin-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, 'familias')"><a>Familias</a></li></router-link>
-                                <router-link to="/admin-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, 'marcas')"><a>Marcas</a></li></router-link>
-                                <router-link to="/admin-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, 'proveedores')"><a>Proveedores</a></li></router-link>
-                                <router-link to="/admin-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, 'historialCompras')"><a>Hist. Compras</a></li></router-link>
-                                <router-link to="/users-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, null, '/users-dashboard')"><a>Usuarios</a></li></router-link>
-                            </ul>
+                            <transition name="dropdown-fade">
+                                <ul class="dropdown-menu" v-if="showGestionDropdown">
+                                <!-- CAMBIO: Usar handleAdminSectionNavigation directamente -->
+                                <li @click="handleAdminSectionNavigation('articulos')"><a>Artículos</a></li>
+                                <li @click="handleAdminSectionNavigation('unidades')"><a>Unidades</a></li>
+                                <li @click="handleAdminSectionNavigation('iva')"><a>IVA</a></li>
+                                <li @click="handleAdminSectionNavigation('familias')"><a>Familias</a></li>
+                                <li @click="handleAdminSectionNavigation('marcas')"><a>Marcas</a></li>
+                                <li @click="handleAdminSectionNavigation('proveedores')"><a>Proveedores</a></li>
+                                <li @click="handleAdminSectionNavigation('historialCompras')"><a>Hist. Compras</a></li>
+                                <!-- Para Usuarios, si es una ruta diferente, el router-link es correcto -->
+                                <router-link to="/users-dashboard" custom v-slot="{ navigate }">
+                                    <li @click="closeDropdownAndNavigate(navigate)"><a>Usuarios</a></li>
+                                </router-link>
+                                </ul>
+                            </transition>
                         </li>
                         <!-- Enlace "Catálogo" para usuarios no-admin o si no está logueado -->
                         <router-link v-else to="/admin-dashboard" custom v-slot="{ navigate, isActive }">
@@ -88,17 +94,21 @@
             <li><a @click="closeMenuAndNavigate('#contacto')">Contacto</a></li>
 
             <hr v-if="loggedIn && isAdmin">
-
             <template v-if="loggedIn && isAdmin">
-            <li class="mobile-menu-section-title"><a>Gestión</a></li>
-                <router-link to="/admin-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, 'articulos', null, true)"><a>Artículos</a></li></router-link>
-                <router-link to="/admin-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, 'unidades', null, true)"><a>Unidades</a></li></router-link>
-                <router-link to="/admin-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, 'iva', null, true)"><a>IVA</a></li></router-link>
-                <router-link to="/admin-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, 'familias', null, true)"><a>Familias</a></li></router-link>
-                <router-link to="/admin-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, 'marcas', null, true)"><a>Marcas</a></li></router-link>
-                <router-link to="/admin-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, 'proveedores', null, true)"><a>Proveedores</a></li></router-link>
-                <router-link to="/admin-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, 'historialCompras', null, true)"><a>Hist. Compras</a></li></router-link>
-                <router-link to="/users-dashboard" custom v-slot="{ navigate }"><li @click="navigateToAdminSection(navigate, null, '/users-dashboard', true)"><a>Usuarios</a></li></router-link>
+              <hr>
+              <li class="mobile-menu-section-title"><a>Gestión</a></li>
+              <!-- CAMBIO: Usar handleAdminSectionNavigation directamente -->
+              <li @click="handleAdminSectionNavigation('articulos', true)"><a>Artículos</a></li>
+              <li @click="handleAdminSectionNavigation('unidades', true)"><a>Unidades</a></li>
+              <li @click="handleAdminSectionNavigation('iva', true)"><a>IVA</a></li>
+              <li @click="handleAdminSectionNavigation('familias', true)"><a>Familias</a></li>
+              <li @click="handleAdminSectionNavigation('marcas', true)"><a>Marcas</a></li>
+              <li @click="handleAdminSectionNavigation('proveedores', true)"><a>Proveedores</a></li>
+              <li @click="handleAdminSectionNavigation('historialCompras', true)"><a>Hist. Compras</a></li>
+              <!-- Para Usuarios, si es una ruta diferente, el router-link es correcto -->
+              <router-link to="/users-dashboard" custom v-slot="{ navigate }">
+                <li @click="closeMenuAndNavigate(navigate)"><a>Usuarios</a></li>
+              </router-link>
             </template>
             
             <hr v-if="loggedIn">
@@ -173,7 +183,7 @@ import { jwtDecode } from 'jwt-decode';
 
 export default {
     name: "HeaderPage",
-    emits: ['loginSuccess', 'navigateAdminSection'],
+    emits: ['loginSuccess'],
     data() {
         return {
             user: {
@@ -257,8 +267,6 @@ export default {
         }
     },
     beforeUnmount() {
-        // localStorage.removeItem('authToken');
-        // localStorage.removeItem('userName');
         window.removeEventListener('resize', this.handleResize);
         document.removeEventListener('click', this.handleClickOutsideDropdown);
     },
@@ -291,57 +299,7 @@ export default {
                 }
             }
         },
-        navigateToAdminSection(navigateFunc, section = null, path = null, closeMobile = false) {
-            if (closeMobile) {
-                this.isMobileMenuOpen = false;
-            }
-            this.showGestionDropdown = false; // Siempre cerrar dropdown de escritorio
-            // Llamar al método estático de CatalogoProductos
-            this.$nextTick(() => {
-                if (path) { // Si se proporciona una ruta específica (ej. para Usuarios)
-                    if (this.$route.path !== path) {
-                        this.$router.push(path);
-                    }
-                } else { // Para secciones dentro de admin-dashboard
-                    if (this.$route.path !== '/admin-dashboard') {
-                        this.$router.push('/admin-dashboard').then(() => {
-                            if (section) this.$emit('navigateAdminSection', section);
-                        });
-                    } else {
-                        if (section) this.$emit('navigateAdminSection', section);
-                    }
-                }
-            });
-        },
-        // handleAdminSectionNavigation(sectionOrPath, isMobileAction = false) {
-        //     if (isMobileAction) {
-        //         this.isMobileMenuOpen = false;
-        //     }
-        //     this.showGestionDropdown = false;
 
-        //     this.$nextTick(() => {
-        //         const targetPath = (typeof sectionOrPath === 'string' && sectionOrPath.startsWith('/'))
-        //             ? sectionOrPath
-        //             : '/admin-dashboard';
-        //         const sectionName = (typeof sectionOrPath === 'string' && !sectionOrPath.startsWith('/'))
-        //             ? sectionOrPath
-        //             : null;
-
-        //         if (this.$route.path !== targetPath) {
-        //             this.$router.push(targetPath).then(() => {
-        //                 if (sectionName) this.$emit('navigateAdminSection', sectionName);
-        //             }).catch(err => {
-        //                 if (err.name !== 'NavigationDuplicated' && err.name !== 'NavigationCancelled') {
-        //                      console.error("Error de navegación:", err);
-        //                 }
-        //                 // Incluso si es duplicado o cancelado (ej. por un guard), si hay sección, intenta emitir
-        //                 if (sectionName) this.$emit('navigateAdminSection', sectionName);
-        //             });
-        //         } else {
-        //             if (sectionName) this.$emit('navigateAdminSection', sectionName);
-        //         }
-        //     });
-        // },
         handleAdminSectionNavigation(sectionOrPath, isMobileAction = false) {
             if (isMobileAction) {
                 this.isMobileMenuOpen = false;
@@ -350,38 +308,42 @@ export default {
 
             this.$nextTick(() => {
                 const targetPath = (typeof sectionOrPath === 'string' && sectionOrPath.startsWith('/'))
-                    ? sectionOrPath
-                    : '/admin-dashboard'; // La ruta donde vive CatalogoProductos
-                const sectionName = (typeof sectionOrPath === 'string' && !sectionOrPath.startsWith('/'))
-                    ? sectionOrPath
-                    : null;
+                    ? sectionOrPath  // Es una ruta completa como '/users-dashboard'
+                    : '/admin-dashboard'; // Es una sección dentro de admin-dashboard
 
-                // Primero, asegurar que estamos en la ruta correcta
-                if (this.$route.path !== targetPath && targetPath === '/admin-dashboard') {
-                    this.$router.push(targetPath).then(() => {
-                        if (sectionName) {
-                            // console.log(`HeaderPage: Emitting navigateAdminSection with '${sectionName}' after navigation`);
-                            this.$emit('navigateAdminSection', sectionName);
-                        }
-                    }).catch(err => {
+                const query = (typeof sectionOrPath === 'string' && !sectionOrPath.startsWith('/'))
+                    ? { section: sectionOrPath } // sectionOrPath es 'articulos', 'marcas', etc.
+                    : {}; // Sin query si es una ruta directa
+
+                // console.log("HeaderPage: Intentando navegar a:", { path: targetPath, query: query });
+                // console.log("HeaderPage: Ruta actual:", { path: this.$route.path, query: this.$route.query });
+
+                if (this.$route.path !== targetPath || JSON.stringify(this.$route.query) !== JSON.stringify(query)) {
+                    this.$router.push({ path: targetPath, query: query }).catch(err => {
                         if (err.name !== 'NavigationDuplicated' && err.name !== 'NavigationCancelled') {
                             console.error("Error de navegación desde HeaderPage:", err);
                         }
-                        // Incluso si la navegación fue duplicada/cancelada (ej. ya estábamos allí),
-                        // si hay una sectionName, intentamos emitir para que se cambie la pestaña.
-                        else if (sectionName) {
-                            // console.log(`HeaderPage: Emitting navigateAdminSection with '${sectionName}' (already on route)`);
-                            this.$emit('navigateAdminSection', sectionName);
-                        }
                     });
-                } else if (targetPath.startsWith('/')) { // Si es una ruta directa como /admin-users
-                    if (this.$route.path !== targetPath) this.$router.push(targetPath);
-                } else { // Ya estamos en /admin-dashboard, solo emitir
-                    if (sectionName) {
-                        // console.log(`HeaderPage: Emitting navigateAdminSection with '${sectionName}' (no navigation needed)`);
-                        this.$emit('navigateAdminSection', sectionName);
+                } else {
+                    // console.log("HeaderPage: Misma ruta y query, no se navega. El watcher debería actuar si es un nuevo clic en la misma sección.");
+                    // Si ya estamos en la misma ruta Y la query es idéntica, el watcher no se disparará.
+                    // Si queremos que CatalogoProductos.vue recargue la sección actual incluso si la query es la misma:
+                    // Esto es útil si el usuario hace clic en "Artículos" cuando ya está en "Artículos"
+                    // y queremos que la lógica de `selectSection` se ejecute (ej. para un refresh forzado).
+                    if (this.$route.path === '/admin-dashboard' && query.section && typeof this.$root.$emit === 'function') {
+                       // Alternativa: emitir un evento global que CatalogoProductos escuche
+                       // this.$root.$emit('forceAdminSection', query.section);
+                       // O, si App.vue tiene una referencia al componente y puede llamarlo:
+                       // (esto es más complejo de mantener)
                     }
                 }
+            });
+        },
+        closeDropdownAndNavigate(navigateFunc) { // Para los items que son router-link custom
+            this.showGestionDropdown = false;
+            this.isMobileMenuOpen = false; // También cerrar menú móvil si estuviera abierto (poco probable aquí)
+            this.$nextTick(() => {
+                if (typeof navigateFunc === 'function') navigateFunc();
             });
         },
         toggleMobileMenu() { this.isMobileMenuOpen = !this.isMobileMenuOpen; },

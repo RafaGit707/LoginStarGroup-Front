@@ -1,24 +1,5 @@
 <template>
 
-  <!-- Menú de selección para el admin -->
-  <div v-if="isAdmin" class="admin-menu">
-    <button @click="selectSection('articulos')">Artículos</button>
-    <button @click="selectSection('unidades')">Unidades</button>
-    <button @click="selectSection('iva')">IVA</button>
-    <button @click="selectSection('familias')">Familias</button>
-
-    <button @click="selectSection('marcas')">Marcas</button>
-    <!--<button @click="selectSection('articulo_marca')">Articulo_Marca</button>-->
-    <button @click="selectSection('proveedores')">Proveedores</button>
-    <button @click="selectSection('historialCompras')">Historial Compras</button>
-  </div>
-
-  <div v-else class="denegado">
-    <h1>Acceso denegado</h1>
-    <p>Solo los administradores pueden ver la lista de articulos y sus relaciones.</p>
-    <p>Si eres un administrador, por favor inicia sesión.</p>
-  </div>
-
   <div class="catalogo-productos" v-if="activeSection === 'articulos'">
   <h1 class="catalogo-titulo">Artículos</h1>
 
@@ -782,7 +763,7 @@ export default {
   name: "CatalogoProductos",
   data() {
     return {
-      activeSection: null,
+      activeSection: '',
       productos: [],
       unidades: [],
       ivas: [],
@@ -855,6 +836,20 @@ export default {
       isUserAdmin: false, // Nueva propiedad en data para almacenar el resultado de la verificación
       authChecked: false, // Para saber si la verificación inicial ya se hizo
     };
+  },
+ watch: {
+    '$route.query.section': {
+      immediate: false, // No se ejecuta inmediatamente al crear, created() lo manejará
+      handler(newSection, oldSection) {
+        console.log(`WATCHER Catalogo: Query 'section' cambió de '${oldSection}' a '${newSection}'`);
+        if (this.authChecked && this.isUserAdmin) { // Solo si la auth ya se verificó y es admin
+          const sectionToUpdate = newSection || 'articulos'; // Fallback si la query se borra
+          if (this.activeSection !== sectionToUpdate) {
+            this.selectSection(sectionToUpdate);
+          }
+        }
+      }
+    }
   },
  computed: {
     // Propiedad computada para determinar si el usuario es admin
@@ -954,44 +949,73 @@ export default {
       if (this.isUserAdmin) {
         this.initializeAdminData();
       }
+
+
     },
 
     initializeAdminData() {
       console.log("CatalogoProductos: Inicializando datos de admin.");
-      this.selectSection('articulos');
+      // this.selectSection('articulos');
       this.fetchUnidades();
       this.fetchIvas();
       this.fetchFamilias();
       this.fetchMarcas();
       this.fetchProveedores();
       this.fetchHistorialCompras();
+      const initialSection = this.$route.query.section || 'articulos';
+      this.selectSection(initialSection); 
     },
 
-    selectSection(section) {
-        console.log(`CatalogoProductos: selectSection llamado con '${section}'`); // Para depuración
+     selectSection(section) {
+      console.log(`CatalogoProductos: selectSection llamado con '${section}'`);
+      if (!this.isUserAdmin) {
+        console.warn("Intento de seleccionar sección sin ser admin.");
+        return;
+      }
       this.activeSection = section;
-      if (section === 'articulos') {
-        this.fetchProductos();
+      // Actualizar la query en la URL si es diferente, sin recargar la página.
+      // Esto también ayuda a que los bookmarks funcionen.
+      if (this.$route.query.section !== section) {
+         this.$router.replace({ query: { ...this.$route.query, section: section } }).catch(err => {
+             if (err.name !== 'NavigationDuplicated') console.error(err);
+         });
       }
-      if (section === 'unidades') {
-        this.fetchUnidades();
-      }
-      if (section === 'ivas') {
-        this.fetchIvas();
-      }
-      if (section === 'familias') {
-        this.fetchFamilias();
-      }
-      if (section === 'marcas') {
-        this.fetchMarcas();
-      }
-      if (section === 'proveedores') {
-        this.fetchProveedores();
-      }
-      if (section === 'historialCompras') {
-        this.fetchHistorialCompras();
-      }
+
+      // Cargar datos específicos de la sección
+      if (section === 'articulos') this.fetchProductos();
+      else if (section === 'unidades') this.fetchUnidades();
+      else if (section === 'ivas') this.fetchIvas();
+      else if (section === 'familias') this.fetchFamilias();
+      else if (section === 'marcas') this.fetchMarcas();
+      else if (section === 'proveedores') this.fetchProveedores();
+      else if (section === 'historialCompras') this.fetchHistorialCompras();
     },
+
+    // selectSection(section) {
+    //     console.log(`CatalogoProductos: selectSection llamado con '${section}'`); // Para depuración
+    //   this.activeSection = section;
+    //   if (section === 'articulos') {
+    //     this.fetchProductos();
+    //   }
+    //   if (section === 'unidades') {
+    //     this.fetchUnidades();
+    //   }
+    //   if (section === 'ivas') {
+    //     this.fetchIvas();
+    //   }
+    //   if (section === 'familias') {
+    //     this.fetchFamilias();
+    //   }
+    //   if (section === 'marcas') {
+    //     this.fetchMarcas();
+    //   }
+    //   if (section === 'proveedores') {
+    //     this.fetchProveedores();
+    //   }
+    //   if (section === 'historialCompras') {
+    //     this.fetchHistorialCompras();
+    //   }
+    // },
 
     /*Obtener Nombres*/
     getUnidadNombre(un_id) {

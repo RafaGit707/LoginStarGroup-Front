@@ -225,7 +225,7 @@ ul li a {
 
 /* Estilos para el menu */ 
 
-.admin-menu {
+/* .admin-menu {
   display: flex;
   gap: 1rem;
   justify-content: center;
@@ -244,7 +244,7 @@ ul li a {
 
 .admin-menu button:hover {
   background-color: #006666;
-}
+} */
 
 /* Estilos para agregar articulo */
 
@@ -1093,6 +1093,7 @@ header nav ul li a:hover {
 .nav-enlaces-desktop a.enlaces:hover {
   color: #4a4c57;
   color: #CCCCCC;
+  cursor: pointer;
 }
 
 /* Dropdown "Gestor" */
@@ -1105,31 +1106,45 @@ header nav ul li a:hover {
   transform: rotate(180deg);
 }
 .dropdown-menu {
-  display: block; /* Se controla con v-if */
+  display: flex; /* Se controla con v-if */
+  flex-direction: column;
   position: absolute;
   top: 100%; /* Debajo del elemento padre "Gestor" */
-  left: 0;
   background-color: #2e2f36; /* Mismo fondo que el header */
   border: 1px solid #4a4c57;
   border-top: none;
   list-style: none;
-  padding: 5px 0;
+  padding: 10px 0;
   margin: 0;
-  min-width: 200px; /* Ancho mínimo del desplegable */
-  z-index: 1001; /* Por encima de otros elementos del header */
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-  border-radius: 0 0 4px 4px;
+  z-index: -1; /* Por encima de otros elementos del header */
+  box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+  /* transform: translateY(-400px);
+  transition: opacity 0.5s ease, visibility 0.5s ease, transform 0.5s ease; */
+}
+.dropdown-menu[style*="display: none;"] { /* Para asegurar que v-if=false oculte la transición */
+    opacity: 0 !important;
+    visibility: hidden !important;
+    /* transform: translateY(-400px) !important; */
+}
+.dropdown-li:hover .dropdown-menu,
+ul.dropdown-menu[v-if="true"] { /* Usar el v-if para controlar la visibilidad */
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
 }
 .dropdown-menu li {
-  margin: 0;
   width: 100%;
+  margin: 0;
+  text-align: left;
 }
 .dropdown-menu li a {
-  padding: 10px 15px;
+  width: 100%;
+  padding: 10px 14px;
   display: block;
   white-space: nowrap;
   color: #f0f0f0;
-  font-size: 0.95em;
+  font-size: 1em;
+  cursor: pointer;
 }
 .dropdown-menu li a:hover {
   background-color: #4a4c57;
