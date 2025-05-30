@@ -991,32 +991,6 @@ export default {
       else if (section === 'historialCompras') this.fetchHistorialCompras();
     },
 
-    // selectSection(section) {
-    //     console.log(`CatalogoProductos: selectSection llamado con '${section}'`); // Para depuración
-    //   this.activeSection = section;
-    //   if (section === 'articulos') {
-    //     this.fetchProductos();
-    //   }
-    //   if (section === 'unidades') {
-    //     this.fetchUnidades();
-    //   }
-    //   if (section === 'ivas') {
-    //     this.fetchIvas();
-    //   }
-    //   if (section === 'familias') {
-    //     this.fetchFamilias();
-    //   }
-    //   if (section === 'marcas') {
-    //     this.fetchMarcas();
-    //   }
-    //   if (section === 'proveedores') {
-    //     this.fetchProveedores();
-    //   }
-    //   if (section === 'historialCompras') {
-    //     this.fetchHistorialCompras();
-    //   }
-    // },
-
     /*Obtener Nombres*/
     getUnidadNombre(un_id) {
       const unidad = this.unidades.find(u => u.un_id === un_id);

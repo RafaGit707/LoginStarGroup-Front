@@ -500,18 +500,6 @@ export default {
         },
         logout() { this.performLogoutActions(true, true); },
 
-        //  logout() {
-        //     localStorage.removeItem('authToken');
-        //     localStorage.removeItem('userName');
-        
-        //     this.checkAuthStatus();
-
-        //     // if (this.$route.meta.requiresAuth) { // Si usas route guards
-        //     //     this.$router.push('/');
-        //     // }
-        //     window.location.reload();
-        // }
-
     },
 };
 </script>
