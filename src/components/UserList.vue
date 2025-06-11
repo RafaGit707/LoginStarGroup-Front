@@ -5,17 +5,9 @@
     </section>
 
     <div class="busqueda">
-      <input
-        v-model="searchQuery"
-        type="text"
-        placeholder="Buscar por nombre o correo"
-        class="filter-input"
+      <input v-model="searchQuery" type="text" placeholder="Buscar por nombre o correo" class="filter-input"
         @keyup.enter="performSearch" />
-      <img
-        class="search-button"
-        src="../assets/search_icon.svg"
-        alt="Buscar"
-        @click="performSearch" >
+      <img class="search-button" src="../assets/search_icon.svg" alt="Buscar" @click="performSearch">
     </div>
 
     <table>
@@ -36,7 +28,7 @@
           <td>{{ usuario.u_password }}</td>
           <td class="botones-accion">
             <img class="edit" src="../assets/editar.png" alt="Editar" @click="selectUserForEdit(usuario)">
-            <img class="delete" src="../assets/borrar.png" alt="Eliminar" @click="confirmDelete(usuario.id)">
+            <img class="delete" src="../assets/borrar.png" alt="Eliminar" @click="confirmDelete(usuario)">
           </td>
         </tr>
       </tbody>
@@ -47,7 +39,7 @@
       <span>Página {{ currentPage }} de {{ totalPages }}</span>
       <button @click="nextPage" :disabled="currentPage === totalPages">Siguiente</button>
     </div>
-    </div>
+  </div>
 
   <div v-else class="usuarios">
     <h1>Acceso denegado</h1>
@@ -61,30 +53,15 @@
         <h2>Editar Usuario</h2>
         <div class="form-group">
           <label for="edit-name">Nombre</label>
-          <input
-            v-model="selectedUser.u_name"
-            type="text"
-            id="edit-name"
-            required
-          />
+          <input v-model="selectedUser.u_name" type="text" id="edit-name" required />
         </div>
         <div class="form-group">
           <label for="edit-email">Correo electrónico</label>
-          <input
-            v-model="selectedUser.u_mail"
-            type="email"
-            id="edit-email"
-            required
-          />
+          <input v-model="selectedUser.u_mail" type="email" id="edit-email" required />
         </div>
         <div class="form-group">
           <label for="edit-password">Contraseña</label>
-          <input
-            v-model="selectedUser.u_password"
-            type="password"
-            id="edit-password"
-            required
-          />
+          <input v-model="selectedUser.u_password" type="password" id="edit-password" required />
         </div>
         <div class="modal-buttons">
           <button type="submit" class="submit-btn">Guardar</button>
@@ -105,30 +82,15 @@
         </div>
         <div class="form-group">
           <label for="new-name">Nombre</label>
-          <input
-            v-model="newUser.u_name"
-            type="text"
-            id="new-name"
-            required
-          />
+          <input v-model="newUser.u_name" type="text" id="new-name" required />
         </div>
         <div class="form-group">
           <label for="new-email">Correo electrónico</label>
-          <input
-            v-model="newUser.u_mail"
-            type="email"
-            id="new-email"
-            required
-          />
+          <input v-model="newUser.u_mail" type="email" id="new-email" required />
         </div>
         <div class="form-group">
           <label for="new-password">Contraseña</label>
-          <input
-            v-model="newUser.u_password"
-            type="password"
-            id="new-password"
-            required
-          />
+          <input v-model="newUser.u_password" type="password" id="new-password" required />
         </div>
         <div class="modal-buttons">
           <button type="submit" class="submit-btn">Crear Usuario</button>
@@ -137,6 +99,23 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <div v-if="showConfirmDeleteModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Confirmar Eliminación</h2>
+      </div>
+      <p style="color: white; margin: 20px 0; text-align: left; line-height: 1.5;">
+        ¿Estás seguro de que quieres eliminar <strong>{{ userToDelete.name || 'este usuario' }}</strong>?
+        <br>
+        Esta acción no se puede deshacer.
+      </p>
+      <div class="modal-buttons">
+        <button @click="cancelDelete" class="cancel-btn">Cancelar</button>
+        <button @click="proceedWithDelete" class="submit-btn" style="background-color: #dc3545;">Eliminar</button>
+      </div>
     </div>
   </div>
 </template>
@@ -157,8 +136,8 @@ export default {
       usersList: [],
       selectedUser: null,
       showEditForm: false,
-      showAddForm: false, // Nueva propiedad para controlar la visibilidad del formulario de añadir
-      newUser: {          // Nueva propiedad para almacenar los datos del nuevo usuario
+      showAddForm: false,
+      newUser: {
         u_name: '',
         u_mail: '',
         u_password: ''
@@ -167,6 +146,9 @@ export default {
       currentPage: 1,
       itemsPerPage: ITEMS_PER_PAGE,
       filteredUsersForPagination: [],
+
+      showConfirmDeleteModal: false,
+      userToDelete: { id: null, name: '' },
     };
   },
   mounted() {
@@ -181,8 +163,8 @@ export default {
       try {
         const decodedToken = jwtDecode(token);
         if (decodedToken.exp * 1000 < Date.now()) {
-            localStorage.removeItem('authToken');
-            return false;
+          localStorage.removeItem('authToken');
+          return false;
         }
         return decodedToken.email && decodedToken.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
       } catch (e) {
@@ -208,7 +190,7 @@ export default {
           this.currentPage = 1;
         })
         .catch(error => {
-            console.error("Error al cargar usuarios", error);
+          console.error("Error al cargar usuarios", error);
         });
     },
     performSearch() {
@@ -230,54 +212,50 @@ export default {
       }
     },
     deleteUser(id) {
-      localStorage.setItem('userId', id); // Almacenas el ID del usuario que quieres eliminar
-      const currentLoggedInUserId = this.getLoggedInUserId(); // Obtener el ID del usuario logueado
-      // Si el ID que quieres eliminar coincide con el ID del usuario logueado
-      if (id == currentLoggedInUserId) { // Usar '==' para comparación de tipo suelta si ID puede ser string/number
-        alert("No puedes eliminar tu propio usuario.");
+      const currentLoggedInUserId = this.getLoggedInUserId();
+      if (id == currentLoggedInUserId) {
+        this.emitter.emit('show-notification', { message: 'No puedes eliminar tu propio usuario.', type: 'error' });
         return;
       }
 
-      axios
-        .delete(API_BASE_URL + `Users/${id}`)
+      axios.delete(`${API_BASE_URL}Users/${id}`)
         .then(() => {
+          this.emitter.emit('show-notification', { message: 'Usuario eliminado correctamente.', type: 'success' });
           this.fetchUsers();
-          alert("Usuario eliminado correctamente.");
-          // Opcional: Si el usuario eliminado era el que tenía la sesión iniciada, forzar cierre de sesión
-          if (id == currentLoggedInUserId) {
-            // Esto solo sería relevante si el usuario administrador se elimina a sí mismo.
-            // En ese caso, es posible que quieras redirigir o recargar la página.
-            // Para la mayoría de los casos de uso, esta verificación ya es suficiente.
-          }
         })
         .catch((error) => {
-          console.error("Error al eliminar usuario", error);
-          alert("Error al eliminar usuario.");
+          console.error("Error al eliminar usuario:", error);
+          this.emitter.emit('show-notification', { message: 'Error al eliminar el usuario.', type: 'error' });
         });
     },
-    confirmDelete(id) {
-      if (confirm("¿Deseas eliminar este usuario?")) {
-        this.deleteUser(id);
-      }
+    confirmDelete(user) {
+      this.userToDelete = { id: user.id, name: user.u_name };
+      this.showConfirmDeleteModal = true;
+    },
+
+    cancelDelete() {
+      this.showConfirmDeleteModal = false;
+      this.userToDelete = { id: null, name: '' };
+    },
+
+    proceedWithDelete() {
+      this.deleteUser(this.userToDelete.id);
+      this.cancelDelete();
     },
     selectUserForEdit(usuario) {
       this.selectedUser = { ...usuario };
       this.showEditForm = true;
     },
     updateUser() {
-      axios
-        .put(
-          API_BASE_URL + `Users/${this.selectedUser.id}`,
-          this.selectedUser
-        )
+      axios.put(`${API_BASE_URL}Users/${this.selectedUser.id}`, this.selectedUser)
         .then(() => {
+          this.emitter.emit('show-notification', { message: 'Usuario actualizado correctamente.', type: 'success' });
           this.fetchUsers();
           this.closeEditForm();
-          alert("Usuario actualizado correctamente.");
         })
         .catch((error) => {
-          console.error("Error al actualizar usuario", error);
-          alert("Error al actualizar usuario.");
+          console.error("Error al actualizar usuario:", error);
+          this.emitter.emit('show-notification', { message: 'Error al actualizar el usuario.', type: 'error' });
         });
     },
     closeEditForm() {
@@ -295,13 +273,13 @@ export default {
     createUser() {
       axios.post(API_BASE_URL + 'Users', this.newUser)
         .then(() => {
-          this.fetchUsers(); // Recargar la lista de usuarios para mostrar el nuevo
-          this.closeAddUserForm(); // Cerrar el modal
-          alert("Usuario creado correctamente.");
+          this.emitter.emit('show-notification', { message: 'Usuario creado correctamente.', type: 'success' });
+          this.fetchUsers();
+          this.closeAddUserForm();
         })
         .catch(error => {
-          console.error("Error al crear usuario", error);
-          alert("Error al crear usuario: " + (error.response?.data?.message || error.message));
+          console.error("Error al crear usuario:", error);
+          this.emitter.emit('show-notification', { message: 'Error al crear el usuario.', type: 'error' });
         });
     },
     // Método para obtener el ID del usuario logueado (necesario para la lógica de no eliminarse a sí mismo)

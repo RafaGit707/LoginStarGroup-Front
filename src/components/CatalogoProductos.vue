@@ -38,7 +38,7 @@
           <td>{{ producto.a_cod_barras }}</td>
           <td class="columna-acciones"> <!-- Última columna para editar/borrar -->
             <img class="edit" src="../assets/editar.png" alt="Editar" @click="selectArticuloForEdit(producto)">
-            <img class="delete" src="../assets/borrar.png" alt="Eliminar" @click="confirmDelete(producto.a_id)">
+            <img class="delete" src="../assets/borrar.png" alt="Eliminar" @click="confirmDelete({ id: producto.a_id }, 'articulo', producto.a_nombre)">
           </td>
         </tr>
       </tbody>
@@ -79,7 +79,7 @@
           <td>{{ unidad.un_nombre }}</td>
           <td class="columna-acciones">
             <img class="edit" src="../assets/editar.png" alt="Editar" @click="selectUnidadForEdit(unidad)">
-            <img class="delete" src="../assets/borrar.png" alt="Eliminar" @click="confirmDeleteUnidad(unidad.un_id)">
+            <img class="delete" src="../assets/borrar.png" alt="Eliminar" @click="confirmDelete({ id: unidad.un_id }, 'unidad', unidad.un_nombre)">
           </td>
         </tr>
       </tbody>
@@ -121,7 +121,7 @@
           <td>{{ ivaItem.iva_value }}%</td>
           <td class="columna-acciones">
             <img class="edit" src="../assets/editar.png" alt="Editar" @click="selectIvaForEdit(ivaItem)">
-            <img class="delete" src="../assets/borrar.png" alt="Eliminar" @click="confirmDeleteIva(ivaItem.iva_id)">
+            <img class="delete" src="../assets/borrar.png" alt="Eliminar" @click="confirmDelete({ id: ivaItem.iva_id }, 'iva', ivaItem.iva_nombre)">
           </td>
         </tr>
       </tbody>
@@ -161,7 +161,7 @@
           <td>{{ marca.ma_nombre }}</td>
           <td class="columna-acciones">
             <img class="edit" src="../assets/editar.png" alt="Editar" @click="selectMarcaForEdit(marca)">
-            <img class="delete" src="../assets/borrar.png" alt="Eliminar" @click="confirmDeleteMarca(marca.ma_id)">
+            <img class="delete" src="../assets/borrar.png" alt="Eliminar" @click="confirmDelete({ id: marca.ma_id }, 'marca', marca.ma_nombre)">
           </td>
         </tr>
       </tbody>
@@ -229,7 +229,7 @@
           <td>{{ familia.fa_nombre }}</td>
           <td class="columna-acciones">
             <img class="edit" src="../assets/editar.png" alt="Editar" @click="selectFamiliaForEdit(familia)">
-            <img class="delete" src="../assets/borrar.png" alt="Eliminar" @click="confirmDeleteFamilia(familia.fa_id)">
+            <img class="delete" src="../assets/borrar.png" alt="Eliminar" @click="confirmDelete({ id: familia.fa_id }, 'familia', familia.fa_nombre)">
           </td>
         </tr>
       </tbody>
@@ -275,8 +275,7 @@
           <td>{{ proveedor.p_telefono }}</td>
           <td class="columna-acciones">
             <img class="edit" src="../assets/editar.png" alt="Editar" @click="selectProveedorForEdit(proveedor)">
-            <img class="delete" src="../assets/borrar.png" alt="Eliminar"
-              @click="confirmDeleteProveedor(proveedor.p_id)">
+            <img class="delete" src="../assets/borrar.png" alt="Eliminar" @click="confirmDelete({ id: proveedor.p_id }, 'proveedor', proveedor.p_nombre)">
           </td>
         </tr>
       </tbody>
@@ -303,25 +302,25 @@
       <button class="agregar-btn-catalogo" @click="abrirFormularioHistorial">+ Agregar Historial</button>
     </div>
     <div class="tabla-responsive-wrapper">
-    <table class="tabla">
-      <thead>
-        <tr>
-          <th>Artículo</th>
-          <th>Proveedor</th>
-          <th>Precio</th>
-          <th>Fecha</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="historial in paginatedHistorialCompras"
-          :key="historial.hc_id || `${historial.a_id}-${historial.p_id}-${historial.hc_fecha}`">
-          <td>{{ getNombreArticulo(historial.a_id) }}</td>
-          <td>{{ getNombreProveedor(historial.p_id) }}</td>
-          <td>{{ historial.hc_precio.toFixed(2) }}€</td>
-          <td>{{ historial.hc_fecha }}</td>
-        </tr>
-      </tbody>
-    </table>
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Artículo</th>
+            <th>Proveedor</th>
+            <th>Precio</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="historial in paginatedHistorialCompras"
+            :key="historial.hc_id || `${historial.a_id}-${historial.p_id}-${historial.hc_fecha}`">
+            <td>{{ getNombreArticulo(historial.a_id) }}</td>
+            <td>{{ getNombreProveedor(historial.p_id) }}</td>
+            <td>{{ historial.hc_precio.toFixed(2) }}€</td>
+            <td>{{ historial.hc_fecha }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
     <div class="pagination-controls" v-if="totalPagesHistorialCompras > 0">
@@ -798,6 +797,24 @@
   </div>
 </div>-->
 
+<!-- Modal de Confirmación de Borrado (VERIFICA ESTE CÓDIGO) -->
+<div v-if="showConfirmDeleteModal" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Confirmar Eliminación</h2>
+    </div>
+    <p style="color: white; margin: 20px 0; text-align: left; line-height: 1.5;">
+      ¿Estás seguro de que quieres eliminar <strong>{{ itemToDelete.name || 'este elemento' }}</strong>?
+      <br>
+      Esta acción no se puede deshacer.
+    </p>
+    <div class="modal-buttons">
+      <button @click="cancelDelete" class="cancel-btn">Cancelar</button>
+      <button @click="proceedWithDelete" class="submit-btn" style="background-color: #dc3545;">Eliminar</button>
+    </div>
+  </div>
+</div>
+
 </template>
 
 <script>
@@ -892,6 +909,9 @@ export default {
       currentSearchTerm: "",
       isUserAdmin: false,
       authChecked: false,
+
+      showConfirmDeleteModal: false,
+      itemToDelete: { id: null, name: '', type: '' },
     };
   },
 
@@ -1286,118 +1306,106 @@ export default {
     },
 
     deleteProduct(id) {
-      localStorage.setItem('productId', id);
-      axios.delete(API_BASE_URL + "articulos/" + id)
+      axios.delete(`${API_BASE_URL}articulos/${id}`)
         .then(() => {
+          this.emitter.emit('show-notification', { message: 'Artículo eliminado.', type: 'success' });
           this.fetchProductos();
-          alert("Producto eliminado correctamente");
         })
-        .catch((error) => {
-          console.error("Error al eliminar producto", error);
-        })
+        .catch(error => {
+          console.error("Error al eliminar producto:", error);
+          this.emitter.emit('show-notification', { message: 'Error al eliminar el artículo.', type: 'error' });
+        });
     },
 
     deleteUnidad(id) {
-      localStorage.setItem('unidadId', id);
-      axios.delete(API_BASE_URL + "Unidades/" + id)
+      axios.delete(`${API_BASE_URL}Unidades/${id}`)
         .then(() => {
+          this.emitter.emit('show-notification', { message: 'Unidad eliminada.', type: 'success' });
           this.fetchUnidades();
-          alert("Unidad eliminada correctamente");
         })
-        .catch((error) => {
-          console.error("Error al eliminar unidad", error);
-        })
+        .catch(error => {
+          console.error("Error al eliminar unidad:", error);
+          this.emitter.emit('show-notification', { message: 'Error al eliminar la unidad.', type: 'error' });
+        });
     },
 
     deleteIva(id) {
-      localStorage.setItem('ivaId', id);
-      axios.delete(API_BASE_URL + "Iva/" + id)
+      axios.delete(`${API_BASE_URL}Iva/${id}`)
         .then(() => {
+          this.emitter.emit('show-notification', { message: 'IVA eliminado.', type: 'success' });
           this.fetchIvas();
-          alert("IVA eliminado correctamente");
         })
-        .catch((error) => {
-          console.error("Error al eliminar IVA", error);
-        })
+        .catch(error => {
+          console.error("Error al eliminar IVA:", error);
+          this.emitter.emit('show-notification', { message: 'Error al eliminar el IVA.', type: 'error' });
+        });
     },
 
     deleteFamilia(id) {
-      localStorage.setItem('familiaId', id);
-      axios.delete(API_BASE_URL + "Familias/" + id)
+      axios.delete(`${API_BASE_URL}Familias/${id}`)
         .then(() => {
+          this.emitter.emit('show-notification', { message: 'Familia eliminada.', type: 'success' });
           this.fetchFamilias();
-          alert("Familia eliminada correctamente");
         })
-        .catch((error) => {
-          console.error("Error al eliminar familia", error);
-        })
+        .catch(error => {
+          console.error("Error al eliminar familia:", error);
+          this.emitter.emit('show-notification', { message: 'Error al eliminar la familia.', type: 'error' });
+        });
     },
 
     deleteMarca(id) {
-      localStorage.setItem('marcaId', id);
-      axios.delete(API_BASE_URL + "Marcas/" + id)
+      axios.delete(`${API_BASE_URL}Marcas/${id}`)
         .then(() => {
+          this.emitter.emit('show-notification', { message: 'Marca eliminada.', type: 'success' });
           this.fetchMarcas();
-          alert("Marca eliminada correctamente");
         })
-        .catch((error) => {
-          console.error("Error al eliminar marca", error);
-        })
+        .catch(error => {
+          console.error("Error al eliminar marca:", error);
+          this.emitter.emit('show-notification', { message: 'Error al eliminar la marca.', type: 'error' });
+        });
     },
 
     deleteProveedor(id) {
-      localStorage.setItem('proveedorId', id);
-      axios.delete(API_BASE_URL + "Proveedores/" + id)
+      axios.delete(`${API_BASE_URL}Proveedores/${id}`)
         .then(() => {
+          this.emitter.emit('show-notification', { message: 'Proveedor eliminado.', type: 'success' });
           this.fetchProveedores();
-          alert("Proveedor eliminado correctamente");
         })
-        .catch((error) => {
-          console.error("Error al eliminar proveedor", error);
-        })
+        .catch(error => {
+          console.error("Error al eliminar proveedor:", error);
+          this.emitter.emit('show-notification', { message: 'Error al eliminar el proveedor.', type: 'error' });
+        });
     },
 
-    confirmDelete(id) {
-      if (confirm("¿Deseas eliminar este producto?")) {
-        this.deleteProduct(id);
+     confirmDelete(item, type, name) {
+      this.itemToDelete = { id: item.id, name: name, type: type };
+      this.showConfirmDeleteModal = true;
+    },
+
+    cancelDelete() {
+      this.showConfirmDeleteModal = false;
+      this.itemToDelete = { id: null, name: '', type: '' };
+    },
+
+    proceedWithDelete() {
+      const { id, type } = this.itemToDelete;
+      switch (type) {
+        case 'articulo': this.deleteProduct(id); break;
+        case 'unidad': this.deleteUnidad(id); break;
+        case 'iva': this.deleteIva(id); break;
+        case 'familia': this.deleteFamilia(id); break;
+        case 'marca': this.deleteMarca(id); break;
+        case 'proveedor': this.deleteProveedor(id); break;
       }
+      this.cancelDelete();
     },
 
-    confirmDeleteUnidad(id) {
+    DeleteUnidad(id) {
       if (confirm("¿Deseas eliminar esta unidad?")) {
         this.deleteUnidad(id);
       }
     },
-    confirmDeleteIva(id) {
-      if (confirm("¿Deseas eliminar este IVA?")) {
-        this.deleteIva(id);
-      }
-    },
-
-    confirmDeleteFamilia(id) {
-      if (confirm("¿Deseas eliminar esta familia?")) {
-        this.deleteFamilia(id);
-      }
-    },
-
-    confirmDeleteMarca(id) {
-      if (confirm("¿Deseas eliminar esta marca?")) {
-        this.deleteMarca(id);
-      }
-    },
-
-    confirmDeleteProveedor(id) {
-      if (confirm("¿Deseas eliminar este proveedor?")) {
-        this.deleteProveedor(id);
-      }
-    },
-
-    confirmDeleteHistorial(id) {
-      if (confirm("¿Deseas eliminar este historial de compra?")) {
-        this.deleteHistorial(id);
-      }
-    },
-
+    
     selectArticuloForEdit(producto) {
       console.log("Producto seleccionado para edición:", producto);
       this.selectedProducto = { ...producto };
@@ -1439,79 +1447,82 @@ export default {
       this.showEditFormFamilia = true;
     },
     updateProducto() {
-      axios.put(API_BASE_URL + `Articulos/${this.selectedProducto.a_id}`, this.selectedProducto
-
-      )
+      axios.put(`${API_BASE_URL}Articulos/${this.selectedProducto.a_id}`, this.selectedProducto)
         .then(() => {
-          alert("Producto actualizado correctamente");
+          this.emitter.emit('show-notification', { message: 'Artículo actualizado.', type: 'success' });
           this.fetchProductos();
           this.closeEditForm();
         })
-        .catch((error) => {
-          console.error("Error al actualizar producto", error);
+        .catch(error => {
+          console.error("Error al actualizar producto:", error);
+          this.emitter.emit('show-notification', { message: 'Error al actualizar el artículo.', type: 'error' });
         });
     },
+
     updateUnidad() {
-      const unidadToUpdate = {
-        un_id: this.selectedUnidad.un_id,
-        un_nombre: this.selectedUnidad.un_nombre
-      };
-      axios.put(API_BASE_URL + `Unidades/${unidadToUpdate.un_id}`, unidadToUpdate)
+      const unidadToUpdate = { un_id: this.selectedUnidad.un_id, un_nombre: this.selectedUnidad.un_nombre };
+      axios.put(`${API_BASE_URL}Unidades/${unidadToUpdate.un_id}`, unidadToUpdate)
         .then(() => {
-          alert("Unidad actualizada correctamente");
+          this.emitter.emit('show-notification', { message: 'Unidad actualizada.', type: 'success' });
           this.fetchUnidades();
           this.closeEditFormUnidad();
         })
-        .catch((error) => {
-          console.error("Error al actualizar unidad", error);
-        })
+        .catch(error => {
+          console.error("Error al actualizar unidad:", error);
+          this.emitter.emit('show-notification', { message: 'Error al actualizar la unidad.', type: 'error' });
+        });
     },
+
     updateIva() {
-      axios.put(API_BASE_URL + `Iva/${this.selectedIva.iva_id}`, this.selectedIva)
+      axios.put(`${API_BASE_URL}Iva/${this.selectedIva.iva_id}`, this.selectedIva)
         .then(() => {
-          alert("Iva actualizado correctamente");
+          this.emitter.emit('show-notification', { message: 'IVA actualizado.', type: 'success' });
           this.fetchIvas();
           this.closeEditFormIva();
         })
-        .catch((error) => {
-          console.error("Error al actualizar iva", error);
+        .catch(error => {
+          console.error("Error al actualizar IVA:", error);
+          this.emitter.emit('show-notification', { message: 'Error al actualizar el IVA.', type: 'error' });
         });
     },
 
     updateFamilia() {
-      axios.put(API_BASE_URL + `Familias/${this.selectedFamilia.fa_id}`, this.selectedFamilia)
+      axios.put(`${API_BASE_URL}Familias/${this.selectedFamilia.fa_id}`, this.selectedFamilia)
         .then(() => {
-          alert("Familia actualizada correctamente");
+          this.emitter.emit('show-notification', { message: 'Familia actualizada.', type: 'success' });
           this.fetchFamilias();
           this.closeEditFormFamilia();
         })
-        .catch((error) => {
-          console.error("Error al actualizar familia", error);
-        })
+        .catch(error => {
+          console.error("Error al actualizar familia:", error);
+          this.emitter.emit('show-notification', { message: 'Error al actualizar la familia.', type: 'error' });
+        });
     },
 
     updateMarca() {
-      axios.put(API_BASE_URL + `Marcas/${this.selectedMarca.ma_id}`, this.selectedMarca)
+      axios.put(`${API_BASE_URL}Marcas/${this.selectedMarca.ma_id}`, this.selectedMarca)
         .then(() => {
-          alert("Marca actualizada correctamente");
+          this.emitter.emit('show-notification', { message: 'Marca actualizada.', type: 'success' });
           this.fetchMarcas();
           this.closeEditFormMarca();
         })
-        .catch((error) => {
-          console.error("Error al actualizar marca", error);
-        })
+        .catch(error => {
+          console.error("Error al actualizar marca:", error);
+          this.emitter.emit('show-notification', { message: 'Error al actualizar la marca.', type: 'error' });
+        });
     },
 
     updateProveedor() {
-      axios.put(API_BASE_URL + `Proveedores/${this.selectedProveedor.p_id}`, this.selectedProveedor)
+      axios.put(`${API_BASE_URL}Proveedores/${this.selectedProveedor.p_id}`, this.selectedProveedor)
         .then(() => {
-          alert("Proveedor actualizado correctamente");
+          this.emitter.emit('show-notification', { message: 'Proveedor actualizado.', type: 'success' });
           this.fetchProveedores();
           this.closeEditFormProveedor();
         })
-        .catch((error) => {
-          console.error("Error al actualizar proveedor", error);
-        })
+        .catch(error => {
+          console.error("Error al actualizar proveedor:", error);
+          this.emitter.emit('show-notification', { message: 'Error al actualizar el proveedor.', type: 'error' });
+        });
     },
 
     /*updateHistorial() {
@@ -1526,88 +1537,95 @@ export default {
           console.error("Error al actualizar historial", error);
         })
     },*/
-    guardarArticulo() {
-      this.mostrarFormularioArticulo = true;
+     guardarArticulo() {
       axios.post(API_BASE_URL + "Articulos", this.nuevoArticulo)
         .then(() => {
+          this.emitter.emit('show-notification', { message: 'Artículo creado.', type: 'success' });
           this.fetchProductos();
           this.cancelarFormulario();
         })
-        .catch((error) => {
-          console.error("Error al crear Articulo", error);
-          alert("Error al crear Articulo");
-        })
+        .catch(error => {
+          console.error("Error al crear Artículo:", error);
+          this.emitter.emit('show-notification', { message: 'Error al crear el artículo.', type: 'error' });
+        });
     },
+
     guardarUnidad() {
-      this.mostrarFormularioUnidades = true;
       axios.post(API_BASE_URL + "Unidades", this.nuevaUnidad)
         .then(() => {
+          this.emitter.emit('show-notification', { message: 'Unidad creada.', type: 'success' });
           this.fetchUnidades();
           this.cancelarFormularioUnidad();
         })
-        .catch((error) => {
-          console.error("Error al crear unidad", error);
-        })
+        .catch(error => {
+          console.error("Error al crear unidad:", error);
+          this.emitter.emit('show-notification', { message: 'Error al crear la unidad.', type: 'error' });
+        });
     },
 
     guardarIva() {
-      this.mostrarFormularioIva = true;
       axios.post(API_BASE_URL + "Iva", this.nuevoIva)
         .then(() => {
+          this.emitter.emit('show-notification', { message: 'IVA creado.', type: 'success' });
           this.fetchIvas();
           this.cancelarFormularioIva();
         })
-        .catch((error) => {
-          console.error("Error al crear iva", error);
-        })
+        .catch(error => {
+          console.error("Error al crear IVA:", error);
+          this.emitter.emit('show-notification', { message: 'Error al crear el IVA.', type: 'error' });
+        });
     },
 
     guardarFamilia() {
-      this.mostrarFormularioFamilia = true;
       axios.post(API_BASE_URL + "Familias", this.nuevaFamilia)
         .then(() => {
+          this.emitter.emit('show-notification', { message: 'Familia creada.', type: 'success' });
           this.fetchFamilias();
           this.cancelarFormularioFamilia();
         })
-        .catch((error) => {
-          console.error("Error al crear familia", error);
-        })
+        .catch(error => {
+          console.error("Error al crear familia:", error);
+          this.emitter.emit('show-notification', { message: 'Error al crear la familia.', type: 'error' });
+        });
     },
 
     guardarMarca() {
-      this.mostrarFormularioMarca = true;
       axios.post(API_BASE_URL + "Marcas", this.nuevaMarca)
         .then(() => {
+          this.emitter.emit('show-notification', { message: 'Marca creada.', type: 'success' });
           this.fetchMarcas();
           this.cancelarFormularioMarca();
         })
-        .catch((error) => {
-          console.error("Error al crear marca", error);
-        })
+        .catch(error => {
+          console.error("Error al crear marca:", error);
+          this.emitter.emit('show-notification', { message: 'Error al crear la marca.', type: 'error' });
+        });
     },
 
     guardarProveedor() {
-      this.mostrarFormularioProveedor = true;
       axios.post(API_BASE_URL + "Proveedores", this.nuevoProveedor)
         .then(() => {
+          this.emitter.emit('show-notification', { message: 'Proveedor creado.', type: 'success' });
           this.fetchProveedores();
           this.cancelarFormularioProveedor();
         })
-        .catch((error) => {
-          console.error("Error al crear proveedor", error);
-        })
+        .catch(error => {
+          console.error("Error al crear proveedor:", error);
+          this.emitter.emit('show-notification', { message: 'Error al crear el proveedor.', type: 'error' });
+        });
     },
 
     guardarHistorialCompras() {
-      this.mostrarFormularioHistorial = true;
       axios.post(API_BASE_URL + "HistorialCompra", this.nuevoHistorial)
         .then(() => {
+          this.emitter.emit('show-notification', { message: 'Historial de compra añadido.', type: 'success' });
           this.fetchHistorialCompras();
           this.cancelarFormularioHistorial();
         })
-        .catch((error) => {
-          console.error("Error al crear historial", error);
-        })
+        .catch(error => {
+          console.error("Error al crear historial:", error);
+          this.emitter.emit('show-notification', { message: 'Error al añadir el historial.', type: 'error' });
+        });
     },
     abrirFormularioArticulo() {
       this.mostrarFormularioArticulo = true;

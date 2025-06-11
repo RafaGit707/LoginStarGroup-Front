@@ -448,28 +448,44 @@ export default {
         },
 
          handleLogin() {
-            if (!this.user.u_mail || !this.user.u_password) { /* ... */ }
+            if (!this.user.u_mail || !this.user.u_password) {
+                // AÑADIDO: Notificación de error si faltan campos
+                this.emitter.emit('show-notification', {
+                    message: 'Por favor, introduce correo y contraseña.',
+                    type: 'error'
+                });
+                return;
+            }
             axios.post(`${API_BASE_URL}Login/login`, this.user)
                 .then(response => {
                     const token = response.data.token;
-                    // const userName = response.data.userName; // Ya lo obtenemos del token decodificado
-
                     localStorage.setItem('authToken', token);
-                    // localStorage.setItem('userName', userName); // No es estrictamente necesario si está en el token
-
                     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
                     
-                    // Actualizar estado local y luego emitir. checkAuthStatus puede hacer esto.
-                    this.checkAuthStatus(); // Esto actualizará loggedIn, currentUserName y activará la computada isAdmin
+                    this.checkAuthStatus();
 
                     this.user = { u_name: '', u_mail: '', u_password: '' };
                     this.showLogin = false;
 
-                    window.location.reload();
+                    // AÑADIDO: Notificación de éxito ANTES de recargar la página
+                    this.emitter.emit('show-notification', {
+                        message: `¡Bienvenido, ${this.currentUserName}!`,
+                        type: 'success'
+                    });
+
+                    // Esperamos un momento para que el usuario vea la notificación antes de recargar
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 5000); // 0.5 segundos de espera
                 })
                 .catch(error => {
                     console.error("Error en login:", error.response ? error.response.data : error.message);
-                    alert("Credenciales incorrectas o error en el servidor.");
+                    
+                    // CAMBIADO: Reemplazamos el alert() por una notificación
+                    this.emitter.emit('show-notification', {
+                        message: 'Credenciales incorrectas o error del servidor.',
+                        type: 'error'
+                    });
                 });
         },
 
@@ -478,25 +494,49 @@ export default {
         },
 
         handleRegister() {
-            // if (!this.validatePassword()) return;
-            axios.post(API_BASE_URL+'Users', this.user)
+            // if (!this.validatePassword()) return; // Podrías añadir validación aquí también
+            axios.post(API_BASE_URL + 'Users', this.user)
             .then(response => {
                 this.showRegister = false;
                 this.fetchUsers();
                 console.log(response.data);
+
+                // AÑADIDO: Notificación de éxito en el registro
+                this.emitter.emit('show-notification', {
+                    message: '¡Registro completado! Ya puedes iniciar sesión.',
+                    type: 'success'
+                });
             })
             .catch(error => {
                 console.error("Error al registrar usuario", error);
-                alert("Error al registrar usuario");
+
+                // CAMBIADO: Reemplazamos el alert() por una notificación
+                this.emitter.emit('show-notification', {
+                    message: 'Error al registrar el usuario. Inténtalo de nuevo.',
+                    type: 'error'
+                });
             });
         },
         performLogoutActions(clearToken = true, reloadPage = true) {
-            if (clearToken) localStorage.removeItem('authToken');
+            if (clearToken) {
+                 // AÑADIDO: Notificación de cierre de sesión
+                this.emitter.emit('show-notification', {
+                    message: 'Has cerrado la sesión.',
+                    type: 'success' // Usamos 'success' para una acción completada
+                });
+                localStorage.removeItem('authToken');
+            }
             this.loggedIn = false;
             this.currentUserName = '';
             delete axios.defaults.headers.common['Authorization'];
             this.$emit('loginSuccess', { isAdmin: false, userName: '' });
-            if (reloadPage) window.location.reload();
+            
+            if (reloadPage) {
+                // Esperamos un momento para que el usuario vea la notificación
+                setTimeout(() => {
+                    window.location.reload();
+                }, 5000);
+            }
         },
         logout() { this.performLogoutActions(true, true); },
 
