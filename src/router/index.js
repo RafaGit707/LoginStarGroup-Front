@@ -3,6 +3,7 @@ import CatalogoProductos from '@/components/CatalogoProductos.vue'
 import UserList from '@/components/UserList.vue'
 import { jwtDecode } from 'jwt-decode';
 import HeaderPage from '@/components/HeaderPage.vue';
+/*import IndexPage from '@/components/IndexPage.vue';*/
 
 const ADMIN_EMAIL = 'antonio.carnero@star-group.net';
 
@@ -10,6 +11,7 @@ const routes = [
   { path: '/index', name: 'HeaderPage', component: HeaderPage },
   { path: '/admin-dashboard', name: 'Catalogo Productos', component: CatalogoProductos, meta: { requiresAdmin: true } },
   { path: '/users-dashboard', name: 'Admin', component: UserList, meta: { requiresAdmin: true } },
+  /*{ path: '/', name: 'Index', component: IndexPage},*/
 ]
 
 function isAuthenticatedAndAdmin() {
